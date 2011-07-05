@@ -1,0 +1,4 @@
+recursive-include projectmanager/public *
+include projectmanager/public/favicon.ico
+recursive-include projectmanager/i18n *
+recursive-include projectmanager/templates *

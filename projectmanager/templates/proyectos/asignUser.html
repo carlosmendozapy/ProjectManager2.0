@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>
+    
+    <h2><a>Asignar Usuario al Proyecto: ${g.current_project.nom_proyecto}</a></h2>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div id="search" class="search">
+    <form action="./searchNoUsers" >       
+       <img src="${tg.url('/images/logo.png')}" alt="TurboGears" height="50" width="50" />
+       <input type="text" name="key"/>
+       <input type="submit" value="Buscar"/>
+    </form>
+    </div>
+    <table rules='rows'>
+          <tr>
+          <th height="20"></th>          
+          <th height="20">Identificador</th>
+          <th height="20">Nombre</th>          
+          </tr>
+          <tr py:for="i, usuario in enumerate(usuarios)" class="${i%2 and 'even' or 'odd'}">
+            <td><a href='/proyecto/saveUserToProject?id_user=${usuario.id_usuario}'><img src="${tg.url('/images/add_user.png')}" alt="Agregar Usuario a Proyecto" height="16" width="16"/></a></td>
+            <td align='center'>${usuario.id_usuario}</td> 
+            <td>${usuario.nom_usuario}</td>            
+          </tr>
+    </table>      
+    <a href='/fase/index?id_proyecto=${g.current_project.id_proyecto}'><img src="${tg.url('/images/back.png')}" alt="Atras"/>Atras</a>
+</body>
+</html>
+

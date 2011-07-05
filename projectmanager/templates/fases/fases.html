@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body> 	  
+ 
+  <div id="AdministrarFases">    
+    <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+    <a><h2>Lista de Fases</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div class="searchtool">
+        ${search()}
+    </div>
+    <div class="menu">
+		<ul>
+            <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) and g.current_project.estadoProyecto.nom_estado=='No Iniciado'">
+			<li><a href="./newPhase" >Nueva Fase</a></li>
+            </span>
+			<span py:if="h.has_AnyProPriv('Usuario',g.current_project.id_proyecto) or h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.is_type('admin')">
+             <li><a href="#" id="current">Usuarios</a>
+			  <ul>
+                  <span py:if="h.has_ProPriv('listar','Usuario',g.current_project.id_proyecto) or h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.is_type('admin')">                  
+				  <li><a href="/proyecto/listUsersProject">Listar Usuarios de Proyecto</a></li>
+                  </span>
+                  <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.is_type('admin')">
+                    <li><a href="/proyecto/userToProject">Asignar Usuarios a Proyecto</a></li>		
+                    <li><a href="/proyecto/quitUserOfProject">Quitar Usuarios del Proyecto</a></li>
+                  </span>
+              </ul>
+		     </li>
+            </span>
+            <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.is_type('admin')">
+              <li><a href="#">Lider de Proyecto</a>
+                <ul>
+                  <li><a href="/proyecto/listLideres">Listar Lideres</a></li>
+                  <li><a href="/proyecto/liderToProject">Asignar Lider a Proyecto</a></li>
+                  <li><a href="/proyecto/quitLiderOfProject">Quitar Lider de Proyecto</a></li>
+                </ul>
+              </li>
+            </span>            		
+		</ul>
+	</div>   
+            
+    <table rules='rows'>
+          <tr>
+          <th width="2%" height="20"></th>
+          <th width="2%" height="20"></th>
+          <th width="5%" height="20">Identificador</th>
+          <th width="10%" height="20">Estado</th>
+          <th width="5%" height="20">Orden</th>
+          <th width="20%" height="20">Nombre</th>
+          <th width="50%" height="20">Descripcion</th>          
+          </tr>
+          <tr py:for="i, fase in enumerate(fases)" class="${i%2 and 'even' or 'odd'}">
+              <td>
+              	<span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) and g.current_project.estadoProyecto.nom_estado=='No Iniciado'">
+				  <a href='./editPhase?idPhase=${fase.id_fase}'><img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a>
+			    </span>
+			  </td>
+              <td>
+                <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) and g.current_project.estadoProyecto.nom_estado=='No Iniciado'">
+                  <a href='./delete?id=${fase.id_fase}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" /></a>
+                </span>
+              </td>            
+            <td align='center'>${fase.id_fase}</td>                       
+            <td>${fase.estadoFase.nom_estado}</td>
+            <td align='center'>${fase.nro_fase}</td>
+            <td><a href='/item/adminItem?faseid=${fase.id_fase}'>${fase.nom_fase}</a></td>
+            <td>${fase.des_fase}</td>            
+          </tr>
+    </table>
+    <a href='/proyecto/adminProject'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+  </div>
+</body>
+</html>

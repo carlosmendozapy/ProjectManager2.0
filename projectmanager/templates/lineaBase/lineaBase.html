@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body> 	  
+ 
+  <div id="AdministrarLineasBase">
+    <a><h2>Administracion de Lineas Base</h2></a>
+    <a><h2>Lista de Lineas Base</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div class="searchtool">
+        ${search()}
+    </div>   
+    <div class="menu">
+		<ul>
+		  <span py:if="h.has_FasePriv('crear','Linea Base',g.current_phase.id_fase)">
+		    <li><a href='./nuevaLineaBase'>Crear Nueva Linea Base</a></li>				
+		  </span>
+		</ul>
+	</div><!-- End of Nav Div --> 
+            
+    <table rules='rows'>
+          <tr>
+          <th width="10%" height="20">Identificador</th>
+          <th width="15%" height="30">Nombre</th>
+          <th width="15%" height="40">Estado</th>
+          <th width="50%" height="20">Descripcion</th>          
+          </tr>
+   
+       <span py:if="bandera == 'ok'">          
+          <tr py:for="i, lineaBase in enumerate(lineasBase)" class="${i%2 and 'even' or 'odd'}">
+            <td align='center'>${lineaBase.id_nro_lb}</td>
+            <td><a href='/itemLineaBase/index?id_nro_lb=${lineaBase.id_nro_lb}'>${lineaBase.lineaBase.nom_linea_base}</a></td>                       
+            <td>${lineaBase.estado.nom_estado}</td>
+            <td>${lineaBase.lineaBase.descripcion}</td>            
+          </tr>
+        </span> 
+        
+        <span py:if="bandera == 'error'">
+        Parametro Incorrecto
+        </span> 
+          
+    </table>
+    <a href='/fase/itemsFase?id_fase=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>        
+  </div>
+ <div class="clearingdiv" />  
+</body>
+</html>

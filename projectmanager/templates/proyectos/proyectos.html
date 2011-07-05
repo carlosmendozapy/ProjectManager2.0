@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>   
+  
+  <div id="AdministrarProyecto">
+    <a><h2>Lista de Proyectos</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div class="searchtool">
+        ${search()}
+    </div>
+    <div class="menu">
+		<ul>        
+			<li py:if="h.is_type('admin')"><a href="./newProject" >Nuevo Proyecto</a></li>			
+		</ul>
+	</div>       
+    
+    <table rules='rows'>
+          <tr>
+          <th width="2%" height="20"></th>
+          <th width="2%" height="20"></th>
+          <th width="2%" height="20"></th>
+          <th width="10%" height="20">Identificador</th>
+          <th width="10%" height="20">Estado</th>
+          <th width="20%" height="20">Nombre</th>
+          <th width="50%" height="20">Descripcion</th>          
+          </tr>
+          <tr py:for="i, proyecto in enumerate(proyectos)" class="${i%2 and 'even' or 'odd'}">
+            <td>
+              <span py:if="h.has_rol_proyecto('Lider de Proyecto',proyecto.id_proyecto) and proyecto.estadoProyecto.nom_estado == 'No Iniciado' ">
+                <a href='./startProject?id=${proyecto.id_proyecto}'>
+                <img src="${tg.url('/images/iniciar.png')}" alt="Iniciar" height="16" width="16"/></a>
+              </span>
+               <span py:if="h.has_rol_proyecto('Lider de Proyecto',proyecto.id_proyecto) and proyecto.estadoProyecto.nom_estado == 'Iniciado' ">
+                <a href='./stopProject?id=${proyecto.id_proyecto}'>
+                <img src="${tg.url('/images/stop.png')}" alt="Iniciar" height="16" width="16"/></a>
+              </span>             
+            </td>            
+            <td>
+              <span py:if="(h.has_rol_proyecto('Lider de Proyecto',proyecto.id_proyecto) or h.is_type('admin')) and proyecto.estadoProyecto.nom_estado == 'No Iniciado' ">
+                <a href='./editProject?id=${proyecto.id_proyecto}'>
+                <img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a>
+              </span>
+            </td>            
+            <td>
+            <span py:if="h.is_type('admin') and proyecto.estadoProyecto.nom_estado == 'No Iniciado'">            
+                <a href='./delete?id=${proyecto.id_proyecto}'>
+                <img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" /></a>
+            </span>
+            </td>
+            <td align='center'>${proyecto.id_proyecto}</td>
+            <td>${proyecto.estadoProyecto.nom_estado}</td>
+              <span py:if="proyecto.estadoProyecto.nom_estado == 'Iniciado' and not h.is_type('admin')">                
+                <td><a href='fase/index?id_proyecto=${proyecto.id_proyecto}'>${proyecto.nom_proyecto}</a></td>
+              </span>
+              <span py:if="proyecto.estadoProyecto.nom_estado == 'No Iniciado'">
+                <span py:if="h.is_type('admin') or h.has_rol_proyecto('Lider de Proyecto',proyecto.id_proyecto)">
+                  <td><a href='fase/index?id_proyecto=${proyecto.id_proyecto}'>${proyecto.nom_proyecto}</a></td>
+                </span>
+                <span py:if="not h.is_type('admin') and not h.has_rol_proyecto('Lider de Proyecto',proyecto.id_proyecto)">
+                  <td>${proyecto.nom_proyecto}</td>
+                </span>                
+              </span>
+              <span py:if="proyecto.estadoProyecto.nom_estado == 'Finalizado' or (proyecto.estadoProyecto.nom_estado == 'Iniciado' and h.is_type('admin'))">
+                <td>${proyecto.nom_proyecto}</td>
+              </span>
+            <td>${proyecto.des_proyecto}</td>            
+          </tr>
+        </table>        
+  </div>  
+  <div class="clearingdiv" />  
+</body>
+</html>

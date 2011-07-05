@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Atributo</title>
+</head>
+
+<body>   
+  <div class="iconRepresentative">
+    <img src="${tg.url('/images/proyecto.jpg')}" height='100' width='200'/>
+  </div>
+  <div>
+    ${search()}
+  </div>
+  <div id="AdministrarItem">
+    <a><h2>Relaciones de Dependencia de ${versionItem.item.nom_item}</h2></a>
+    <form action="../newRelacion" >
+        <input type="submit" value="Establecer Nueva Relacion" />  
+    </form>
+    <Table>
+      <tr>	
+	<th>Fase Anterior: ${versionItem.tipoItem.fase.nom_fase}</th>        
+      </tr>
+      <tr>
+        <td>    
+    	  <table rules='rows'>
+            <tr>
+               <th></th>          
+              <th>Identificador</th>
+              <th>Nombre</th>              
+              <th>Tipo Item</th>          
+	      <th>Usr Modif</th>
+              <th>Fecha Modif</th>                
+            </tr>
+	    <tr py:for="i, relacionItem in enumerate(relacionesItem)" class="${i%2 and 'even' or 'odd'}">                      
+              <td><a href='../deleteRelacion?id=${relacionItem.id_relacion}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar Relacion" height="16" width="16" /></a></td>            
+              <td>${relacionItem.versionItem.item.id_item}</td>
+              <td>${relacionItem.versionItem.item.nom_item}</td>
+              <td>${relacionItem.versionItem.estado.nom_estado}</td>
+              <td>${relacionItem.versionItem.tipoItem.nom_tipo_item}</td>
+              <td>${relacionItem.versionItem.usuarioModifico.login_name}</td>
+              <td>${relacionItem.versionItem.fecha}</td>            
+            </tr>
+          </table>
+        </td>
+        <td>
+
+        </td>
+      </tr>
+    </Table>
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

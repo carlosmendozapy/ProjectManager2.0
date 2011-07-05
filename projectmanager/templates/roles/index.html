@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>   
+  <div id="ListarRoles">
+    <a><h2>Lista de Roles</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div class="searchtool">
+        ${search()}
+    </div>   
+    <div class="menu">
+		<ul>
+			<li><a href="./newRol" >Nuevo Rol</a></li>			
+		</ul>
+	</div>               
+    <table rules='rows'>
+          <tr>          
+          <th width="2%" height="20"></th>
+          <th width="2%" height="20"></th>
+          <th width="10%" height="20">Identificador</th>
+          <th width="10%" height="20">Tipo</th>
+          <th width="20%" height="20">Nombre</th>
+          <th width="50%" height="20">Descripcion</th>          
+          </tr>
+          <tr py:for="i, rol in enumerate(roles)" class="${i%2 and 'even' or 'odd'}">                        
+            <td>   
+                <span py:if="not rol.nom_rol=='Lider de Proyecto'">
+                <a href='./editRol?id=${rol.id_rol}'>
+                <img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a>           
+                </span>
+            </td>            
+            <td> 
+                <span py:if="not rol.nom_rol=='Lider de Proyecto'">
+                <a href='./deleteRol?id=${rol.id_rol}'>
+                <img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" /></a>           
+                </span>
+            </td>
+            <td align='center'>${rol.id_rol}</td>
+            <td>${rol.tipoRol.nom_tipo_rol}</td>
+            <span py:if="rol.nom_rol=='Lider de Proyecto'">
+              <td><img src="${tg.url('/images/lock.png')}"/>${rol.nom_rol}</td>
+            </span>
+            <span py:if="not rol.nom_rol=='Lider de Proyecto'">
+              <td><a href='./permisos?id_rol=${rol.id_rol}'>${rol.nom_rol}</a></td>
+            </span>
+            <td>${rol.des_rol}</td>            
+          </tr>
+        </table>        
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

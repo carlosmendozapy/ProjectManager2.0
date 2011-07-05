@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>
+    
+    <h2><a>Proyecto: ${g.current_project.nom_proyecto}</a></h2>
+    <a><h2>Administracion de la Fase: ${g.current_phase.nom_fase}</h2></a>
+    <a><h2>Administrar Tipos de Items</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div id="search" class="search">
+    <form action="./searchUsersOfPhase_list" >       
+       <img src="${tg.url('/images/logo.png')}" alt="TurboGears" height="50" width="50" />
+       <input type="text" name="key"/>
+       <input type="submit" value="Buscar"/>
+    </form>
+    </div>
+    <div class="menu">
+		<ul>
+			 <li><a href="/fase/newTipoItem">Nuevo Tipo de Item</a></li>
+			 <li><a href="/fase/importTipoItem">Importar Tipos de Item</a></li>
+		</ul>
+    </div>
+    <table rules='rows'>
+          <tr>
+          <th height="20"></th>                  
+          <th height="20">Identificador</th>
+          <th height="20">Nombre</th>
+          <th height="20">Atributos</th>          
+          </tr>
+          <tr py:for="i, tipo in enumerate(tiposItem)" class="${i%2 and 'even' or 'odd'}">
+            <td>
+				<span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('crear','Atributo de Item',g.current_phase.id_fase)">
+					<a href='/fase/addAtributo?id_tipo=${tipo.id_tipo_item}'>
+					<img src="${tg.url('/images/add.png')}" alt="Editar" height="16" width="16"/></a>
+                </span>
+            </td>
+            <td align='center'>${tipo.id_tipo_item}</td> 
+            <td><a><b>${tipo.nom_tipo_item}</b></a></td>
+            <td>
+				<table>
+					<tr py:for="i, atributo in enumerate(tipo.Atributo)" class="${i%2 and 'even' or 'odd'}">
+					   <td><b>${atributo.nom_atributo}: </b> ${atributo.tipoDatoAtributo.nom_tipo_dato}</td>
+				    </tr>
+				</table>
+				
+            </td>            
+          </tr>
+    </table>      
+    <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}" alt="Atras"/>Atras</a>
+</body>
+</html>

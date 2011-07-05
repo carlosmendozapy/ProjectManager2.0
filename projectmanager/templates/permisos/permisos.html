@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>   
+  <div id="ListarPermisos">
+    <a><h2>Lista de Permisos del Rol: ${g.current_rol.nom_rol}</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>       
+    <div class="menu">
+		<ul>
+			<li><a href="/permisos/newPermission" >Nuevo Permiso</a></li>			
+		</ul>
+	</div>               
+    <table rules='rows'>
+          <tr>          
+          <th width="2%" height="20"></th>
+          <th width="2%" height="20"></th>
+          <th width="10%" height="20">Identificador</th>
+          <th width="20%" height="20">Entidad</th>
+          <th width="65%" height="20">Permisos</th>          
+          </tr>
+          <tr py:for="i, permiso in enumerate(permisos)" class="${i%2 and 'even' or 'odd'}">                        
+            <td>           
+                <a href='/permisos/addPrivilegio?id_permiso=${permiso.id_permiso}'>
+                <img src="${tg.url('/images/add.png')}" alt="Editar" height="16" width="16"/></a>           
+            </td>            
+            <td>                    
+                <a href='/permisos/delPermiso?id_permiso=${permiso.id_permiso}'>
+                <img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" /></a>           
+            </td>
+            <td align='center'>${permiso.id_permiso}</td>
+            <td>${permiso.entidad.nom_entidad}</td>
+            <td>
+                <span py:for="i, privilegio in enumerate(permiso.privilegios)">
+                    <li><a href='/permisos/delPrivilegio?id_permiso=${permiso.id_permiso};id_privilegio=${privilegio.id_privilegio}'>
+                      <img src="${tg.url('/images/del.png')}" alt="Eliminar" height="16" width="16" /></a>
+                      ${privilegio.nom_privilegio}
+                    </li>                   
+                </span>
+            </td>        
+          </tr>
+        </table> 
+        <a href='/roles/index'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>       
+  </div>
+  <div>
+    <p>
+    <a>Referencia de iconos:</a><br />
+    <img src="${tg.url('/images/add.png')}" alt="Editar" height="16" width="16"/>Agregar Privilegios<br />
+    <img src="${tg.url('/images/del.png')}" alt="Eliminar" height="16" width="16" /> Borrar Privilegio individual de un Permiso<br />
+    <img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" />Borrar Permiso con todos sus privilegios<br />
+    </p>
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

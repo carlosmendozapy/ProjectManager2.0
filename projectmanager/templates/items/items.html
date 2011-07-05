@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body> 	  
+ 
+  <div id="AdministrarItems">   
+    <a><h2>Proyecto: ${g.current_project.nom_proyecto}</h2></a> 
+    <a><h2>Administracion de la Fase: ${g.current_phase.nom_fase}</h2></a>
+    <a><h2>Lista de Items</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div class="searchtool">
+        ${search()}
+    </div>
+    <div class="menu">
+		<ul>
+			<span py:if="h.has_FasePriv('crear','Item',g.current_phase.id_fase)">
+			<li><a href="#" >Nuevo Item</a></li>            
+			</span>
+			<span py:if="h.has_AnyFasePriv('Usuario',g.current_phase.id_fase) or h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
+			  <li><a href="#" id="current">Usuarios</a>
+			    <ul>
+					<span py:if="h.has_FasePriv('listar','Usuario',g.current_phase.id_fase) or h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.is_type('admin')">
+				      <li><a href="/fase/listUsers">Listar Usuarios de esta Fase</a></li>
+				    </span>
+				    <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
+                      <li><a href="/fase/asignUsers">Asignar Usuarios a esta Fase</a></li>		
+                      <li><a href="/fase/quitUsers">Quitar Usuarios de esta Fase</a></li>                                   
+                    </span>
+                </ul>
+              </li>
+             </span>
+            <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
+              <li><a href="/fase/usersRol">Roles por Usuarios</a></li>
+            </span>
+            <span py:if="h.has_AnyFasePriv('Linea Base',g.current_phase.id_fase)">             
+            <li><a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}' >Administrar Lineas Base</a></li>    			
+            </span>
+		</ul>
+	</div>   
+    <h2>Aquí la tabla que lista los items (Adjuntar lo de Cristian)</h2>
+    <a href='/fase/index?id_proyecto=${g.current_project.id_proyecto}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+  </div>
+</body>
+</html>

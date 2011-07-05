@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>   
+  <div id="Administrar">
+    <a><h2>Volver a una version anterior del Item: ${versionItem.item.nom_item}</h2></a>      
+  </div>
+  <div>
+     <table rules='rows'>
+          <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th>Identificador</th>
+          <th>Nombre</th>
+          <th>Estado</th>          
+          <th>Tipo Item</th>          
+	  <th>Usr Modif</th>
+          <th>Fecha Modif</th>                      
+          </tr>
+          <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
+            <td><a href='../atributosItem?id=${versionItem.id_version_item}'><img src="${tg.url('/images/atributos.png')}" alt="Editar Atributos" height="16" width="16"/></a></td>
+	    <td><a href='../relacionesItem?id=${versionItem.id_version_item}'><img src="${tg.url('/images/relaciones.png')}" alt="Editar Relaciones" height="16" width="16"/></a></td>                        
+            <td><a href='../delete?id=${versionItem.id_version_item}'><img src="${tg.url('/images/remove.png')}" alt="Eliminar" height="16" width="16" /></a></td>
+            <td><a href='../revertItem?id=${versionItem.id_version_item}'><img src="${tg.url('/images/revertir.jpg')}" alt="Revertir" height="16" width="16" /></a></td>
+            <td>${versionItem.item.id_item}</td>
+            <td>${versionItem.item.nom_item}</td>
+            <td>${versionItem.estado.nom_estado}</td>
+            <td>${versionItem.tipoItem.nom_tipo_item}</td>
+            <td>${versionItem.usuarioModifico.login_name}</td>
+            <td>${versionItem.fecha}</td>            
+          </tr>
+     </table>
+  </div>  
+  
+</body>
+</html>
+

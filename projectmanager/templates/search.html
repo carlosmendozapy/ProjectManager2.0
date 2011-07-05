@@ -1,0 +1,15 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      py:strip="">
+
+<py:def function="search">
+  <div id="search" class="search">
+    <form action="./search" >       
+       <img src="${tg.url('/images/logo.png')}" alt="TurboGears" height="50" width="50" />
+       <input type="text" name="key"/>
+       <input type="submit" value="Buscar"/>
+    </form>
+  </div>
+</py:def>    
+
+</html>

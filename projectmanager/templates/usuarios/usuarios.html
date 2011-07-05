@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>  
+</head>
+
+<body>    
+  <div id="AdministrarUsuarios">
+    <a><h2>Administracion de Usuarios</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+     <div class="searchtool">
+        ${search()}
+    </div>    
+    <div class="menu">
+		<ul>
+			<li><a href="./newUser" >Nuevo Usuario</a></li>			
+		</ul>
+	</div>
+     
+    <table rules='rows'>
+          <tr>
+          <!--<th width="2%" height="20"></th>-->
+          <th width="2%" height="20"></th>
+          <th width="2%" height="20"></th>
+          <th width="10%" height="20">Identificador</th>
+          <th width="15%" height="20">Tipo</th>
+          <th width="20%" height="20">Usuario</th>
+          <th width="50%" height="20">Nombre</th>          
+          </tr>
+          <tr py:for="i, usuario in enumerate(usuarios)" class="${i%2 and 'even' or 'odd'}">
+            <!--<td><a href='./asignRol?id=${usuario.id_usuario}'><img src="${tg.url('/images/asign_rol.png')}" alt="Asignar Rol" height="16" width="16"/></a></td>-->
+            <td><a href='./editUser?id=${usuario.id_usuario}'><img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a></td>
+            <td py:if="not usuario.login_name == 'admin'"><a href='./delete?id=${usuario.id_usuario}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16"/></a></td>
+            <td align='center'>${usuario.id_usuario}</td>
+            <td>${usuario.groups}</td>
+            <td>${usuario.login_name}</td>
+            <td>${usuario.nom_usuario}</td>            
+          </tr>
+        </table>      
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

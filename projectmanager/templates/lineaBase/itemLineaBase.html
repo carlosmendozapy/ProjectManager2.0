@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body> 	  
+ 
+  <div id="AdministrarLineasBase">
+    <a><h2>Linea Base</h2></a>
+    <a><h2>Lista de Items</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div class="searchtool">
+        ${search()}
+    </div>
+    <div class="menu">
+	  <ul>
+		<span py:if="estado == 'Aprobado' and h.has_FasePriv('modificar','Linea Base',g.current_phase.id_fase)">
+		  <li><a href="/itemLineaBase/abrirLineaBase?idlineaBase=${idlineaBase}">Liberar Linea Base</a></li>
+		</span>
+		<span py:if="estado == 'Abierta' and h.has_FasePriv('modificar','Linea Base',g.current_phase.id_fase)">    
+		  <li><a href="./cambiarEstadoPendiente?idlineaBase=${idlineaBase}" >Actualizar Cambios</a></li>	      
+	    </span>
+	    <span py:if="estado == 'Pendiente' and h.has_FasePriv('modificar','Linea Base',g.current_phase.id_fase)">
+	      <li><a href="/itemLineaBase/aprobar?idlineaBase=${idlineaBase}" >Aprobar Nueva Linea Base</a></li>
+	      <li><a href="/itemLineaBase/rechazar?idlineaBase=${idlineaBase}" >Rechazar Linea Base(Mantener informacion anterior)</a></li>
+	    </span> 
+	  </ul>	  
+    </div>            
+    <table rules='rows'>
+          <tr>
+          <th width="1%" height="20">Identificador</th>
+          <th width="20%" height="20">Nombre</th>
+          <th width="15%" height="20">Estado</th>
+          <th width="64%" height="20">Observaciones</th>
+          </tr>   
+       <span py:if="bandera == 'ok'">          
+          <tr py:for="i, itemLineaBase in enumerate(itemlineaBase)" class="${i%2 and 'even' or 'odd'}">
+            <td align='center'>${itemLineaBase.id_version_item}</td>
+            <td>${itemLineaBase.item.nom_item}</td> 
+            <td>${itemLineaBase.estado.nom_estado}</td>
+            <td>${itemLineaBase.observaciones}</td>                    
+          </tr>
+        </span>       
+        <span py:if="bandera == 'error'">
+        		Parametro Incorrecto
+        </span>          
+    </table>
+    <a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>        
+  </div>
+ <div class="clearingdiv" />  
+</body>
+</html>

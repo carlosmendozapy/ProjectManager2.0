@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>TurboGears File Upload Example</title>
+</head>
+
+<body>
+    
+    <form method="post" action="save" enctype="multipart/form-data">
+    Seleccione un Archivo:<br />
+    <input type="file" name="userfile" /> <br />
+    <input type="submit" value="Subir Archivo" />    
+    </form>
+    
+    <h2>Archivo Actual</h2>
+    <div py:for="file in current_files">
+    <a href="/file_upload/view/${file.id}">${file.filename}</a> <!--[<a href="/delete/${file.id}">x</a>]-->
+    </div>    
+
+    <a href='/item/atributosItem?id=${idVersionItem}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+</body>
+</html>

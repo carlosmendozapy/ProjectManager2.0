@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>   
+  <div id="ListarPermisos">
+    <a><h2>Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+    <a><h2>Lista de Roles por Usuario</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+     <table rules='all'>
+          <tr align='center'>
+          <th width="3%" height="20"></th>                  
+          <th width="10%" height="20">Identificador</th>
+          <th width="15%" height="20">Nombre</th>
+          <th width="70%" height="20">Roles</th>          
+          </tr>
+          <tr py:for="i, usuario in enumerate(usuarios)" class="${i%2 and 'even' or 'odd'}">
+            <td align='center'><a href='/fase/asignRolPhase?id_usuario=${usuario.id_usuario}'><img src="${tg.url('/images/add.png')}" alt="Asignar Rol" height="16" width="16"/></a></td>
+            <td align='center'>${usuario.id_usuario}</td> 
+            <td>${usuario.nom_usuario}</td>                        
+            <td>
+                <table rules='rows' cellpadding='10'>                    
+                    <tr py:for="i, rol in enumerate(usuario.RolFaseUsuario)" class="${i%2 and 'even' or 'odd'}">
+                      <span py:if="rol.fase.id_fase == g.current_phase.id_fase">
+                        <td>
+                            <a href='/fase/quitRolPhase?id_usuario=${usuario.id_usuario};id_rol=${rol.roles.id_rol}'><img src="${tg.url('/images/remove.png')}" alt="Quitar Rol"/></a>
+                            <a><b>${rol.roles.nom_rol}:</b></a>
+                        </td>
+                        <td>
+                            <span py:for="i, permiso in enumerate(rol.roles.permisos)" class="${i%2 and 'even' or 'odd'}">
+                                <b>${permiso.entidad.nom_entidad}: </b>
+                                    <span py:for="i, privilegio in enumerate(permiso.privilegios)" class="${i%2 and 'even' or 'odd'}">
+                                        ${privilegio.nom_privilegio}
+                                     </span>
+                                    <br /> 
+                             </span>
+                        </td>
+                      </span>                        
+                    </tr>
+                </table>
+            </td>
+          </tr>
+    </table>                              
+        <a href='/fase/itemsFase?id_fase=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>       
+  </div>
+  <div>    
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

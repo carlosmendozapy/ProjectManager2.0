@@ -1,0 +1,1063 @@
+# -*- coding: utf-8 -*-
+"""Sample model module."""
+
+from sqlalchemy import *
+from sqlalchemy.orm import mapper, relation
+from sqlalchemy import Table, ForeignKey, Column
+from sqlalchemy.types import Integer, Unicode
+from sqlalchemy.orm import relation, backref
+
+from projectmanager.model import DeclarativeBase, metadata, DBSession
+
+class Item(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_item(self):
+        return self.__idItem
+
+
+    def get_nom_item(self):
+        return self.__nomItem
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_item(self, value):
+        self.__idItem = value
+
+
+    def set_nom_item(self, value):
+        self.__nomItem = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_item(self):
+        del self.__idItem
+
+
+    def del_nom_item(self):
+        del self.__nomItem
+
+    __tablename__ = 'ITEM'
+    
+    #{ Columns    
+
+    idItem = Column(Integer, Sequence('id_item_seq'), primary_key=True)   
+    nomItem = Column(Unicode(255), nullable=False)
+
+    #{ Getters and setters
+
+    def setIdItem(self, idItem):
+        
+        self.idItem = idItem
+
+    def getIdItem(self):
+
+        return self.idItem
+
+    def setNomItem(self, nomItem):
+        
+        self.nomItem = nomItem
+
+    def getNomItem(self):
+
+        return self.nomItem
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idItem = property(get_id_item, set_id_item, del_id_item, "idItem's docstring")
+    nomItem = property(get_nom_item, set_nom_item, del_nom_item, "nomItem's docstring")
+
+    
+    #}
+   
+class Estado(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_estado(self):
+        return self.__idEstado
+
+
+    def get_nom_estado(self):
+        return self.__nomEstado
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_estado(self, value):
+        self.__idEstado = value
+
+
+    def set_nom_estado(self, value):
+        self.__nomEstado = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_estado(self):
+        del self.__idEstado
+
+
+    def del_nom_estado(self):
+        del self.__nomEstado
+
+    __tablename__ = 'ESTADO'
+    
+    #{ Columns    
+
+    idEstado = Column(Integer, Sequence('id_estado_seq'), primary_key=True)    
+    nomEstado = Column(Unicode(255), nullable=False)
+    
+    #{ Getters and setters
+
+    def setIdEstado(self, idEstado):
+        
+        self.idEstado = idEstado
+
+    def getIdEstado(self):
+
+        return self.idEstado
+    
+    def setNomEstado(self, nomEstado):
+        
+        self.nomEstado = nomEstado
+
+    def getNomEstado(self):
+
+        return self.nomEstado
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idEstado = property(get_id_estado, set_id_estado, del_id_estado, "idEstado's docstring")
+    nomEstado = property(get_nom_estado, set_nom_estado, del_nom_estado, "nomEstado's docstring")
+    
+    #}
+
+
+class TipoDatoAtributo(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_tipo_dato(self):
+        return self.__idTipoDato
+
+
+    def get_nom_tipo_dato(self):
+        return self.__nomTipoDato
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_tipo_dato(self, value):
+        self.__idTipoDato = value
+
+
+    def set_nom_tipo_dato(self, value):
+        self.__nomTipoDato = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_tipo_dato(self):
+        del self.__idTipoDato
+
+
+    def del_nom_tipo_dato(self):
+        del self.__nomTipoDato
+
+    __tablename__ = 'TIPO_DATO_ATRIBUTO'
+    
+    #{ Columns    
+
+    idTipoDato = Column(Integer, Sequence('id_tipo_dato_seq'), primary_key=True)    
+    nomTipoDato = Column(Unicode(255), nullable=False)
+    
+    #{ Getters and setters
+
+    def setIdTipoDato(self, idTipoDato):
+        
+        self.idTipoDato = idTipoDato
+
+    def getIdTipoDato(self):
+
+        return self.idTipoDato
+
+    def setNomTipoDato(self, nomTipoDato):
+        
+        self.nomTipoDato = nomTipoDato
+
+    def getNomTipoDato(self):
+
+        return self.nomTipoDato
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idTipoDato = property(get_id_tipo_dato, set_id_tipo_dato, del_id_tipo_dato, "idTipoDato's docstring")
+    nomTipoDato = property(get_nom_tipo_dato, set_nom_tipo_dato, del_nom_tipo_dato, "nomTipoDato's docstring")
+    
+    #}
+
+class TipoItem(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_tipo_item(self):
+        return self.__idTipoItem
+
+
+    def get_nom_tipo_item(self):
+        return self.__nomTipoItem
+
+
+    def get_id_proyecto(self):
+        return self.__idProyecto
+
+
+    def get_id_fase(self):
+        return self.__idFase
+
+
+    def get_proyecto(self):
+        return self.__proyecto
+
+
+    def get_fase(self):
+        return self.__fase
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_tipo_item(self, value):
+        self.__idTipoItem = value
+
+
+    def set_nom_tipo_item(self, value):
+        self.__nomTipoItem = value
+
+
+    def set_id_proyecto(self, value):
+        self.__idProyecto = value
+
+
+    def set_id_fase(self, value):
+        self.__idFase = value
+
+
+    def set_proyecto(self, value):
+        self.__proyecto = value
+
+
+    def set_fase(self, value):
+        self.__fase = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_tipo_item(self):
+        del self.__idTipoItem
+
+
+    def del_nom_tipo_item(self):
+        del self.__nomTipoItem
+
+
+    def del_id_proyecto(self):
+        del self.__idProyecto
+
+
+    def del_id_fase(self):
+        del self.__idFase
+
+
+    def del_proyecto(self):
+        del self.__proyecto
+
+
+    def del_fase(self):
+        del self.__fase
+
+    __tablename__ = 'TIPO_ITEM'
+    
+    #{ Columns    
+
+    idTipoItem = Column(Integer, Sequence('id_tipo_item_seq'), primary_key=True)
+    nomTipoItem = Column(Unicode(255), nullable=False)    
+    idProyecto = Column(Integer, ForeignKey('PROYECTO.idProyecto'))
+    idFase = Column(Integer, ForeignKey('FASE.idFase'))
+
+    #{ Relations
+
+    proyecto  = relation(Proyecto, backref=backref('TipoItem', order_by=idTipoItem))	
+    fase = relation(Fase, backref=backref('TipoItem', order_by=idTipoItem))	
+
+    #{ Getters and setters
+
+    def setIdTipoItem(self, idTipoItem):
+        
+        self.idTipoItem = idTipoItem
+
+    def getIdTipoItem(self):
+
+        return self.idTipoItem
+
+    def setNomTipoItem(self, nomTipoItem):
+        
+        self.nomTipoItem = nomTipoItem
+
+    def getNomTipoItem(self):
+
+        return self.nomTipoItem
+
+    def setIdProyecto(self, idProyecto):
+        
+        self.idProyecto = idProyecto
+
+    def getIdProyecto(self):
+
+        return self.idProyecto
+
+    def setIdFase(self, idFase):
+        
+        self.idFase = idFase
+
+    def getIdFase(self):
+
+        return self.idFase
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idTipoItem = property(get_id_tipo_item, set_id_tipo_item, del_id_tipo_item, "idTipoItem's docstring")
+    nomTipoItem = property(get_nom_tipo_item, set_nom_tipo_item, del_nom_tipo_item, "nomTipoItem's docstring")
+    idProyecto = property(get_id_proyecto, set_id_proyecto, del_id_proyecto, "idProyecto's docstring")
+    idFase = property(get_id_fase, set_id_fase, del_id_fase, "idFase's docstring")
+    proyecto = property(get_proyecto, set_proyecto, del_proyecto, "proyecto's docstring")
+    fase = property(get_fase, set_fase, del_fase, "fase's docstring")
+    
+    #}
+
+
+class VersionItem(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_version_item(self):
+        return self.__idVersionItem
+
+
+    def get_nro_version_item(self):
+        return self.__nroVersionItem
+
+
+    def get_id_item(self):
+        return self.__idItem
+
+
+    def get_id_estado(self):
+        return self.__idEstado
+
+
+    def get_id_tipo_item(self):
+        return self.__idTipoItem
+
+
+    def get_observaciones(self):
+        return self.__observaciones
+
+
+    def get_fecha(self):
+        return self.__fecha
+
+
+    def get_id_usuario_modifico(self):
+        return self.__idUsuarioModifico
+
+
+    def get_peso(self):
+        return self.__peso
+
+
+    def get_item(self):
+        return self.__item
+
+
+    def get_estado(self):
+        return self.__estado
+
+
+    def get_tipo_item(self):
+        return self.__tipoItem
+
+
+    def get_usuario_modifico(self):
+        return self.__usuarioModifico
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_version_item(self, value):
+        self.__idVersionItem = value
+
+
+    def set_nro_version_item(self, value):
+        self.__nroVersionItem = value
+
+
+    def set_id_item(self, value):
+        self.__idItem = value
+
+
+    def set_id_estado(self, value):
+        self.__idEstado = value
+
+
+    def set_id_tipo_item(self, value):
+        self.__idTipoItem = value
+
+
+    def set_observaciones(self, value):
+        self.__observaciones = value
+
+
+    def set_fecha(self, value):
+        self.__fecha = value
+
+
+    def set_id_usuario_modifico(self, value):
+        self.__idUsuarioModifico = value
+
+
+    def set_peso(self, value):
+        self.__peso = value
+
+
+    def set_item(self, value):
+        self.__item = value
+
+
+    def set_estado(self, value):
+        self.__estado = value
+
+
+    def set_tipo_item(self, value):
+        self.__tipoItem = value
+
+
+    def set_usuario_modifico(self, value):
+        self.__usuarioModifico = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_version_item(self):
+        del self.__idVersionItem
+
+
+    def del_nro_version_item(self):
+        del self.__nroVersionItem
+
+
+    def del_id_item(self):
+        del self.__idItem
+
+
+    def del_id_estado(self):
+        del self.__idEstado
+
+
+    def del_id_tipo_item(self):
+        del self.__idTipoItem
+
+
+    def del_observaciones(self):
+        del self.__observaciones
+
+
+    def del_fecha(self):
+        del self.__fecha
+
+
+    def del_id_usuario_modifico(self):
+        del self.__idUsuarioModifico
+
+
+    def del_peso(self):
+        del self.__peso
+
+
+    def del_item(self):
+        del self.__item
+
+
+    def del_estado(self):
+        del self.__estado
+
+
+    def del_tipo_item(self):
+        del self.__tipoItem
+
+
+    def del_usuario_modifico(self):
+        del self.__usuarioModifico
+
+    __tablename__ = 'VERSION_ITEM'
+    
+    #{ Columns    
+
+    idVersionItem = Column(Integer, Sequence('id_version_item_seq'), primary_key=True)    
+    nroVersionItem = Column(Integer)                                        
+    idItem = Column(Integer, ForeignKey('ITEM.idItem'))                                                                
+    idEstado = Column(Integer, ForeignKey('ESTADO.idEstado'))
+    idTipoItem = Column(Integer, ForeignKey('TIPO_ITEM.idTipoItem'))
+    observaciones  = Column(Unicode(255))
+    fecha = Column(DateTime)
+    idUsuarioModifico = Column(Integer, ForeignKey('USUARIO.idUsuario'))
+    peso = Column(Integer)
+
+    #{ Relations
+
+    item = relation(Item, backref=backref('VersionItem', order_by=idVersionItem))
+    estado = relation(Estado, backref=backref('VersionItem', order_by=idVersionItem))
+    tipoItem = relation(TipoItem, backref=backref('VersionItem', order_by=idVersionItem))
+    usuarioModifico  = relation(Usuario, backref=backref('VersionItem', order_by=idVersionItem))	
+
+    #{ Getters and setters
+
+    def setIdVersionItem(self, idVersionItem):
+        
+        self.idVersionItem = idVersionItem
+
+    def getIdVersionItem(self):
+
+        return self.idVersionItem
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idVersionItem = property(get_id_version_item, set_id_version_item, del_id_version_item, "idVersionItem's docstring")
+    nroVersionItem = property(get_nro_version_item, set_nro_version_item, del_nro_version_item, "nroVersionItem's docstring")
+    idItem = property(get_id_item, set_id_item, del_id_item, "idItem's docstring")
+    idEstado = property(get_id_estado, set_id_estado, del_id_estado, "idEstado's docstring")
+    idTipoItem = property(get_id_tipo_item, set_id_tipo_item, del_id_tipo_item, "idTipoItem's docstring")
+    observaciones = property(get_observaciones, set_observaciones, del_observaciones, "observaciones's docstring")
+    fecha = property(get_fecha, set_fecha, del_fecha, "fecha's docstring")
+    idUsuarioModifico = property(get_id_usuario_modifico, set_id_usuario_modifico, del_id_usuario_modifico, "idUsuarioModifico's docstring")
+    peso = property(get_peso, set_peso, del_peso, "peso's docstring")
+    item = property(get_item, set_item, del_item, "item's docstring")
+    estado = property(get_estado, set_estado, del_estado, "estado's docstring")
+    tipoItem = property(get_tipo_item, set_tipo_item, del_tipo_item, "tipoItem's docstring")
+    usuarioModifico = property(get_usuario_modifico, set_usuario_modifico, del_usuario_modifico, "usuarioModifico's docstring")
+    
+    #}
+
+
+class Atributo(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_atributo(self):
+        return self.__idAtributo
+
+
+    def get_nom_atributo(self):
+        return self.__nomAtributo
+
+
+    def get_id_tipo_dato(self):
+        return self.__idTipoDato
+
+
+    def get_id_tipo_item(self):
+        return self.__idTipoItem
+
+
+    def get_tipo_dato_atributo(self):
+        return self.__tipoDatoAtributo
+
+
+    def get_tipo_item(self):
+        return self.__tipoItem
+
+
+    def get_id_estado(self):
+        return self.__idEstado
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_atributo(self, value):
+        self.__idAtributo = value
+
+
+    def set_nom_atributo(self, value):
+        self.__nomAtributo = value
+
+
+    def set_id_tipo_dato(self, value):
+        self.__idTipoDato = value
+
+
+    def set_id_tipo_item(self, value):
+        self.__idTipoItem = value
+
+
+    def set_tipo_dato_atributo(self, value):
+        self.__tipoDatoAtributo = value
+
+
+    def set_tipo_item(self, value):
+        self.__tipoItem = value
+
+
+    def set_id_estado(self, value):
+        self.__idEstado = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_atributo(self):
+        del self.__idAtributo
+
+
+    def del_nom_atributo(self):
+        del self.__nomAtributo
+
+
+    def del_id_tipo_dato(self):
+        del self.__idTipoDato
+
+
+    def del_id_tipo_item(self):
+        del self.__idTipoItem
+
+
+    def del_tipo_dato_atributo(self):
+        del self.__tipoDatoAtributo
+
+
+    def del_tipo_item(self):
+        del self.__tipoItem
+
+
+    def del_id_estado(self):
+        del self.__idEstado
+
+    __tablename__ = 'ATRIBUTO'
+    
+    #{ Columns    
+
+    idAtributo = Column(Integer, Sequence('id_atributo_seq'), primary_key=True)
+    
+    nomAtributo = Column(Unicode(255), nullable=False)
+    
+    idTipoDato = Column(Integer, ForeignKey('TIPO_DATO_ATRIBUTO.idTipoDato'))
+
+    idTipoItem = Column(Integer, ForeignKey('TIPO_ITEM.idTipoItem'))
+
+    #{ Relations
+
+    tipoDatoAtributo  = relation(TipoDatoAtributo, backref=backref('Atributo', order_by=idAtributo))	
+    tipoItem = relation(TipoItem, backref=backref('Atributo', order_by=idAtributo))	
+
+#{ Getters and setters
+
+    def setIdEstado(self, idEstado):
+        
+        self.idEstado = idEstado
+
+    def getIdEstado(self):
+
+        return self.idEstado
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idAtributo = property(get_id_atributo, set_id_atributo, del_id_atributo, "idAtributo's docstring")
+    nomAtributo = property(get_nom_atributo, set_nom_atributo, del_nom_atributo, "nomAtributo's docstring")
+    idTipoDato = property(get_id_tipo_dato, set_id_tipo_dato, del_id_tipo_dato, "idTipoDato's docstring")
+    idTipoItem = property(get_id_tipo_item, set_id_tipo_item, del_id_tipo_item, "idTipoItem's docstring")
+    tipoDatoAtributo = property(get_tipo_dato_atributo, set_tipo_dato_atributo, del_tipo_dato_atributo, "tipoDatoAtributo's docstring")
+    tipoItem = property(get_tipo_item, set_tipo_item, del_tipo_item, "tipoItem's docstring")
+    idEstado = property(get_id_estado, set_id_estado, del_id_estado, "idEstado's docstring")
+    
+    #}
+
+
+class RelacionItem(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_relacion(self):
+        return self.__idRelacion
+
+
+    def get_id_version_item_antecesor(self):
+        return self.__idVersionItemAntecesor
+
+
+    def get_id_version_item(self):
+        return self.__idVersionItem
+
+
+    def get_version_item_antecesor(self):
+        return self.__versionItemAntecesor
+
+
+    def get_version_item(self):
+        return self.__versionItem
+
+
+    def get_id_estado(self):
+        return self.__idEstado
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_relacion(self, value):
+        self.__idRelacion = value
+
+
+    def set_id_version_item_antecesor(self, value):
+        self.__idVersionItemAntecesor = value
+
+
+    def set_id_version_item(self, value):
+        self.__idVersionItem = value
+
+
+    def set_version_item_antecesor(self, value):
+        self.__versionItemAntecesor = value
+
+
+    def set_version_item(self, value):
+        self.__versionItem = value
+
+
+    def set_id_estado(self, value):
+        self.__idEstado = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_relacion(self):
+        del self.__idRelacion
+
+
+    def del_id_version_item_antecesor(self):
+        del self.__idVersionItemAntecesor
+
+
+    def del_id_version_item(self):
+        del self.__idVersionItem
+
+
+    def del_version_item_antecesor(self):
+        del self.__versionItemAntecesor
+
+
+    def del_version_item(self):
+        del self.__versionItem
+
+
+    def del_id_estado(self):
+        del self.__idEstado
+
+    __tablename__ = 'RELACION_ITEM'
+    
+    #{ Columns    
+
+    idRelacion = Column(Integer, Sequence('id_relacion_seq'), primary_key=True)
+    
+    idVersionItemAntecesor = Column(Integer, ForeignKey('VERSION_ITEM.idVersionItem'))
+
+    idVersionItem = Column(Integer, ForeignKey('VERSION_ITEM.idVersionItem'))
+
+    #{ Relations
+
+    versionItemAntecesor  = relation(VersionItem, backref=backref('RelacionItem', order_by=idRelacion))	
+    versionItem = relation(VersionItem, backref=backref('RelacionItem', order_by=idRelacion))	
+
+#{ Getters and setters
+
+    def setIdEstado(self, idEstado):
+        
+        self.idEstado = idEstado
+
+    def getIdEstado(self):
+
+        return self.idEstado
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idRelacion = property(get_id_relacion, set_id_relacion, del_id_relacion, "idRelacion's docstring")
+    idVersionItemAntecesor = property(get_id_version_item_antecesor, set_id_version_item_antecesor, del_id_version_item_antecesor, "idVersionItemAntecesor's docstring")
+    idVersionItem = property(get_id_version_item, set_id_version_item, del_id_version_item, "idVersionItem's docstring")
+    versionItemAntecesor = property(get_version_item_antecesor, set_version_item_antecesor, del_version_item_antecesor, "versionItemAntecesor's docstring")
+    versionItem = property(get_version_item, set_version_item, del_version_item, "versionItem's docstring")
+    idEstado = property(get_id_estado, set_id_estado, del_id_estado, "idEstado's docstring")
+        
+    #}
+
+
+class AtributoItem(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_atributo(self):
+        return self.__idAtributo
+
+
+    def get_id_version_item(self):
+        return self.__idVersionItem
+
+
+    def get_val_atributo(self):
+        return self.__valAtributo
+
+
+    def get_atributo(self):
+        return self.__atributo
+
+
+    def get_version_item(self):
+        return self.__versionItem
+
+
+    def get_id_estado(self):
+        return self.__idEstado
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_atributo(self, value):
+        self.__idAtributo = value
+
+
+    def set_id_version_item(self, value):
+        self.__idVersionItem = value
+
+
+    def set_val_atributo(self, value):
+        self.__valAtributo = value
+
+
+    def set_atributo(self, value):
+        self.__atributo = value
+
+
+    def set_version_item(self, value):
+        self.__versionItem = value
+
+
+    def set_id_estado(self, value):
+        self.__idEstado = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_atributo(self):
+        del self.__idAtributo
+
+
+    def del_id_version_item(self):
+        del self.__idVersionItem
+
+
+    def del_val_atributo(self):
+        del self.__valAtributo
+
+
+    def del_atributo(self):
+        del self.__atributo
+
+
+    def del_version_item(self):
+        del self.__versionItem
+
+
+    def del_id_estado(self):
+        del self.__idEstado
+
+    __tablename__ = 'ATRIBUTO_ITEM'
+    
+    #{ Columns    
+
+    idAtributo = Column(Integer, ForeignKey('ATRIBUTO.idAtributo'),primary_key=True)
+    idVersionItem = Column(Integer, ForeignKey('VERSION_ITEM.idVersionItem'),primary_key=True)
+    valAtributo = Column(Unicode(255), nullable=False)
+    
+    #{ Relations
+
+    atributo  = relation(Atributo, backref=backref('AtributoItem', order_by=idAtributo))	
+    versionItem = relation(VersionItem, backref=backref('AtributoItem', order_by=idAtributo))	
+
+#{ Getters and setters
+
+    def setIdEstado(self, idEstado):
+        
+        self.idEstado = idEstado
+
+    def getIdEstado(self):
+
+        return self.idEstado
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idAtributo = property(get_id_atributo, set_id_atributo, del_id_atributo, "idAtributo's docstring")
+    idVersionItem = property(get_id_version_item, set_id_version_item, del_id_version_item, "idVersionItem's docstring")
+    valAtributo = property(get_val_atributo, set_val_atributo, del_val_atributo, "valAtributo's docstring")
+    atributo = property(get_atributo, set_atributo, del_atributo, "atributo's docstring")
+    versionItem = property(get_version_item, set_version_item, del_version_item, "versionItem's docstring")
+    idEstado = property(get_id_estado, set_id_estado, del_id_estado, "idEstado's docstring")
+    
+    #}
+
+
+class AtributoArchivo(DeclarativeBase):
+
+    def get_tablename__(self):
+        return self.__tablename__
+
+
+    def get_id_atributo(self):
+        return self.__idAtributo
+
+
+    def get_id_version_item(self):
+        return self.__idVersionItem
+
+
+    def get_archivo(self):
+        return self.__archivo
+
+
+    def get_atributo(self):
+        return self.__atributo
+
+
+    def get_version_item(self):
+        return self.__versionItem
+
+
+    def get_id_estado(self):
+        return self.__idEstado
+
+
+    def set_tablename__(self, value):
+        self.__tablename__ = value
+
+
+    def set_id_atributo(self, value):
+        self.__idAtributo = value
+
+
+    def set_id_version_item(self, value):
+        self.__idVersionItem = value
+
+
+    def set_archivo(self, value):
+        self.__archivo = value
+
+
+    def set_atributo(self, value):
+        self.__atributo = value
+
+
+    def set_version_item(self, value):
+        self.__versionItem = value
+
+
+    def set_id_estado(self, value):
+        self.__idEstado = value
+
+
+    def del_tablename__(self):
+        del self.__tablename__
+
+
+    def del_id_atributo(self):
+        del self.__idAtributo
+
+
+    def del_id_version_item(self):
+        del self.__idVersionItem
+
+
+    def del_archivo(self):
+        del self.__archivo
+
+
+    def del_atributo(self):
+        del self.__atributo
+
+
+    def del_version_item(self):
+        del self.__versionItem
+
+
+    def del_id_estado(self):
+        del self.__idEstado
+
+    __tablename__ = 'ATRIBUTO_ARCHIVO'
+    
+    #{ Columns    
+
+    idAtributo = Column(Integer, ForeignKey('ATRIBUTO.idAtributo'),primary_key=True)
+    idVersionItem = Column(Integer, ForeignKey('VERSION_ITEM.idVersionItem'),primary_key=True)
+    archivo = Column(Binary, nullable=False)
+    
+    #{ Relations
+
+    atributo  = relation(Atributo, backref=backref('AtributoItem', order_by=idAtributo))	
+    versionItem = relation(VersionItem, backref=backref('AtributoItem', order_by=idAtributo))	
+
+#{ Getters and setters
+
+    def setIdEstado(self, idEstado):
+        
+        self.idEstado = idEstado
+
+    def getIdEstado(self):
+
+        return self.idEstado
+    tablename__ = property(get_tablename__, set_tablename__, del_tablename__, "tablename__'s docstring")
+    idAtributo = property(get_id_atributo, set_id_atributo, del_id_atributo, "idAtributo's docstring")
+    idVersionItem = property(get_id_version_item, set_id_version_item, del_id_version_item, "idVersionItem's docstring")
+    archivo = property(get_archivo, set_archivo, del_archivo, "archivo's docstring")
+    atributo = property(get_atributo, set_atributo, del_atributo, "atributo's docstring")
+    versionItem = property(get_version_item, set_version_item, del_version_item, "versionItem's docstring")
+    idEstado = property(get_id_estado, set_id_estado, del_id_estado, "idEstado's docstring")
+    
+    #}

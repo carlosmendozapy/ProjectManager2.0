@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>  
+</head>
+
+<body>  
+  <div class="iconRepresentative">
+    <img src="${tg.url('/images/users.png')}" height='200' width='200'/>
+  </div> 
+  <div id="AdministrarUsuarios">
+    <a><h2>Administracion de Usuarios</h2></a>
+    <form action="./newUser" >
+        <input type="submit" value="Registrar Nuevo Usuario"/>  
+    </form>
+    <table rules='rows'>
+          <tr>
+          <th></th>
+          <th></th>
+          <th>Identificador</th>
+          <th>Usuario</th>
+          <th>Nombre</th>          
+          </tr>
+          <tr py:for="i, usuario in enumerate(usuarios)" class="${i%2 and 'even' or 'odd'}">
+            <td><a href='./update?id=${usuario.id_usuario}'><img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a></td>
+            <td><a href='./delete?id=${usuario.id_usuario}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16"/></a></td>
+            <td>${usuario.id_usuario}</td>
+            <td>${usuario.login_name}</td>
+            <td>${usuario.nom_usuario}</td>            
+          </tr>
+        </table>      
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>
+    
+    <h2><a>Editar Rol</a></h2>
+    <hr width="100%" color="#6699FF" size="2"/>
+
+    <div py:replace="tmpl_context.form(child_args=dict(tipoRol=dict(options=type_options)),
+                                        value=dict(idRol=rol.id_rol,
+                                                tipoRol=rol.id_tipo_rol,
+                                                nombreRol=rol.nom_rol,
+                                                descripcion=rol.des_rol))">Input Form </div>
+  
+</body>
+</html>

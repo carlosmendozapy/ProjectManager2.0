@@ -1,0 +1,779 @@
+# Spanish (Spain) translations for ProjectManager.
+# Copyright (C) 2011 ORGANIZATION
+# This file is distributed under the same license as the ProjectManager
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ProjectManager 0.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2011-05-19 11:18-0400\n"
+"PO-Revision-Date: 2011-05-19 11:24-0400\n"
+"Last-Translator: Carlos <carlosmendozapy@gmail.com>\n"
+"Language-Team: es_ES <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: projectmanager/controllers/admin.py:22
+#: projectmanager/controllers/proyecto.py:23
+#: projectmanager/controllers/usuario.py:23
+msgid "Solo para personas con permisos de  \"Administracion\""
+msgstr ""
+
+#: projectmanager/controllers/admin.py:27
+msgid "Aqui el administrador maneja el sistema"
+msgstr ""
+
+#: projectmanager/controllers/admin.py:33
+msgid "Despliega Formulario de Administracion de Usuarios"
+msgstr ""
+
+#: projectmanager/controllers/proyecto.py:37
+msgid "Despliega Formulario de Creacion de Proyecto"
+msgstr ""
+
+#: projectmanager/controllers/proyecto.py:47
+#, python-format
+msgid "Se ha creado un nuevo Proyecto %s"
+msgstr ""
+
+#: projectmanager/controllers/root.py:66
+msgid "Solo para Administradores"
+msgstr ""
+
+#: projectmanager/controllers/root.py:72
+msgid "Only for the editor"
+msgstr ""
+
+#: projectmanager/controllers/root.py:82
+msgid "Usuario y/o Password Incorrectos"
+msgstr ""
+
+#: projectmanager/controllers/root.py:97
+#, python-format
+msgid "Bienvenido, %s!"
+msgstr ""
+
+#: projectmanager/controllers/root.py:107
+msgid "Lo esperamos para su proxima sesion!"
+msgstr ""
+
+#: projectmanager/controllers/secure.py:20
+msgid "Only for people with the \"admin\" permission"
+msgstr ""
+
+#: projectmanager/controllers/secure.py:25
+msgid "Secure Controller here"
+msgstr ""
+
+#: projectmanager/controllers/usuario.py:28
+msgid "Aqui se administran los usuarios"
+msgstr ""
+
+#: projectmanager/templates/about.html:11
+msgid "Learning TurboGears 2.0: Quick guide to the Quickstart pages."
+msgstr ""
+
+#: projectmanager/templates/about.html:18
+msgid "Architectural basics of a quickstart TG2 site."
+msgstr ""
+
+#: projectmanager/templates/about.html:19
+msgid "The TG2 quickstart command produces this basic TG site.  Here's how it works."
+msgstr ""
+
+#: projectmanager/templates/about.html:22
+msgid "Code my data model"
+msgstr ""
+
+#: projectmanager/templates/about.html:23
+msgid ""
+"When you want a model for storing favorite links or wiki content, \n"
+"            the"
+msgstr ""
+
+#: projectmanager/templates/about.html:24
+msgid "/model"
+msgstr ""
+
+#: projectmanager/templates/about.html:24
+msgid "folder in your site is ready to go."
+msgstr ""
+
+#: projectmanager/templates/about.html:25
+msgid ""
+"You can build a dynamic site without any data model at all. There \n"
+"            still be a default data-model template for you if you didn't enable \n"
+"            authentication and authorization in quickstart. If you enabled\n"
+"            it, you got auth data-model made for you."
+msgstr ""
+
+#: projectmanager/templates/about.html:31
+msgid "Design my URL structure"
+msgstr ""
+
+#: projectmanager/templates/about.html:32
+msgid "The \""
+msgstr ""
+
+#: projectmanager/templates/about.html:32
+msgid "root.py"
+msgstr ""
+
+#: projectmanager/templates/about.html:32
+msgid "\" file under the"
+msgstr ""
+
+#: projectmanager/templates/about.html:33
+msgid "/controllers"
+msgstr ""
+
+#: projectmanager/templates/about.html:33
+msgid ""
+"folder has your URLs.  When you \n"
+"            called this url ("
+msgstr ""
+
+#: projectmanager/templates/about.html:34
+#: projectmanager/templates/about.html:36
+msgid "about"
+msgstr ""
+
+#: projectmanager/templates/about.html:34
+msgid ""
+"), \n"
+"            the command went through the RootController class to the"
+msgstr ""
+
+#: projectmanager/templates/about.html:36
+msgid "method."
+msgstr ""
+
+#: projectmanager/templates/about.html:37
+msgid ""
+"Those Python methods are responsible to create the dictionary of\n"
+"             variables that will be used in your web views (template)."
+msgstr ""
+
+#: projectmanager/templates/about.html:41
+msgid "Reuse the web page elements"
+msgstr ""
+
+#: projectmanager/templates/about.html:42
+msgid ""
+"A web page viewed by user could be constructed by single or \n"
+"            several reusable templates under"
+msgstr ""
+
+#: projectmanager/templates/about.html:43
+msgid "/templates"
+msgstr ""
+
+#: projectmanager/templates/about.html:43
+msgid ""
+". \n"
+"            Take 'about' page for example, each reusable templates generating \n"
+"            a part of the page. We'll cover them in the order of where they are \n"
+"            found, listed near the top of the about.html template"
+msgstr ""
+
+#: projectmanager/templates/about.html:47
+msgid "header.html"
+msgstr ""
+
+#: projectmanager/templates/about.html:47
+msgid ""
+"- The \n"
+"            \"header.html\" template contains the HTML code to display the \n"
+"            'header': The blue gradient, TG2 logo, and some site text at the \n"
+"            top of every page it is included on. When the \"about.html\" template \n"
+"            is called, it includes this \"header.html\" template (and the others) \n"
+"            with a"
+msgstr ""
+
+#: projectmanager/templates/about.html:52
+msgid "<xi:include />"
+msgstr ""
+
+#: projectmanager/templates/about.html:52
+msgid ""
+"tag, part of \n"
+"            the Genshi templating system. The \"header.html\" template is not a \n"
+"            completely static HTML -- it also dynamically displays the current \n"
+"            page name with a Genshi template method called \"replace\" with the \n"
+"            code:"
+msgstr ""
+
+#: projectmanager/templates/about.html:56
+msgid "<span py:replace=\"page\"/>"
+msgstr ""
+
+#: projectmanager/templates/about.html:56
+msgid ""
+". \n"
+"            It means replace this"
+msgstr ""
+
+#: projectmanager/templates/about.html:57
+msgid "<span />"
+msgstr ""
+
+#: projectmanager/templates/about.html:57
+msgid ""
+"region with the contents found in the variable 'page' that has \n"
+"            been sent in the dictionary to this \"about.html\" template, and is \n"
+"            available through that namespace for use by this \"header.html\" \n"
+"            template.  That's how it changes in the header depending on what \n"
+"            page you are visiting."
+msgstr ""
+
+#: projectmanager/templates/about.html:64
+msgid "sidebars.html"
+msgstr ""
+
+#: projectmanager/templates/about.html:64
+msgid ""
+"- The\n"
+"             sidebars (navigation areas on the right side of the page) are \n"
+"             generated as two separate"
+msgstr ""
+
+#: projectmanager/templates/about.html:66
+#: projectmanager/templates/about.html:67
+msgid "py:def"
+msgstr ""
+
+#: projectmanager/templates/about.html:66
+msgid ""
+"blocks \n"
+"             in the \"sidebars.html\" template.  The"
+msgstr ""
+
+#: projectmanager/templates/about.html:67
+msgid ""
+"construct is best thought of as a \"macro\" code... a simple way to \n"
+"             separate and reuse common code snippets.  All it takes to include \n"
+"             these on the \"about.html\" page template is to write"
+msgstr ""
+
+#: projectmanager/templates/about.html:73
+msgid "${sidebar_top()}"
+msgstr ""
+
+#: projectmanager/templates/about.html:75
+msgid "${sidebar_bottom()}"
+msgstr ""
+
+#: projectmanager/templates/about.html:77
+msgid ""
+"in the page where they are wanted.  CSS styling (in \n"
+"        \"/public/css/style.css\") floats them off to the right side.  You can \n"
+"        remove a sidebar or add more of them, and the CSS will place them one \n"
+"        atop the other."
+msgstr ""
+
+#: projectmanager/templates/about.html:81
+msgid ""
+"This is, of course, also exactly how the header and footer \n"
+"            templates are also displayed in their proper places, but we'll \n"
+"            cover that in the \"master.html\" template below."
+msgstr ""
+
+#: projectmanager/templates/about.html:84
+msgid ""
+"Oh, and in sidebar_top we've added a dynamic menu that shows the \n"
+"            link to this page at the top when you're at the \"index\" page, and \n"
+"            shows a link to the Home (index) page when you're here.  Study the \n"
+"            \"sidebars.html\" template to see how we used"
+msgstr ""
+
+#: projectmanager/templates/about.html:88
+msgid "py:choose"
+msgstr ""
+
+#: projectmanager/templates/about.html:88
+msgid "for that."
+msgstr ""
+
+#: projectmanager/templates/about.html:89
+msgid "footer.html"
+msgstr ""
+
+#: projectmanager/templates/about.html:89
+msgid ""
+"- The \n"
+"            \"footer.html\" block is simple, but also utilizes a special \n"
+"            \"replace\" method to set the current YEAR in the footer copyright \n"
+"            message. The code is:"
+msgstr ""
+
+#: projectmanager/templates/about.html:93
+msgid "<span py:replace=\"now.strftime('%Y')\">"
+msgstr ""
+
+#: projectmanager/templates/about.html:94
+msgid ""
+"and it uses the variable \"now\" that was passed \n"
+"            in with the dictionary of variables.  But because \"now\" is a \n"
+"            datetime object, we can use the Python"
+msgstr ""
+
+#: projectmanager/templates/about.html:97
+msgid "\"strftime()\""
+msgstr ""
+
+#: projectmanager/templates/about.html:97
+msgid ""
+"method with the \"replace\" \n"
+"            call to say \"Just Display The Year Here\".  Simple, elegant; we \n"
+"            format the date display in the template (the View in the \n"
+"            Model/View/Controller architecture) rather than formatting it in \n"
+"            the Controller method and sending it to the template as a string \n"
+"            variable."
+msgstr ""
+
+#: projectmanager/templates/about.html:103
+msgid "master.html"
+msgstr ""
+
+#: projectmanager/templates/about.html:103
+msgid ""
+"- The \n"
+"            \"master.html\" template is called last, by design.  The \"master.html\" \n"
+"            template controls the overall design of the page we're looking at, \n"
+"            calling first the \"header\" py:def macro, then the putting everything \n"
+"            from this \"about.html\" template into the \"content\" div, and \n"
+"            then calling the \"footer\" macro at the end.  Thus the \"master.html\" \n"
+"            template provides the overall architecture for each page in this \n"
+"            site."
+msgstr ""
+
+#: projectmanager/templates/about.html:111
+msgid ""
+"But why then shouldn't we call it first?  Isn't it the most \n"
+"            important?  Perhaps, but that's precisely why we call it LAST. \n"
+"            The \"master.html\" template needs to know where to find everything \n"
+"            else, everything that it will use in py:def macros to build the\n"
+"             page.  So that means we call the other templates first, and then \n"
+"             call \"master.html\"."
+msgstr ""
+
+#: projectmanager/templates/about.html:117
+msgid ""
+"There's more to the \"master.html\" template... study it to see how \n"
+"           the <title> tags and static JS and CSS files are brought into \n"
+"           the page.  Templating with Genshi is a powerful tool and we've only \n"
+"           scratched the surface.  There are also a few little CSS tricks \n"
+"           hidden in these pages, like the use of a \"clearingdiv\" to make \n"
+"           sure that your footer stays below the sidebars and always looks \n"
+"           right.  That's not TG2 at work, just CSS.  You'll need all your \n"
+"           skills to build a fine web app, but TG2 will make the hard parts \n"
+"           easier so that you can concentrate more on good design and content \n"
+"           rather than struggling with mechanics."
+msgstr ""
+
+#: projectmanager/templates/about.html:129
+msgid "Good luck with TurboGears 2!"
+msgstr ""
+
+#: projectmanager/templates/admin.html:11
+#: projectmanager/templates/header.html:6
+#: projectmanager/templates/index.html:11
+#: projectmanager/templates/newProject.html:11
+#: projectmanager/templates/proyectos.html:11
+#: projectmanager/templates/updateUser.html:11
+#: projectmanager/templates/usuarios.html:11
+msgid "Bienvenido a PyProject v1.0"
+msgstr ""
+
+#: projectmanager/templates/admin.html:17
+msgid "Tareas Administrativas"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:11
+msgid "Learning TurboGears 2.0: Quick guide to authentication."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:18
+msgid "Authentication & Authorization in a TG2 site."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:19
+msgid ""
+"If you have access to this page, this means you have enabled authentication and authorization\n"
+"    in the quickstart to create your project."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:21
+msgid ""
+"The paster command will have created a few specific controllers for you. But before you\n"
+"    go to play with those controllers you'll need to make sure your application has been\n"
+"    properly bootstapped.\n"
+"    This is dead easy, here is how to do this:"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:28
+msgid "paster setup-app development.ini"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:32
+msgid ""
+"inside your application's folder and you'll get a database setup (using the preferences you have\n"
+"    set in your development.ini file). This database will also have been prepopulated with some\n"
+"    default logins/passwords so that you can test the secured controllers and methods."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:37
+msgid "To change the comportement of this setup-app command you just need to edit the"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:38
+msgid "websetup.py"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:38
+msgid "file."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:40
+msgid "Now try to visiting the"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:41
+msgid "manage_permission_only"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:41
+msgid "URL. You will be challenged with a login/password form."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:43
+msgid "Only managers are authorized to visit this method. You will need to log-in using:"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:46
+msgid "login: manager"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:51
+msgid "password: managepass"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:56
+msgid "Another protected resource is"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:57
+msgid "editor_user_only"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:57
+msgid ""
+". This one is protected by a different set of permissions.\n"
+"    You will need to be"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:58
+msgid "editor"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:58
+msgid "with a password of"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:58
+msgid "editpass"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:58
+msgid "to be able to access it."
+msgstr ""
+
+#: projectmanager/templates/authentication.html:60
+msgid "The last kind of protected resource in this quickstarted app is a full so called"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:61
+msgid "secure controller"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:61
+msgid ""
+". This controller is protected globally.\n"
+"    Instead of having a @require decorator on each method, we have set an allow_only attribute at the class level. All the methods in this controller will\n"
+"    require the same level of access. You need to be manager to access"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:63
+msgid "secc"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:63
+msgid "or"
+msgstr ""
+
+#: projectmanager/templates/authentication.html:63
+msgid "secc/some_where"
+msgstr ""
+
+#: projectmanager/templates/debug.html:11
+msgid "Sample Template, for looking at template locals"
+msgstr ""
+
+#: projectmanager/templates/debug.html:15
+msgid "All objects from locals():"
+msgstr ""
+
+#: projectmanager/templates/error.html:11
+msgid "A"
+msgstr ""
+
+#: projectmanager/templates/error.html:11
+msgid "Error has Occurred"
+msgstr "Ha ocurrido un Error"
+
+#: projectmanager/templates/error.html:15
+msgid "Error"
+msgstr ""
+
+#: projectmanager/templates/footer.html:7
+#: projectmanager/templates/proyectos.html:29
+#: projectmanager/templates/proyectos.html:30
+#: projectmanager/templates/usuarios.html:29
+#: projectmanager/templates/usuarios.html:30
+msgid "TurboGears"
+msgstr ""
+
+#: projectmanager/templates/footer.html:8
+msgid "Powered by TurboGears 2"
+msgstr ""
+
+#: projectmanager/templates/footer.html:11
+msgid ""
+"PyProject is a open source front-to-back web projects\n"
+"      administrator written in Python. Copyright (c) 2011"
+msgstr ""
+
+#: projectmanager/templates/header.html:8
+msgid "Administrador de Proyectos"
+msgstr ""
+
+#: projectmanager/templates/index.html:17
+msgid "Ingresa al Sistema para acceder a tu proyecto"
+msgstr ""
+
+#: projectmanager/templates/index.html:18
+msgid ""
+"PyProject v1.0 es una herramienta de Administración de Proyectos desarrollada por alumnos\n"
+"    de la Universidad Nacional de Asunción, Facultad Politécnica."
+msgstr ""
+
+#: projectmanager/templates/index.html:20
+msgid "Desarrolladores"
+msgstr ""
+
+#: projectmanager/templates/index.html:21
+msgid "Carlos Mendoza"
+msgstr ""
+
+#: projectmanager/templates/index.html:22
+msgid "Diana Jara"
+msgstr ""
+
+#: projectmanager/templates/index.html:23
+msgid "Cristián Munizaga"
+msgstr ""
+
+#: projectmanager/templates/index.html:38
+msgid "Gracias por elegir PyProject v1.0"
+msgstr ""
+
+#: projectmanager/templates/login.html:11
+msgid "Login Form"
+msgstr ""
+
+#: projectmanager/templates/login.html:18
+msgid "Login"
+msgstr ""
+
+#: projectmanager/templates/login.html:19
+msgid "Usuario:"
+msgstr ""
+
+#: projectmanager/templates/login.html:20
+msgid "Password:"
+msgstr ""
+
+#: projectmanager/templates/master.html:20
+msgid "Welcome"
+msgstr ""
+
+#: projectmanager/templates/master.html:22
+msgid "Ingresar"
+msgstr ""
+
+#: projectmanager/templates/master.html:23
+msgid "Salir"
+msgstr ""
+
+#: projectmanager/templates/master.html:25
+msgid "Administrar"
+msgstr ""
+
+#: projectmanager/templates/newProject.html:19
+#: projectmanager/templates/newProject.html:23
+#: projectmanager/templates/proyectos.html:25
+#: projectmanager/templates/usuarios.html:26
+msgid "Nombre"
+msgstr ""
+
+#: projectmanager/templates/newProject.html:20
+#: projectmanager/templates/newProject.html:24
+#: projectmanager/templates/proyectos.html:26
+msgid "Descripcion"
+msgstr ""
+
+#: projectmanager/templates/newUser.html:11
+#: projectmanager/templates/newUser.html:16
+msgid "Registrar Nuevo Usuario"
+msgstr ""
+
+#: projectmanager/templates/proyectos.html:16
+msgid "Administracion de Proyectos"
+msgstr ""
+
+#: projectmanager/templates/proyectos.html:22
+#: projectmanager/templates/usuarios.html:22
+msgid "Editar"
+msgstr ""
+
+#: projectmanager/templates/proyectos.html:23
+#: projectmanager/templates/usuarios.html:23
+msgid "Eliminar"
+msgstr ""
+
+#: projectmanager/templates/proyectos.html:24
+#: projectmanager/templates/usuarios.html:24
+msgid "Identificador"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:7
+msgid "Get Started with TG2"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:11
+msgid "About this page"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:11
+msgid "A quick guide to this TG2 site"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:14
+msgid "Home"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:14
+msgid "Back to your Quickstart Home page"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:16
+msgid "TG2 Documents"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:16
+msgid "- Read everything in the Getting Started section"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:17
+msgid "TG1 docs"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:17
+msgid "(still useful, although a lot has changed for TG2)"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:18
+msgid "Join the TG Mail List"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:18
+msgid "for general TG use/topics"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:25
+msgid "Developing TG2"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:27
+msgid "More TG2 Documents"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:27
+msgid "in progress"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:28
+msgid "TG2 Trac tickets"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:28
+msgid "What's happening now in TG2 development"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:29
+msgid "TG Dev timeline"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:29
+msgid "(recent ticket updates, svn checkins, wiki changes)"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:30
+msgid "TG2 SVN repository"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:30
+msgid "For checking out a copy"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:31
+msgid "Follow these instructions"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:31
+msgid "For installing your copy"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:32
+msgid "TG2 Trac's svn view"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:32
+msgid "In case you need a quick look"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:33
+msgid "Join the TG-Trunk Mail List"
+msgstr ""
+
+#: projectmanager/templates/sidebars.html:33
+msgid "for TG2 discuss/dev"
+msgstr ""
+
+#: projectmanager/templates/updateUser.html:17
+msgid "Editar el Usuario:"
+msgstr ""
+
+#: projectmanager/templates/usuarios.html:16
+msgid "Administracion de Usuarios"
+msgstr ""
+
+#: projectmanager/templates/usuarios.html:25
+msgid "Usuario"
+msgstr ""
+
