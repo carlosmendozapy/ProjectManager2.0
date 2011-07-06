@@ -109,6 +109,9 @@ class Estado(DeclarativeBase):
         
 class TipoDatoAtributo(DeclarativeBase):
 
+    def __init__(self, nombre):
+		self.nom_tipo_dato=nombre
+   
     def get_tablename__(self):
         return self.__tablename__
 
@@ -143,10 +146,7 @@ class TipoDatoAtributo(DeclarativeBase):
 
     def del_nom_tipo_dato(self):
         del self.__nom_tipo_dato
-
-	def __init__(self,nombre):
-		self.nom_tipo_dato=nombre
-		
+	
     __tablename__ = 'TIPO_DATO_ATRIBUTO'
     
     #{ Columns    
@@ -448,37 +448,34 @@ class VersionItem(DeclarativeBase):
         
 class Atributo(DeclarativeBase):
 
+    def __init__(self, nombre, tipoDato, tipoItem):
+        self.nom_atributo = nombre
+        self.tipoDatoAtributo = tipoDato
+        self.tipoItem = tipoItem
+        
     def get_tablename__(self):
         return self.__tablename__
-
 
     def get_id_atributo(self):
         return self.__id_atributo
 
-
     def get_nom_atributo(self):
         return self.__nom_atributo
-
 
     def get_id_tipo_dato(self):
         return self.__id_tipo_dato
 
-
     def get_id_tipo_item(self):
         return self.__id_tipo_item
-
 
     def get_tipo_dato_atributo(self):
         return self.__tipoDatoAtributo
 
-
     def get_tipo_item(self):
         return self.__tipoItem
 
-
     def set_tablename__(self, value):
         self.__tablename__ = value
-
 
     def set_id_atributo(self, value):
         self.__id_atributo = value
@@ -491,26 +488,20 @@ class Atributo(DeclarativeBase):
     def set_id_tipo_dato(self, value):
         self.__id_tipo_dato = value
 
-
     def set_id_tipo_item(self, value):
         self.__id_tipo_item = value
-
 
     def set_tipo_dato_atributo(self, value):
         self.__tipoDatoAtributo = value
 
-
     def set_tipo_item(self, value):
         self.__tipoItem = value
-
 
     def del_tablename__(self):
         del self.__tablename__
 
-
     def del_id_atributo(self):
         del self.__id_atributo
-
 
     def del_nom_atributo(self):
         del self.__nom_atributo
@@ -519,18 +510,14 @@ class Atributo(DeclarativeBase):
     def del_id_tipo_dato(self):
         del self.__id_tipo_dato
 
-
     def del_id_tipo_item(self):
         del self.__id_tipo_item
-
 
     def del_tipo_dato_atributo(self):
         del self.__tipoDatoAtributo
 
-
     def del_tipo_item(self):
         del self.__tipoItem
-
 
     __tablename__ = 'ATRIBUTO'
     

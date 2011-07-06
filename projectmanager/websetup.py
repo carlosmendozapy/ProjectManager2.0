@@ -120,10 +120,11 @@ def setup_app(command, conf, vars):
                             ])
     model.DBSession.flush()
     '''Tipo de Datos Atributo'''
-    model.DBSession.add_all([model.TipoDatoAtributo(u'texto'),
+    model.DBSession.add_all([
+                             model.TipoDatoAtributo(u'texto'),
 							 model.TipoDatoAtributo(u'numerico'),
 							 model.TipoDatoAtributo(u'fecha'),
-							 model.TipoDatoAtributo(u'archivo'),	
+							 model.TipoDatoAtributo(u'archivo')	
 							])
     '''Estados'''
     
@@ -165,9 +166,17 @@ def setup_app(command, conf, vars):
     lider_rol = model.Rol()
     lider_rol.nom_rol=u'Lider de Proyecto'
     lider_rol.des_rol=u'Rol que se encarga de administrar un proyecto específico'
-    lider_rol.tipoRol= tipo_sistema
+    lider_rol.tipoRol= tipo_sistema   
        
-    model.DBSession.add(lider_rol)  
+    model.DBSession.add(lider_rol) 
+    
+    ''' Rol Administrador de Lineas Base'''
+    admin_lb = model.Rol()
+    admin_lb.nom_rol=u'Admin de LB'
+    admin_lb.des_rol=u'Rol que se encarga de administrar las Lineas Bases de un proyecto'
+    admin_lb.tipoRol= tipo_proyecto
+    
+    model.DBSession.add(admin_lb)
     
     model.DBSession.flush()
     

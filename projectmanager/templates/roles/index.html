@@ -34,23 +34,23 @@
           </tr>
           <tr py:for="i, rol in enumerate(roles)" class="${i%2 and 'even' or 'odd'}">                        
             <td>   
-                <span py:if="not rol.nom_rol=='Lider de Proyecto'">
+                <span py:if="not rol.nom_rol=='Lider de Proyecto' and not rol.nom_rol=='Admin de LB'">
                 <a href='./editRol?id=${rol.id_rol}'>
                 <img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a>           
                 </span>
             </td>            
             <td> 
-                <span py:if="not rol.nom_rol=='Lider de Proyecto'">
+                <span py:if="not rol.nom_rol=='Lider de Proyecto' and not rol.nom_rol=='Admin de LB'">
                 <a href='./deleteRol?id=${rol.id_rol}'>
                 <img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" /></a>           
                 </span>
             </td>
             <td align='center'>${rol.id_rol}</td>
             <td>${rol.tipoRol.nom_tipo_rol}</td>
-            <span py:if="rol.nom_rol=='Lider de Proyecto'">
+            <span py:if="rol.nom_rol=='Lider de Proyecto' or rol.nom_rol=='Admin de LB'">
               <td><img src="${tg.url('/images/lock.png')}"/>${rol.nom_rol}</td>
             </span>
-            <span py:if="not rol.nom_rol=='Lider de Proyecto'">
+            <span py:if="not rol.nom_rol=='Lider de Proyecto' and not rol.nom_rol=='Admin de LB'">
               <td><a href='./permisos?id_rol=${rol.id_rol}'>${rol.nom_rol}</a></td>
             </span>
             <td>${rol.des_rol}</td>            

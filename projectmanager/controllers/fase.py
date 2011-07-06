@@ -383,38 +383,46 @@ class FaseController(BaseController):
     @expose('projectmanager.templates.fases.importTipoItem')
     def importTipoItem(self,**kw):
 		
-		fase=DBSession.query(Fase).filter(Fase.id_fase==Globals.current_phase.id_fase).one()
+        fase=DBSession.query(Fase).filter(Fase.id_fase==Globals.current_phase.id_fase).one()
+        
+        list1=DBSession.query(TipoItem).filter(TipoItem.fase!=fase).all()
+        tipos_fase =DBSession.query(TipoItem).filter(TipoItem.fase==fase).all()
 		
-		list1=DBSession.query(TipoItem).filter(TipoItem.fase!=fase).all()
-		tipos_fase =DBSession.query(TipoItem).filter(TipoItem.fase==fase).all()
-		
-		list_tipos=[]
-		for tipo in list1:
-			esta=False
-			for tipofase in tipos_fase:
-			    if tipo.nom_tipo_item == tipofase.nom_tipo_item:
-					esta=True
-					break
+        list_tipos=[]
+        for tipo in list1:
+            esta=False
+            for tipofase in tipos_fase:
+                if tipo.nom_tipo_item == tipofase.nom_tipo_item:
+                    esta=True
+                    break
 			
-			if esta==False:
-				list_tipos.append(tipo)
-			    
-		return dict(tiposItem=list_tipos)
+            if esta==False:
+                list_tipos.append(tipo)
+               	    
+        return dict(tiposItem=list_tipos)
 	
     @expose()
     def saveImport(self,**kw):
-		fase = DBSession.query(Fase).\
-			filter(Fase.id_fase==Globals.current_phase.id_fase).one()
+        fase = DBSession.query(Fase).\
+            filter(Fase.id_fase==Globals.current_phase.id_fase).one()
 		
-		tipo=DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['id_tipo'])).one()
-		tipoNew = TipoItem()
-		
-		tipoNew.nom_tipo_item = tipo.nom_tipo_item
-		tipoNew.fase = fase
-		tipoNew.prefijo = tipo.prefijo
-		tipoNew.cont_prefijo = 0
-		
-		redirect('/fase/importTipoItem')	
+        tipo=DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['id_tipo'])).one()
+        		
+        tipoNew = TipoItem()		
+        tipoNew.nom_tipo_item = tipo.nom_tipo_item
+        tipoNew.fase = fase
+        tipoNew.prefijo = tipo.prefijo
+        tipoNew.cont_prefijo = 0
+               
+        list_atributos = []       
+        for atributo in tipo.Atributo:
+            list_atributos.append(Atributo(atributo.nom_atributo, 
+                                           atributo.tipoDatoAtributo, 
+                                           tipoNew))
+        
+        DBSession.add(tipoNew)
+        DBSession.add_all(list_atributos)           
+        redirect('/fase/importTipoItem')	
 				
       
     #******************* BUSCADORES *****************
