@@ -10,6 +10,7 @@ from tg import session
 from tg.controllers import CUSTOM_CONTENT_TYPE
 
 # third party imports
+from datetime import datetime
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what import predicates
 from repoze.what.predicates import has_permission
@@ -39,95 +40,63 @@ from projectmanager.widgets.new_itemForm import create_new_item
 from projectmanager.lib.app_globals import Globals
 
 class ItemController(BaseController):
-    idFaseItem = None
+    
     # The predicate that must be met for all the actions in this controller:
     allow_only = not_anonymous(msg='Debe Ingresar al Sistema para ver esta pagina')    
-                 
-    @expose('projectmanager.templates.items')
-    def index(self):
-        return dict(page='index')
+    
         
-    @expose('projectmanager.templates.items')
+    @expose('projectmanager.templates.items.items')
     def adminItem(self, faseid):                       
-	session['idFaseItem'] = faseid
-        session.save()        
-        
+	       
         Globals.current_phase = DBSession.query(Fase).filter(Fase.id_fase == int(faseid)).one()
         
-        idFaseItem = session.get('idFaseItem',None)
-        '''q = DBSession.query(VersionItem)       
-        q = q.join(['tipoItem', 'fase'])
-        q = q.filter(Fase.id_fase==faseid)
-        items = list(q)'''
-        
-	'''SELECT VI.id_version_item,VI.id_item,VI.id_estado,VI.id_tipo_item,VI.id_usuario_modifico,VI.nro_version_item, VI.observaciones, VI.fecha, VI.peso 
-	FROM "VERSION_ITEM" VI 
-	INNER JOIN (SELECT id_item as ID, MAX(id_version_item) as MAX_VERSION FROM "VERSION_ITEM" GROUP BY id_item) MAX 
-	ON VI.id_item=MAX.ID AND VI.id_version_item=MAX.MAX_VERSION 
-	INNER JOIN "TIPO_ITEM" AS TIP 
-	ON VI.id_tipo_item = TIP.id_tipo_item 
-	INNER JOIN "FASE" AS FAS 
-	ON TIP.id_fase = FAS.id_fase 
-	INNER JOIN "ESTADO" AS EST 
-	ON EST.id_estado = VI.id_estado 
-	WHERE FAS.id_fase=:idFase AND EST.nom_estado<>\'Eliminado\''''
+        list_items = DBSession.query(VersionItem).\
+            filter(TipoItem.fase==Globals.current_phase).\
+            filter(VersionItem.ultima_version=='S').all()
 
-        query = DBSession.query(VersionItem) 	        
-        query = query.from_statement('SELECT VI.id_version_item,VI.id_item,VI.id_estado,VI.id_tipo_item,VI.id_usuario_modifico,VI.nro_version_item, VI.observaciones, VI.fecha, VI.peso FROM "VERSION_ITEM" VI INNER JOIN (SELECT id_item as ID, MAX(id_version_item) as MAX_VERSION FROM "VERSION_ITEM" GROUP BY id_item) MAX ON VI.id_item=MAX.ID AND VI.id_version_item=MAX.MAX_VERSION INNER JOIN "TIPO_ITEM" AS TIP ON VI.id_tipo_item = TIP.id_tipo_item INNER JOIN "FASE" AS FAS ON TIP.id_fase = FAS.id_fase INNER JOIN "ESTADO" AS EST ON EST.id_estado = VI.id_estado WHERE FAS.id_fase=:idFase AND EST.nom_estado<>\'Eliminado\'')
-        query = query.params(idFase=idFaseItem)
-        items = list(query)                
-
-        return dict(page='Administrar Items', items=items)
+        return dict(items=list_items)
         
-    @expose('projectmanager.templates.newItem')
+    @expose('projectmanager.templates.items.newItem')
     def newItem(self, **kw):
 	
-	fase_id = kw['id_fase'] 
+        fase = DBSession.query(Fase).\
+            filter(Fase.id_fase==Globals.current_phase.id_fase).one()
 	
-	listTipoItem = DBSession.query(TipoItem).filter(TipoItem.id_fase == fase_id).all()
-	
-	options=[]
-	for itemEnviar in listTipoItem:
-            options.append([itemEnviar.id_tipo_item,itemEnviar.nom_tipo_item])
-
+        listTipoItem = DBSession.query(TipoItem.id_tipo_item,\
+                                   TipoItem.nom_tipo_item).\
+                   filter(TipoItem.fase == fase).all()
+		
         tmpl_context.form = create_new_item
         
-        return dict(page='Nuevo Item', type_options = options)    	        
+        return dict(type_options = listTipoItem)    	        
     
+    @validate(create_new_item,error_handler=newItem)
     @expose()
     def saveItem(self, **kw):
-        unEstado = DBSession.query(Estado).filter_by(nom_estado="Inicial").one()
-        unTipoItem = DBSession.query(TipoItem).filter_by(id_tipo_item=kw['tipoItem']).one()
-        unTipoItem.cont_prefijo = unTipoItem.cont_prefijo + 1                
-        DBSession.flush()
+        estado = DBSession.query(Estado).filter(Estado.nom_estado=='En Modificacion').one()
+        tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['tipoItem'])).one()                      
         lg_name=request.identity['repoze.who.userid']
-        unUsuario = DBSession.query(Usuario).filter(Usuario.login_name==lg_name).one()
+        usuario = DBSession.query(Usuario).filter(Usuario.login_name==lg_name).one()
         
-        unItem = Item()
-        unItem.cod_item = str(unTipoItem.prefijo) + str(unTipoItem.cont_prefijo)
+        item = Item()
+        item.cod_item = str(tipoItem.prefijo) + str(tipoItem.cont_prefijo)
+        tipoItem.cont_prefijo = tipoItem.cont_prefijo + 1
+               
+        item.nom_item = kw['nomItem']
+        item.tipoItem = tipoItem          
         
-        aItemSelecionado = kw['tipoItem']
-        unTipoItem_ = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item == aItemSelecionado).one()
-        unItem.nom_item = kw['nomItem']
-        unItem.tipoItem = unTipoItem_          
-        DBSession.add(unItem)
-
-        
-
         nuevaVersionItem = VersionItem()
-        nuevaVersionItem.item = unItem        
+        nuevaVersionItem.item = item        
         nuevaVersionItem.nro_version_item = 0
-        nuevaVersionItem.estado = unEstado
-       # nuevaVersionItem.tipoItem = unTipoItem
-        nuevaVersionItem.tipoItem = unTipoItem_         
-        nuevaVersionItem.usuarioModifico = unUsuario
-        nuevaVersionItem.fecha = "10/06/2011"
+        nuevaVersionItem.estado = estado       
+        nuevaVersionItem.tipoItem = tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
         nuevaVersionItem.observaciones = kw['observaciones']
-        #unaVersionItem.peso = kw['peso']
-        
-        DBSession.add(nuevaVersionItem)  
-        
-        for atributo in DBSession.query(Atributo).filter_by(tipoItem=unTipoItem):
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = int(kw['peso'])
+               
+        for atributo in DBSession.query(Atributo).filter(Atributo.tipoItem==tipoItem):
             nuevoAtributoItem = AtributoItem()
             nuevoAtributoItem.atributo = atributo
             nuevoAtributoItem.versionItem = nuevaVersionItem        
@@ -135,14 +104,14 @@ class ItemController(BaseController):
             DBSession.add(nuevoAtributoItem)   
       
         flash(_("Se ha creado un nuevo Item: %s") %kw['nomItem'],'info')
-        redirect("atributosItem?id="+str(nuevaVersionItem.id_version_item))
+        redirect("adminItem?faseid="+str(Globals.current_phase.id_fase))
 
-    @expose('projectmanager.templates.atributosItem')
-    def atributosItem(self, **kw):        
-        #tmpl_context.form = atributos_item
-        unaVersionItem = DBSession.query(VersionItem).filter(VersionItem.id_version_item==kw['id']).one()
+    @expose('projectmanager.templates.items.atributosItem')
+    def atributosItem(self, **kw):                        
+        unaVersionItem = DBSession.query(VersionItem).filter(VersionItem.id_version_item==kw['id_version']).one()
+        Globals.current_item = unaVersionItem
         atributosItem = DBSession.query(AtributoItem).filter(AtributoItem.versionItem==unaVersionItem)                
-        return dict(versionItem=unaVersionItem,atributosItem=atributosItem)            
+        return dict(atributosItem=atributosItem)            
 
     @expose('projectmanager.templates.relacionesItem')
     def relacionesItem(self, **kw):        

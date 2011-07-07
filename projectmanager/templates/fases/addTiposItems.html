@@ -32,25 +32,39 @@
     </div>
     <table rules='rows'>
           <tr>
-          <th height="20"></th>                  
+          <th height="20"></th>                          
           <th height="20">Identificador</th>
           <th height="20">Nombre</th>
           <th height="20">Atributos</th>          
           </tr>
           <tr py:for="i, tipo in enumerate(tiposItem)" class="${i%2 and 'even' or 'odd'}">
             <td>
-				<span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('crear','Atributo de Item',g.current_phase.id_fase)">
-					<a href='/fase/addAtributo?id_tipo=${tipo.id_tipo_item}'>
-					<img src="${tg.url('/images/add.png')}" alt="Editar" height="16" width="16"/></a>
+				<span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('eliminar','Tipo de Item',g.current_phase.id_fase)">
+					<a href='/fase/delTipoItem?id_tipo=${tipo.id_tipo_item}'>
+					<img src="${tg.url('/images/eliminar.png')}" alt="Editar" height="16" width="16"/></a>
                 </span>
-            </td>
+            </td>            
             <td align='center'>${tipo.id_tipo_item}</td> 
             <td><a><b>${tipo.nom_tipo_item}</b></a></td>
             <td>
 				<table>
 					<tr py:for="i, atributo in enumerate(tipo.Atributo)" class="${i%2 and 'even' or 'odd'}">
-					   <td><b>${atributo.nom_atributo}: </b> ${atributo.tipoDatoAtributo.nom_tipo_dato}</td>
+					   <td>
+                            <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('eliminar','Atributo de Item',g.current_phase.id_fase)">
+                              <a href="/fase/delAtributo?id_atributo=${atributo.id_atributo}">
+                              <img src="${tg.url('/images/remove.png')}" alt="Eliminar" height="16" width="16"/></a>
+                            </span>
+                           <b>${atributo.nom_atributo}: </b> ${atributo.tipoDatoAtributo.nom_tipo_dato}
+                       </td>
 				    </tr>
+                    <tr>
+                    <td>
+                        <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('crear','Atributo de Item',g.current_phase.id_fase)">
+                            <a href='/fase/addAtributo?id_tipo=${tipo.id_tipo_item}'>
+                            <img src="${tg.url('/images/add.png')}" alt="Editar" height="16" width="16"/>agregar atributo</a>
+                        </span>
+                    </td>
+                    </tr>
 				</table>
 				
             </td>            

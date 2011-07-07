@@ -8,24 +8,23 @@
   
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
-  <title>Bienvenido a PyProject v1.0</title>
+  <title>Item</title>
 </head>
 
-<body> 	  
- 
-  <div id="AdministrarItems">   
-    <a><h2>Proyecto: ${g.current_project.nom_proyecto}</h2></a> 
-    <a><h2>Administracion de la Fase: ${g.current_phase.nom_fase}</h2></a>
-    <a><h2>Lista de Items</h2></a>
+<body>   
+   <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+	    <a><h2>Lista de Items</h2></a>
     <hr width="100%" color="#6699FF" size="2"/>
-    <div class="searchtool">
-        ${search()}
-    </div>
-    <div class="menu">
+  <div>
+    ${search()}
+  </div>
+
+<div class="menu">
 		<ul>
-			<span py:if="h.has_FasePriv('crear','Item',g.current_phase.id_fase)">
-			<li><a href="#" >Nuevo Item</a></li>            
-			</span>
+			<span>
+              <li><a href="/item/newItem">Nuevo Item</a></li>
+            </span>
 			<span py:if="h.has_AnyFasePriv('Usuario',g.current_phase.id_fase) or h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
 			  <li><a href="#" id="current">Usuarios</a>
 			    <ul>
@@ -45,10 +44,45 @@
             <span py:if="h.has_AnyFasePriv('Linea Base',g.current_phase.id_fase)">             
             <li><a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}' >Administrar Lineas Base</a></li>    			
             </span>
+            <li><a href="#">Tipos de Item</a>
+              <ul>
+                <li><a href="/fase/listTiposItem">Listar Tipos de Item de Fase</a></li>
+                <li><a href="/fase/addTiposItem">Administrar Tipos de Item a Fase</a></li>                
+              </ul>
+            </li>	
 		</ul>
-	</div>   
-    <h2>Aquí la tabla que lista los items (Adjuntar lo de Cristian)</h2>
-    <a href='/fase/index?id_proyecto=${g.current_project.id_proyecto}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+	</div>
+
+  <div id="AdministrarItem">    
+    <table rules='rows'>
+          <tr>          
+            <th width="3%"></th>
+            <th width="3%"></th>            
+            <th width="10%">Codigo</th>
+            <th width="15%">Nombre</th>
+            <th width="15%">Estado</th>          
+            <th width="15%">Tipo Item</th>          
+            <th width="15%">Usuario Modifico</th>
+            <th width="15%">Fecha Modificacion</th>
+            <th width="5%">Complejidad</th>                      
+          </tr>
+          <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
+            <td></td>
+            <td></td>
+            <td>${versionItem.item.cod_item}</td>
+            <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a>                
+            </td>
+            <td>${versionItem.estado.nom_estado}</td>
+            <td>${versionItem.tipoItem.nom_tipo_item}</td>
+            <td>${versionItem.usuarioModifico.login_name}</td>
+            <td>${versionItem.fecha}</td>            
+            <td>${versionItem.peso}</td>
+          </tr>
+        </table>
+
+        <a href='/fase/index?id_proyecto=${g.current_project.id_proyecto}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
   </div>
+
+  <div class="clearingdiv" />  
 </body>
 </html>

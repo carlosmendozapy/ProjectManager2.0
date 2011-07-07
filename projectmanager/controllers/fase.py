@@ -361,6 +361,14 @@ class FaseController(BaseController):
 		
 		redirect('/fase/addTiposItem')
 	
+    @expose()
+    def delTipoItem(self, **kw):
+        tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['id_tipo'])).one()
+        atributos = DBSession.query(Atributo).filter(Atributo.tipoItem==tipoItem)
+        atributos.delete()
+        DBSession.delete(tipoItem)
+        redirect('/fase/addTiposItem')
+        
     @expose('projectmanager.templates.fases.addAtributos')
     def addAtributo(self, **kw):
 		tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['id_tipo'])).one()
@@ -373,12 +381,17 @@ class FaseController(BaseController):
 		tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==(kw['id_tipo'])).one()
 		tipoDato = DBSession.query(TipoDatoAtributo).filter(TipoDatoAtributo.id_tipo_dato==int(kw['tipo_dato'])).one()
 		
-		newAtri = Atributo()
-		newAtri.nom_atributo=kw['nom_atributo']
-		newAtri.tipoDatoAtributo=tipoDato
-		newAtri.tipoItem=tipoItem
-		
+		newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
+				
 		redirect('/fase/addTiposItem')
+        
+    @expose()
+    def delAtributo(self, **kw):
+        atributo = DBSession.query(Atributo).\
+            filter(Atributo.id_atributo == int(kw['id_atributo'])).one()
+            
+        DBSession.delete(atributo)
+        redirect('/fase/addTiposItem')
 		
     @expose('projectmanager.templates.fases.importTipoItem')
     def importTipoItem(self,**kw):

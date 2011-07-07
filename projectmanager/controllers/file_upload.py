@@ -82,7 +82,7 @@ class FileUploadController(BaseController):
         atributoItem.atributoArchivo = new_file
         DBSession.flush()
         #redirect("/file_upload/view/"+str(new_file.id))
-        redirect("/item/atributosItem?id="+str(atributoItem.versionItem.id_version_item))
+        redirect("/item/atributosItem?id_version="+str(atributoItem.versionItem.id_version_item))
     
     @expose(content_type=CUSTOM_CONTENT_TYPE)
     def view(self, fileid):
