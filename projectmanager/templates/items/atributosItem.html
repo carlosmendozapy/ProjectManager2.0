@@ -11,10 +11,11 @@
   <title>Atributo</title>
 </head>
 
-<body>   
-  <div class="iconRepresentative">
-    <img src="${tg.url('/images/proyecto.jpg')}" height='100' width='200'/>
-  </div>
+<body> 
+   <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+   <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+   <a><h2>Lista de Atributos del item: ${g.current_item.item.nom_item}</h2></a>
+   <hr width="100%" color="#6699FF" size="2"/>    
   <div>
     ${search()}
   </div>
@@ -37,8 +38,10 @@
 	    <td>
 		  <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">		    
             <a align="center" href="${tg.url('/file_upload/file_upload', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}"> <img src="${tg.url('/images/subir.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/><img src="${tg.url('/images/archivo.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/> </a>
-            ${atributoItem.atributoArchivo.filename}
-            <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}"><img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                <span py:if="atributoItem.atributoArchivo != None">
+                    ${atributoItem.atributoArchivo.filename}
+                    <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}"><img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
           </span>
 		  <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">
 		    <a href=""><img src="${tg.url('/images/edit.png')}"/></a>

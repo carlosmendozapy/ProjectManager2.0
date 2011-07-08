@@ -83,6 +83,7 @@ class VersionItem(DeclarativeBase):
     id_tipo_item = Column(Integer, ForeignKey('TIPO_ITEM.id_tipo_item'))
     id_usuario_modifico = Column(Integer, ForeignKey('USUARIO.id_usuario'))
     id_antecesor = Column(Integer, ForeignKey('VERSION_ITEM.id_version_item'))
+    id_fase = Column(Integer, ForeignKey('FASE.id_fase'))    
     nro_version_item = Column(Integer) 
     observaciones = Column(Unicode(255))
     fecha = Column(DateTime)    
@@ -95,6 +96,7 @@ class VersionItem(DeclarativeBase):
     tipoItem = relation("TipoItem", backref=backref('VersionItem', order_by=id_version_item))
     usuarioModifico  = relation("Usuario", backref=backref('VersionItem', order_by=id_version_item))	
     antecesor = relation("VersionItem", backref=backref('Sucesor',remote_side=id_version_item))
+    fase = relation("Fase", backref=backref('VersionItem'))
         
 class Atributo(DeclarativeBase):
 

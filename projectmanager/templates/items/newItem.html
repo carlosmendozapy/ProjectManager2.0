@@ -13,9 +13,8 @@
 
 <body>
     
-    <h1>Registrar Nuevo Item</h1>
-
-    <div py:replace="tmpl_context.form(child_args=dict(tipoItem=dict(options=type_options)))">Input Form</div>
+    <h1>Registrar Nuevo Item</h1>    
+    <div py:replace="tmpl_context.form(child_args=dict(tipoItem=dict(options=type_options),antecesor=dict(options=ancestros)))">Input Form</div>
   
 </body>
 </html>

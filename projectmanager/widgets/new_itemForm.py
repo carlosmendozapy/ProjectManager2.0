@@ -11,6 +11,11 @@ from tw.forms.validators import DateConverter
 from tw.forms.validators import FieldsMatch
 import formencode
 from formencode import *
+from projectmanager.model import DBSession, metadata
+from projectmanager.lib.app_globals import Globals
+from projectmanager.model.proyecto import Fase
+from projectmanager.model.entities import Estado
+from projectmanager.model.entities import VersionItem
     
 class NewItemForm(TableForm):
 
@@ -21,15 +26,15 @@ class NewItemForm(TableForm):
             
     class fields(WidgetsList):   
                    
-        nomItem = TextField(label_text='Nombre del Item', 
+        nomItem = TextField(label_text='Nombre del Item',         
                                 maxlength=25,
                                 size=25,
                                 help_text='Nombre del Item: Maximo 25 Caracteres',                              
                                 validator=NotEmpty)
         
-        tipoItem = SingleSelectField(label_text='Lista de Tipo de Items',                                
+        tipoItem = SingleSelectField(label_text='Tipo de Item',                                
                                 validator=NotEmpty,
-                                help_text='Establece la lista de tipo de items')
+                                help_text='Establece a que tipo de item pertenecera')
         
         peso = TextField(label_text='Complejidad',
                             maxlength=3,
@@ -43,6 +48,9 @@ class NewItemForm(TableForm):
                                 attrs={'maxlength':200},
                                 help_text='Nombre del Item: Maximo 25 Caracteres')
         
+        antecesor = SingleSelectField(label_text='Antecesor',
+                                      help_text='Establece el Antecesor del item. Si es la fase inicial no se necesita establecer un antecesor',
+                                      )
                        
   
 create_new_item = NewItemForm("create_new_item", action='saveItem')

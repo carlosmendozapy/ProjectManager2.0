@@ -46,13 +46,16 @@ class ItemController(BaseController):
     
         
     @expose('projectmanager.templates.items.items')
-    def adminItem(self, faseid):                       
-	       
+    def adminItem(self, faseid,**kw):                       
+	    
+        if 'msg' in kw:
+           flash(_(kw['msg']),'warning')
+               
         Globals.current_phase = DBSession.query(Fase).filter(Fase.id_fase == int(faseid)).one()
         
         list_items = DBSession.query(VersionItem).\
-            filter(TipoItem.fase==Globals.current_phase).\
-            filter(VersionItem.ultima_version=='S').all()
+            filter(VersionItem.ultima_version=='S').\
+            filter(VersionItem.fase==Globals.current_phase).all()
 
         return dict(items=list_items)
         
@@ -66,9 +69,39 @@ class ItemController(BaseController):
                                    TipoItem.nom_tipo_item).\
                    filter(TipoItem.fase == fase).all()
 		
+        fase_list = DBSession.query(Fase).\
+                    filter(Fase.id_proyecto == Globals.current_project.id_proyecto).\
+                    order_by(Fase.nro_fase)
+        
+        estado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Aprobado').one()
+        
+        options_items=[(-1,'ninguno')]            
+        if fase_list.first().nro_fase != Globals.current_phase.nro_fase:
+            anterior = fase_list.first()
+            for fase in fase_list.all():
+                if fase.nro_fase < Globals.current_phase.nro_fase:
+                    anterior = fase
+                else:
+                    break
+            items = DBSession.query(VersionItem).\
+                filter(VersionItem.estado==estado).\
+                filter(VersionItem.fase==anterior)
+                        
+            if items.count() != 0:
+                options_items=[]
+                for item in items.all():
+                    options_items.append([item.id_version_item,item.item.nom_item])
+            else:
+                warn='La Fase Anterior no Posee Items en Linea Base '+\
+                     'necesarios para la creacion de Items en esta '+\
+                     'fase'
+                redirect('adminItem?faseid=' +\
+                    str(Globals.current_phase.id_fase)+';msg='+warn)
+                
         tmpl_context.form = create_new_item
         
-        return dict(type_options = listTipoItem)    	        
+        return dict(type_options = listTipoItem, ancestros=options_items)    	        
     
     @validate(create_new_item,error_handler=newItem)
     @expose()
@@ -95,7 +128,11 @@ class ItemController(BaseController):
         nuevaVersionItem.observaciones = kw['observaciones']
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = int(kw['peso'])
-               
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        if int(kw['antecesor']) != -1:
+            nuevaVersionItem.id_antecesor = int(kw['antecesor'])
+            
         for atributo in DBSession.query(Atributo).filter(Atributo.tipoItem==tipoItem):
             nuevoAtributoItem = AtributoItem()
             nuevoAtributoItem.atributo = atributo
