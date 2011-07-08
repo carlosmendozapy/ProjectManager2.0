@@ -5,16 +5,18 @@ from tg import expose, flash, require, url, request, redirect, response
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 
 from tg import session
-
+from datetime import datetime
 from projectmanager.lib.base import BaseController
 from tg.controllers import CUSTOM_CONTENT_TYPE
 from projectmanager.model import DBSession, metadata
 #from fileupload.controllers.error import ErrorController
 #from projectmanager.model.userfile import UserFile
+from projectmanager.lib.app_globals import Globals
 from projectmanager.model.entities import Atributo
 from projectmanager.model.entities import AtributoArchivo
 from projectmanager.model.entities import AtributoItem
 from projectmanager.model.entities import VersionItem
+from projectmanager.model.roles import Usuario
 
 from repoze.what import predicates
 from repoze.what.predicates import has_permission
@@ -45,31 +47,86 @@ class FileUploadController(BaseController):
 
     @expose('projectmanager.templates.file_upload')
     def file_upload(self, **kw):
-        idAtributo = kw['idAtributo']
-        idVersionItem = kw['idVersionItem']
+        
+        if 'validate' in kw:
+            flash(_('Favor seleccione un archivo'),'warning')
+            current_files=[]
+            
+        else:
+            Globals.current_atributo = DBSession.query(Atributo).\
+                filter(Atributo.id_atributo==int(kw['idAtributo'])).one()
+            idAtributo = kw['idAtributo']
+            idVersionItem = kw['idVersionItem']
 
-        session['idAtributo'] = idAtributo
-        session['idVersionItem'] = idVersionItem
-        session.save()               
+            session['idAtributo'] = idAtributo
+            session['idVersionItem'] = idVersionItem
+            session.save()               
 
-        q = DBSession.query(AtributoItem)
-        q = q.from_statement('SELECT * FROM \"ATRIBUTO_ITEM\" WHERE id_atributo=:idAtributoArch AND id_version_item=:idVersionItemArch')
-        q=  q.params(idAtributoArch=idAtributo)
-        q=  q.params(idVersionItemArch=idVersionItem)        
-        atributoItem = q.first()        
+            q = DBSession.query(AtributoItem)
+            q = q.from_statement('SELECT * FROM \"ATRIBUTO_ITEM\" WHERE id_atributo=:idAtributoArch AND id_version_item=:idVersionItemArch')
+            q=  q.params(idAtributoArch=idAtributo)
+            q=  q.params(idVersionItemArch=idVersionItem)        
+            atributoItem = q.first()        
 
-        current_files = DBSession.query(AtributoArchivo).filter(AtributoArchivo.id == atributoItem.id_archivo)
-        return dict(current_files=current_files, idVersionItem=idVersionItem)
+            current_files = DBSession.query(AtributoArchivo).filter(AtributoArchivo.id == atributoItem.id_archivo)
+        return dict(current_files=current_files, idVersionItem=Globals.current_item.id_version_item)
         
     @expose()
     def save(self, userfile):
         forbidden_files = [".js", ".htm", ".html", ".mp3"]
         for forbidden_file in forbidden_files:
-            if userfile.filename.find(forbidden_file) != -1:
+            if not hasattr(userfile,'filename'):
+                redirect('file_upload?validate=error')
+            elif userfile.filename.find(forbidden_file) != -1:
                 return redirect("/")
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == Globals.\
+                   current_item.id_version_item).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+            
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        nuevaVersionItem.antecesor = versionItem.antecesor
+        
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == Globals.\
+                   current_item.id_version_item).\
+            filter(AtributoItem.id_atributo != Globals.\
+                   current_atributo.id_atributo).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            DBSession.add(nuevoAtributoItem)
+        
         filecontent = userfile.file.read()
         new_file = AtributoArchivo(filename=userfile.filename, filecontent=filecontent)        
         DBSession.add(new_file)
+        
+        nuevoAtributoItem = AtributoItem()
+        nuevoAtributoItem.id_atributo = Globals.current_atributo.id_atributo
+        nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
+        nuevoAtributoItem.atributoArchivo = new_file
+        DBSession.add(nuevoAtributoItem)
+        
+        Globals.current_item = nuevaVersionItem
+        
+        '''
         idAtributo = session.get('idAtributo',None)
         idVersionItem = session.get('idVersionItem',None)
         q = DBSession.query(AtributoItem)
@@ -77,12 +134,11 @@ class FileUploadController(BaseController):
         q=  q.params(idAtributoArch=idAtributo)
         q=  q.params(idVersionItemArch=idVersionItem)        
         atributoItem = q.first()        
-
-	'''atributoItem = DBSession.query(AtributoItem).filter(AtributoItem.atributo.id_atributo == idAtributo).filter(AtributoItem.versionItem.id_version_item == idVersionItem)'''
+	
         atributoItem.atributoArchivo = new_file
         DBSession.flush()
-        #redirect("/file_upload/view/"+str(new_file.id))
-        redirect("/item/atributosItem?id_version="+str(atributoItem.versionItem.id_version_item))
+        '''
+        redirect("/item/atributosItem?id_version="+str(Globals.current_item.id_version_item))
     
     @expose(content_type=CUSTOM_CONTENT_TYPE)
     def view(self, fileid):

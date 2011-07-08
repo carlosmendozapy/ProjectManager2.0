@@ -220,7 +220,7 @@ class ItemController(BaseController):
         nuevoAtributoItem.val_atributo = kw['valor'].strftime('%d/%m/%y')
         DBSession.add(nuevoAtributoItem)
         
-        Globals.current_item = nuevoAtributoItem
+        Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))
@@ -267,7 +267,7 @@ class ItemController(BaseController):
         nuevoAtributoItem.val_atributo = kw['valor']
         DBSession.add(nuevoAtributoItem)
         
-        Globals.current_item = nuevoAtributoItem
+        Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))    
@@ -315,7 +315,7 @@ class ItemController(BaseController):
         nuevoAtributoItem.val_atributo = kw['valor']
         DBSession.add(nuevoAtributoItem)
         
-        Globals.current_item = nuevoAtributoItem
+        Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))
