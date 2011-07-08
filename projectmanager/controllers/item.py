@@ -36,7 +36,10 @@ from projectmanager.model.proyecto import Fase
 from projectmanager.model.roles import Usuario
 
 from projectmanager.widgets.new_itemForm import create_new_item
-#from projectmanager.widgets.edit_itemForm import edit_item
+from projectmanager.widgets.edit_fechaForm import edit_atributo_fecha
+from projectmanager.widgets.edit_numericoForm import edit_atributo_numerico
+from projectmanager.widgets.edit_textoForm import edit_atributo_texto
+
 from projectmanager.lib.app_globals import Globals
 
 class ItemController(BaseController):
@@ -55,7 +58,8 @@ class ItemController(BaseController):
         
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\
-            filter(VersionItem.fase==Globals.current_phase).all()
+            filter(VersionItem.fase==Globals.current_phase).\
+            order_by(VersionItem.fecha).all()
 
         return dict(items=list_items)
         
@@ -124,7 +128,8 @@ class ItemController(BaseController):
         nuevaVersionItem.estado = estado       
         nuevaVersionItem.tipoItem = tipoItem         
         nuevaVersionItem.usuarioModifico = usuario
-        nuevaVersionItem.fecha = str(datetime.now())
+        dt = datetime.now()
+        nuevaVersionItem.fecha = dt.strftime('%d/%m/%Y %I:%M%p')
         nuevaVersionItem.observaciones = kw['observaciones']
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = int(kw['peso'])
@@ -150,6 +155,171 @@ class ItemController(BaseController):
         atributosItem = DBSession.query(AtributoItem).filter(AtributoItem.versionItem==unaVersionItem)                
         return dict(atributosItem=atributosItem)            
 
+    @expose('projectmanager.templates.items.editAtributo')
+    def editAtributo(self, **kw):
+        Globals.current_atributo = DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_atributo==int(kw['id_atributo'])).\
+            filter(AtributoItem.id_version_item==int(kw['id_version_item'])).\
+            one()
+        
+        if Globals.current_atributo.atributo.tipoDatoAtributo.\
+           nom_tipo_dato == 'fecha':           
+            tmpl_context.form = edit_atributo_fecha
+        
+        elif Globals.current_atributo.atributo.tipoDatoAtributo.\
+            nom_tipo_dato == 'numerico':
+            tmpl_context.form = edit_atributo_numerico
+            
+        elif Globals.current_atributo.atributo.tipoDatoAtributo.\
+            nom_tipo_dato == 'texto':
+            tmpl_context.form = edit_atributo_texto
+               
+        return dict(idAtributo = Globals.current_atributo.id_atributo,
+                    idVersionItem = Globals.current_atributo.id_version_item,
+                    value = Globals.current_atributo.val_atributo)
+
+    @validate(edit_atributo_fecha,error_handler=editAtributo)
+    @expose()
+    def updateAtributoFecha(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+            
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        nuevaVersionItem.antecesor = versionItem.antecesor
+        
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
+            filter(AtributoItem.id_atributo != int(kw['id_atributo'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            DBSession.add(nuevoAtributoItem)
+       
+        nuevoAtributoItem = AtributoItem()
+        nuevoAtributoItem.id_atributo = int(kw['id_atributo'])
+        nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
+        nuevoAtributoItem.val_atributo = kw['valor'].strftime('%d/%m/%y')
+        DBSession.add(nuevoAtributoItem)
+        
+        Globals.current_item = nuevoAtributoItem
+        
+        redirect('atributosItem?id_version=' +\
+            str(Globals.current_item.id_version_item))
+    
+    @validate(edit_atributo_numerico,error_handler=editAtributo)
+    @expose()
+    def updateAtributoNumerico(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+            
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        nuevaVersionItem.antecesor = versionItem.antecesor
+        
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
+            filter(AtributoItem.id_atributo != int(kw['id_atributo'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            DBSession.add(nuevoAtributoItem)
+       
+        nuevoAtributoItem = AtributoItem()
+        nuevoAtributoItem.id_atributo = int(kw['id_atributo'])
+        nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
+        nuevoAtributoItem.val_atributo = kw['valor']
+        DBSession.add(nuevoAtributoItem)
+        
+        Globals.current_item = nuevoAtributoItem
+        
+        redirect('atributosItem?id_version=' +\
+            str(Globals.current_item.id_version_item))    
+            
+    @validate(edit_atributo_texto,error_handler=editAtributo)
+    @expose()
+    def updateAtributoTexto(self, **kw):
+                        
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+            
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        nuevaVersionItem.antecesor = versionItem.antecesor
+        
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
+            filter(AtributoItem.id_atributo != int(kw['id_atributo'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            DBSession.add(nuevoAtributoItem)
+       
+        nuevoAtributoItem = AtributoItem()
+        nuevoAtributoItem.id_atributo = int(kw['id_atributo'])
+        nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
+        nuevoAtributoItem.val_atributo = kw['valor']
+        DBSession.add(nuevoAtributoItem)
+        
+        Globals.current_item = nuevoAtributoItem
+        
+        redirect('atributosItem?id_version=' +\
+            str(Globals.current_item.id_version_item))
+    
     @expose('projectmanager.templates.relacionesItem')
     def relacionesItem(self, **kw):        
         unaVersionItem = DBSession.query(VersionItem).filter(VersionItem.id_version_item==kw['id']).one()

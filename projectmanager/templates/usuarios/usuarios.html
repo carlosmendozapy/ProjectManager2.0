@@ -34,10 +34,13 @@
           <th width="20%" height="20">Usuario</th>
           <th width="50%" height="20">Nombre</th>          
           </tr>
-          <tr py:for="i, usuario in enumerate(usuarios)" class="${i%2 and 'even' or 'odd'}">
-            <!--<td><a href='./asignRol?id=${usuario.id_usuario}'><img src="${tg.url('/images/asign_rol.png')}" alt="Asignar Rol" height="16" width="16"/></a></td>-->
+          <tr py:for="i, usuario in enumerate(usuarios)" class="${i%2 and 'even' or 'odd'}">            
             <td><a href='./editUser?id=${usuario.id_usuario}'><img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a></td>
-            <td py:if="not usuario.login_name == 'admin'"><a href='./delete?id=${usuario.id_usuario}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16"/></a></td>
+            <td>
+                <span py:if="not usuario.login_name == 'admin'">
+                    <a href='./delete?id=${usuario.id_usuario}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16"/></a>
+                </span>
+            </td>
             <td align='center'>${usuario.id_usuario}</td>
             <td>${usuario.groups}</td>
             <td>${usuario.login_name}</td>

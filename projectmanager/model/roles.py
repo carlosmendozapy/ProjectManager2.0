@@ -85,7 +85,7 @@ class Usuario(DeclarativeBase):
     #{ Columns
     
     id_usuario = Column(Integer, autoincrement=True, primary_key=True)
-    nom_usuario = Column(Unicode(25), unique=True, nullable=False)
+    nom_usuario = Column(Unicode(25), nullable=False)
     login_name = Column(Unicode(25), nullable=False)
     _password = Column('password',Unicode(80), info={'rum': {'field':'Password'}})
     

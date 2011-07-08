@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Bienvenido a PyProject v1.0</title>
+</head>
+
+<body>
+    <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+    <a><h2>Item: ${g.current_item.item.nom_item}</h2></a>    
+    <a><h2>Editar Atributo: ${g.current_atributo.atributo.nom_atributo}</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+        
+    <div py:replace="tmpl_context.form(value=dict(id_atributo=idAtributo,
+                                                  id_version_item=idVersionItem,
+                                                  valor=value))">Input For
+    
+    </div>
+    <div>
+        <a href='/item/atributosItem?id_version=${g.current_item.id_version_item}'>
+        <img src="${tg.url('/images/back.png')}"/> CANCELAR</a>        
+    </div>
+</body>
+</html>
+

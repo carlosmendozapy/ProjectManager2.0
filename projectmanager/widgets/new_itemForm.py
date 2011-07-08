@@ -11,11 +11,6 @@ from tw.forms.validators import DateConverter
 from tw.forms.validators import FieldsMatch
 import formencode
 from formencode import *
-from projectmanager.model import DBSession, metadata
-from projectmanager.lib.app_globals import Globals
-from projectmanager.model.proyecto import Fase
-from projectmanager.model.entities import Estado
-from projectmanager.model.entities import VersionItem
     
 class NewItemForm(TableForm):
 

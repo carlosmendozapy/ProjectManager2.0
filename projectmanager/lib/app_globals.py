@@ -7,6 +7,7 @@ __all__ = ['Globals']
 from projectmanager import model
 from projectmanager.model.entities import Estado
 from projectmanager.model.entities import VersionItem
+from projectmanager.model.entities import AtributoItem
 from projectmanager.model.proyecto import Proyecto
 from projectmanager.model.proyecto import Fase
 from projectmanager.model.roles import Rol
@@ -24,6 +25,7 @@ class Globals(object):
     current_project = Proyecto()
     current_phase = Fase()
     current_item = VersionItem()
+    current_atributo = AtributoItem()
     lista_actualizados = []
     lista_no_actualizados = []
     lista_version_anterior = []

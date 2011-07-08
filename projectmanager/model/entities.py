@@ -10,6 +10,22 @@ from sqlalchemy.orm import relation, backref
 from projectmanager.model import DeclarativeBase, metadata, DBSession
 from projectmanager.model.roles import Usuario
 
+PadreVersionItem = Table('PADRE_VERSIONITEM', metadata,
+    Column('id_padre', Integer, ForeignKey('PADRE.id_padre')),
+    Column('id_version_item', Integer, ForeignKey('VERSION_ITEM.id_version_item')),
+)
+
+class Padre(DeclarativeBase):
+    
+    __tablename__ = 'PADRE'
+    
+    #{ Columns
+    id_padre = Column(Integer, autoincrement=True, primary_key=True)
+    id_version_item = Column(Integer, ForeignKey('VERSION_ITEM.id_version_item'))
+    
+    #{ Relations
+    hijos = relation('VersionItem', secondary=PadreVersionItem, backref=backref('Padres'))
+    
 class Item(DeclarativeBase):
     
     def __init__(self,**kw):
@@ -145,7 +161,8 @@ class RelacionItem(DeclarativeBase):
     #{ Relations    
     versionItem = relation("VersionItem", backref=backref('relacionItem', order_by=id_relacion))	
     tipoRelacion = relation("TipoRelacion", backref=backref('relacionItem', order_by=id_relacion))
-    
+ 
+        
 class AtributoItem(DeclarativeBase):
 
     

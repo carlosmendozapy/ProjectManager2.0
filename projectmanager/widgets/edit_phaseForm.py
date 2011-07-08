@@ -47,7 +47,7 @@ class EditPhaseForm(TableForm):
                                 maxlength=3,
                                 size = 3,
                                 help_text='Establece el orden entre Fases',
-                                validator=formencode.All(NotEmpty,UniquePhaseNumber()))
+                                validator=formencode.All(NotEmpty,UniquePhaseNumber(),Int(min=0,max=999)))
         phaseName = TextField(label_text='Nombre de la Fase', 
                                 maxlength=25,
                                 size=25,

@@ -8,7 +8,7 @@
   
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
-  <title>Item</title>
+  <title>Lista de Items</title>
 </head>
 
 <body>   
@@ -59,12 +59,13 @@
             <th width="3%"></th>
             <th width="3%"></th>            
             <th width="10%">Codigo</th>
-            <th width="15%">Nombre</th>
-            <th width="15%">Estado</th>          
-            <th width="15%">Tipo Item</th>          
+            <th width="10%">Nombre</th>
+            <th width="14%">Estado</th>          
+            <th width="10%">Tipo Item</th>          
             <th width="15%">Usuario Modifico</th>
             <th width="15%">Fecha Modificacion</th>
-            <th width="5%">Complejidad</th>                      
+            <th width="5%">Peso</th> 
+            <th width="15%">Observaciones</th>                                 
           </tr>
           <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
             <td></td>
@@ -77,6 +78,7 @@
             <td>${versionItem.usuarioModifico.login_name}</td>
             <td>${versionItem.fecha}</td>            
             <td>${versionItem.peso}</td>
+            <td>${versionItem.observaciones}</td>
           </tr>
         </table>
 

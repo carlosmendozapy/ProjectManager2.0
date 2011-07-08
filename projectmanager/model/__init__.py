@@ -70,4 +70,6 @@ from projectmanager.model.entities import TipoRelacion
 from projectmanager.model.entities import Item, Estado, TipoDatoAtributo
 from projectmanager.model.entities import TipoItem, VersionItem, Atributo
 from projectmanager.model.entities import RelacionItem, AtributoItem, AtributoArchivo
+from projectmanager.model.entities import Padre
 from projectmanager.model.configuracion import LineaBase, ItemLineaBase, NroLineaBase
+
