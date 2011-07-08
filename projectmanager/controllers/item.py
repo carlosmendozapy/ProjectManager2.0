@@ -55,10 +55,13 @@ class ItemController(BaseController):
            flash(_(kw['msg']),'warning')
                
         Globals.current_phase = DBSession.query(Fase).filter(Fase.id_fase == int(faseid)).one()
-        
+        estado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
+            
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\
+            filter(VersionItem.id_estado!=estado.id_estado).\
             order_by(VersionItem.fecha).all()
 
         return dict(items=list_items)
@@ -374,11 +377,23 @@ class ItemController(BaseController):
         DBSession.flush()
         redirect("adminItem?faseid="+idFaseItem)
     
-    @expose('projectmanager.templates.items')
-    def search(sefl, **kw):
-        word = '%'+kw['key']+'%'        
-        projects = DBSession.query(VersionItem).filter(VersionItem.item.nom_item.contains(word)).order_by(VersionItem.item.nom_item)
-        return dict(page='Administrar Items', items=items)
+    @expose('projectmanager.templates.items.items')
+    def search(self, **kw):
+        word = kw['key']
+        estado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
+            
+        items = DBSession.query(VersionItem).\
+            filter(VersionItem.ultima_version=='S').\
+            filter(VersionItem.fase==Globals.current_phase).\
+            filter(VersionItem.id_estado!=estado.id_estado).all()
+            
+        items_list = []
+        for item in items:
+            if item.item.nom_item.find(word) != -1:
+                items_list.append(item)
+                
+        return dict(items=items_list)
 
     '''@expose()
     def calcularImpactoHaciaAtras(self, idVersionItem):

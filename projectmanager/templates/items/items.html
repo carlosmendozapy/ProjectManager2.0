@@ -68,7 +68,11 @@
             <th width="15%">Observaciones</th>                                 
           </tr>
           <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
-            <td></td>
+            <td>
+                <a href="/item/history?id_item=${versionItem.id_item}">
+                <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
+                </a>
+            </td>
             <td></td>
             <td>${versionItem.item.cod_item}</td>
             <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a>                
