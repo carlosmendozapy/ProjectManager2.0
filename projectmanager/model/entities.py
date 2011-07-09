@@ -15,6 +15,11 @@ PadreVersionItem = Table('PADRE_VERSIONITEM', metadata,
     Column('id_version_item', Integer, ForeignKey('VERSION_ITEM.id_version_item')),
 )
 
+AntecesorVersionItem = Table('ANTECESOR_VERSIONITEM', metadata,
+    Column('id_antecesor', Integer, ForeignKey('ANTECESOR.id_antecesor')),
+    Column('id_version_item', Integer, ForeignKey('VERSION_ITEM.id_version_item')),
+)
+
 class Padre(DeclarativeBase):
     
     __tablename__ = 'PADRE'
@@ -25,6 +30,20 @@ class Padre(DeclarativeBase):
     
     #{ Relations
     hijos = relation('VersionItem', secondary=PadreVersionItem, backref=backref('Padres'))
+    
+class Antecesor(DeclarativeBase):
+    
+    def __init__(self, id_version):
+        self.id_version_item = id_version
+        
+    __tablename__ = 'ANTECESOR'
+    
+    #{ Columns
+    id_antecesor = Column(Integer, autoincrement=True, primary_key=True)
+    id_version_item = Column(Integer, ForeignKey('VERSION_ITEM.id_version_item'))
+    
+    #{ Relations
+    sucesores = relation('VersionItem', secondary=AntecesorVersionItem, backref=backref('Antecesores'))
     
 class Item(DeclarativeBase):
     
@@ -97,8 +116,7 @@ class VersionItem(DeclarativeBase):
     id_item = Column(Integer, ForeignKey('ITEM.id_item'))                                                                
     id_estado = Column(Integer, ForeignKey('ESTADO.id_estado'))
     id_tipo_item = Column(Integer, ForeignKey('TIPO_ITEM.id_tipo_item'))
-    id_usuario_modifico = Column(Integer, ForeignKey('USUARIO.id_usuario'))
-    id_antecesor = Column(Integer, ForeignKey('VERSION_ITEM.id_version_item'))
+    id_usuario_modifico = Column(Integer, ForeignKey('USUARIO.id_usuario'))    
     id_fase = Column(Integer, ForeignKey('FASE.id_fase'))    
     nro_version_item = Column(Integer) 
     observaciones = Column(Unicode(255))
@@ -110,8 +128,7 @@ class VersionItem(DeclarativeBase):
     item = relation("Item", backref=backref('VersionItem', order_by=id_version_item))
     estado = relation("Estado", backref=backref('VersionItem', order_by=id_version_item))
     tipoItem = relation("TipoItem", backref=backref('VersionItem', order_by=id_version_item))
-    usuarioModifico  = relation("Usuario", backref=backref('VersionItem', order_by=id_version_item))	
-    antecesor = relation("VersionItem", backref=backref('Sucesor',remote_side=id_version_item))
+    usuarioModifico  = relation("Usuario", backref=backref('VersionItem', order_by=id_version_item))	    
     fase = relation("Fase", backref=backref('VersionItem'))
         
 class Atributo(DeclarativeBase):

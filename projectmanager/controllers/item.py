@@ -32,6 +32,8 @@ from projectmanager.model.entities import AtributoArchivo
 from projectmanager.model.entities import Estado
 from projectmanager.model.entities import TipoItem
 from projectmanager.model.entities import RelacionItem
+from projectmanager.model.entities import Padre
+from projectmanager.model.entities import Antecesor
 from projectmanager.model.proyecto import Fase
 from projectmanager.model.roles import Usuario
 
@@ -83,7 +85,7 @@ class ItemController(BaseController):
         estado = DBSession.query(Estado).\
             filter(Estado.nom_estado=='Aprobado').one()
         
-        options_items=[(-1,'ninguno')]            
+        options_ancestros=[]            
         if fase_list.first().nro_fase != Globals.current_phase.nro_fase:
             anterior = fase_list.first()
             for fase in fase_list.all():
@@ -95,24 +97,33 @@ class ItemController(BaseController):
                 filter(VersionItem.estado==estado).\
                 filter(VersionItem.fase==anterior)
                         
-            if items.count() != 0:
-                options_items=[]
+            if items.count() != 0:                
                 for item in items.all():
-                    options_items.append([item.id_version_item,item.item.nom_item])
+                    options_ancestros.append([item.id_version_item,item.item.nom_item])
             else:
                 warn='La Fase Anterior no Posee Items en Linea Base '+\
                      'necesarios para la creacion de Items en esta '+\
                      'fase'
                 redirect('adminItem?faseid=' +\
                     str(Globals.current_phase.id_fase)+';msg='+warn)
-                
+               
         tmpl_context.form = create_new_item
-        
-        return dict(type_options = listTipoItem, ancestros=options_items)    	        
+        #options_ancestros =[(1,'Algo'),(2,'Otro'),(3,'Requerimientos')]
+        return dict(type_options = listTipoItem, 
+                    ancestros = options_ancestros)    	        
     
     @validate(create_new_item,error_handler=newItem)
     @expose()
     def saveItem(self, **kw):
+        fase_list = DBSession.query(Fase).\
+                    filter(Fase.id_proyecto == Globals.current_project.id_proyecto).\
+                    order_by(Fase.nro_fase)
+                    
+        if fase_list.first().nro_fase != Globals.current_phase.nro_fase and\
+           len(kw['antecesor']) == 0:
+            flash(_('Debe elegir al menos un Antecesor'),'warning')
+            redirect('newItem')
+        
         estado = DBSession.query(Estado).filter(Estado.nom_estado=='En Modificacion').one()
         tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['tipoItem'])).one()                      
         lg_name=request.identity['repoze.who.userid']
@@ -137,9 +148,10 @@ class ItemController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = int(kw['peso'])
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-        
-        if int(kw['antecesor']) != -1:
-            nuevaVersionItem.id_antecesor = int(kw['antecesor'])
+                           
+        if len(kw['antecesor']) > 0:
+            for antecesorID in kw['antecesor']:
+                nuevaVersionItem.Antecesores.append(Antecesor(antecesorID))
             
         for atributo in DBSession.query(Atributo).filter(Atributo.tipoItem==tipoItem):
             nuevoAtributoItem = AtributoItem()
@@ -147,8 +159,9 @@ class ItemController(BaseController):
             nuevoAtributoItem.versionItem = nuevaVersionItem        
             nuevoAtributoItem.val_atributo = atributo.val_default
             DBSession.add(nuevoAtributoItem)   
-      
+        
         flash(_("Se ha creado un nuevo Item: %s") %kw['nomItem'],'info')
+        
         redirect("adminItem?faseid="+str(Globals.current_phase.id_fase))
 
     @expose('projectmanager.templates.items.atributosItem')
@@ -205,7 +218,9 @@ class ItemController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-        nuevaVersionItem.antecesor = versionItem.antecesor
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -252,7 +267,9 @@ class ItemController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-        nuevaVersionItem.antecesor = versionItem.antecesor
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -300,7 +317,9 @@ class ItemController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-        nuevaVersionItem.antecesor = versionItem.antecesor
+       
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\

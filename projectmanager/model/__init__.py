@@ -59,17 +59,33 @@ def init_model(engine):
     #mapper(Reflected, t_reflected)
 
 # Import your model modules here.
-from projectmanager.model.auth import User, Group, Permission
+from projectmanager.model.auth import User
+from projectmanager.model.auth import Group
+from projectmanager.model.auth import Permission
 from projectmanager.model.proyecto import Proyecto
 from projectmanager.model.proyecto import Fase
 from projectmanager.model.roles import Rol, TipoRol 
-from projectmanager.model.roles import UsuarioRolSistema, RolPermisos, Permisos
-from projectmanager.model.roles import Privilegios, PrivilegiosPermisos, Usuario
-from projectmanager.model.roles import EntidadSistema, RolProyectoUsuario, RolFaseUsuario
+from projectmanager.model.roles import TipoRol 
+from projectmanager.model.roles import UsuarioRolSistema
+from projectmanager.model.roles import RolPermisos 
+from projectmanager.model.roles import Permisos
+from projectmanager.model.roles import Privilegios
+from projectmanager.model.roles import PrivilegiosPermisos
+from projectmanager.model.roles import Usuario
+from projectmanager.model.roles import EntidadSistema
+from projectmanager.model.roles import RolProyectoUsuario
+from projectmanager.model.roles import RolFaseUsuario
 from projectmanager.model.entities import TipoRelacion
-from projectmanager.model.entities import Item, Estado, TipoDatoAtributo
-from projectmanager.model.entities import TipoItem, VersionItem, Atributo
-from projectmanager.model.entities import RelacionItem, AtributoItem, AtributoArchivo
+from projectmanager.model.entities import Item
+from projectmanager.model.entities import Estado
+from projectmanager.model.entities import TipoDatoAtributo
+from projectmanager.model.entities import TipoItem
+from projectmanager.model.entities import VersionItem
+from projectmanager.model.entities import Atributo
+from projectmanager.model.entities import RelacionItem
+from projectmanager.model.entities import AtributoItem
+from projectmanager.model.entities import AtributoArchivo
 from projectmanager.model.entities import Padre
+from projectmanager.model.entities import Antecesor
 from projectmanager.model.configuracion import LineaBase, ItemLineaBase, NroLineaBase
 

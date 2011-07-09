@@ -1,6 +1,7 @@
 from tw.api import WidgetsList
 from tw.forms import TableForm
 from tw.forms import CalendarDatePicker
+from tw.forms import CheckBoxList
 from tw.forms import SingleSelectField
 from tw.forms import TextField
 from tw.forms import TextArea
@@ -43,7 +44,7 @@ class NewItemForm(TableForm):
                                 attrs={'maxlength':200},
                                 help_text='Nombre del Item: Maximo 25 Caracteres')
         
-        antecesor = SingleSelectField(label_text='Antecesor',
+        antecesor = CheckBoxList(label_text='Antecesor',
                                       help_text='Establece el Antecesor del item. Si es la fase inicial no se necesita establecer un antecesor',
                                       )
                        
