@@ -44,9 +44,12 @@ class NewItemForm(TableForm):
                                 attrs={'maxlength':200},
                                 help_text='Nombre del Item: Maximo 25 Caracteres')
         
-        antecesor = CheckBoxList(label_text='Antecesor',
-                                      help_text='Establece el Antecesor del item. Si es la fase inicial no se necesita establecer un antecesor',
-                                      )
+        padres = CheckBoxList(label_text='Padres',
+                              help_text='Establece los Padres del Item')
+                              
+        antecesor = CheckBoxList(label_text='Antecesor',                                 
+                                 help_text='Establece el Antecesor del item. Si es la fase inicial no se necesita establecer un antecesor',
+                                )
                        
   
 create_new_item = NewItemForm("create_new_item", action='saveItem')

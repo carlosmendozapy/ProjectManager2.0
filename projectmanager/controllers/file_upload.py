@@ -100,8 +100,13 @@ class FileUploadController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-        nuevaVersionItem.antecesor = versionItem.antecesor
         
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionitem.padres.append(padre)
+            
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == Globals.\
                    current_item.id_version_item).\

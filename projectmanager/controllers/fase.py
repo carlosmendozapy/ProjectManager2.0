@@ -4,6 +4,7 @@ from tg import expose, flash, tmpl_context, redirect, validate, request
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what.predicates import has_permission
 from repoze.what.predicates import not_anonymous
+from datetime import datetime
 
 #from dbsprockets.dbmechanic.frameworks.tg2 import DBMechanic
 #from dbsprockets.saprovider import SAProvider
@@ -378,12 +379,23 @@ class FaseController(BaseController):
     @validate(create_new_atributo,error_handler=addAtributo)
     @expose()
     def saveAtributo(self, **kw):
-		tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==(kw['id_tipo'])).one()
-		tipoDato = DBSession.query(TipoDatoAtributo).filter(TipoDatoAtributo.id_tipo_dato==int(kw['tipo_dato'])).one()
+        tipoItem = DBSession.query(TipoItem).\
+            filter(TipoItem.id_tipo_item==(kw['id_tipo'])).one()
+        tipoDato = DBSession.query(TipoDatoAtributo).\
+            filter(TipoDatoAtributo.id_tipo_dato==int(kw['tipo_dato'])).one()
 		
-		newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
+        newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
+        
+        if tipoDato.nom_tipo_dato == 'numerico':
+            newAtri.val_default = kw['def_numerico']
+        
+        elif tipoDato.nom_tipo_dato == 'texto':
+            newAtri.val_default = kw['def_texto']
+            
+        elif tipoDato.nom_tipo_dato == 'fecha':
+            newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
 				
-		redirect('/fase/addTiposItem')
+        redirect('/fase/addTiposItem')
         
     @expose()
     def delAtributo(self, **kw):

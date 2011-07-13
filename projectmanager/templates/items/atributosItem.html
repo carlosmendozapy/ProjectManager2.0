@@ -31,20 +31,51 @@
         <th width="15%">Tipo de Dato  </th>
         <th width="40%">Valor  </th>                    
       </tr>
+      <tr>
+        <td></td>
+        <td>Peso</td>
+        <td>Numerico</td>
+        <td>
+          <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+            <a href="/item/editAtributo?peso=0">
+            <img src="${tg.url('/images/edit.png')}"/></a>
+          </span>
+          ${g.current_item.peso}
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Observaciones</td>
+        <td>Texto</td>
+        <td>
+          <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+            <a href="/item/editAtributo?obs=0">
+            <img src="${tg.url('/images/edit.png')}"/></a>
+          </span>
+          ${g.current_item.observaciones}
+        </td>
+      </tr>
 	  <tr py:for="i, atributoItem in enumerate(atributosItem)" class="${i%2 and 'even' or 'odd'}">        
         <td></td>                
         <td>${atributoItem.atributo.nom_atributo} </td>
 	    <td>${atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato}</td>            
 	    <td>
 		  <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">		    
-            <a align="center" href="${tg.url('/file_upload/file_upload', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}"> <img src="${tg.url('/images/subir.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/><img src="${tg.url('/images/archivo.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/> </a>
+            <a align="center" href="${tg.url('/file_upload/file_upload', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
+              <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/> 
+              <span py:if="atributoItem.atributoArchivo == None">Adjuntar</span>
+            </a>
                 <span py:if="atributoItem.atributoArchivo != None">
                     ${atributoItem.atributoArchivo.filename}
-                    <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}"><img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> &nbsp;&nbsp;&nbsp;&nbsp;
-                </span>
+                    <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
+                    <img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> 
+                </span>                
           </span>
 		  <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">
-		    <a href="/item/editAtributo?id_atributo=${atributoItem.id_atributo};id_version_item=${atributoItem.id_version_item}"><img src="${tg.url('/images/edit.png')}"/></a>
+		    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+              <a href="/item/editAtributo?id_atributo=${atributoItem.id_atributo};id_version_item=${atributoItem.id_version_item}">
+              <img src="${tg.url('/images/edit.png')}"/></a>
+            </span>
             ${atributoItem.val_atributo}            
 		  </span>
 	    </td>

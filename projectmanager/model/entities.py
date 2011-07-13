@@ -22,6 +22,9 @@ AntecesorVersionItem = Table('ANTECESOR_VERSIONITEM', metadata,
 
 class Padre(DeclarativeBase):
     
+    def __init__(self, id_version_item):
+        self.id_version_item = id_version_item
+        
     __tablename__ = 'PADRE'
     
     #{ Columns

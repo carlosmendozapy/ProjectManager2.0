@@ -1,10 +1,19 @@
 Metadata-Version: 1.0
 Name: ProjectManager
-Version: 0.1dev
+Version: 2.5dev
 Summary: UNKNOWN
 Home-page: UNKNOWN
 Author: UNKNOWN
 Author-email: UNKNOWN
 License: UNKNOWN
 Description: UNKNOWN
+Keywords: toscawidgets.widgets
 Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Environment :: Web Environment :: ToscaWidgets
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Widget Sets
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python

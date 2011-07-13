@@ -15,11 +15,17 @@ from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what import predicates
 from repoze.what.predicates import has_permission
 from repoze.what.predicates import not_anonymous
-
-'''import cherrypy
-from cherrypy.lib.static import serve_file'''
+# Import pygraph
+from pygraph.classes.graph import graph
+from pygraph.classes.digraph import digraph
+from pygraph.algorithms.searching import breadth_first_search
+from pygraph.algorithms.cycles import *
+from pygraph.readwrite.dot import write
 
 from sqlalchemy import func
+from sqlalchemy import or_
+from sqlalchemy.orm.exc import NoResultFound
+
 
 # project specific imports
 from projectmanager.lib.base import BaseController
@@ -41,6 +47,7 @@ from projectmanager.widgets.new_itemForm import create_new_item
 from projectmanager.widgets.edit_fechaForm import edit_atributo_fecha
 from projectmanager.widgets.edit_numericoForm import edit_atributo_numerico
 from projectmanager.widgets.edit_textoForm import edit_atributo_texto
+from projectmanager.widgets.edit_pesoForm import edit_atributo_peso
 
 from projectmanager.lib.app_globals import Globals
 
@@ -106,11 +113,25 @@ class ItemController(BaseController):
                      'fase'
                 redirect('adminItem?faseid=' +\
                     str(Globals.current_phase.id_fase)+';msg='+warn)
-               
+        
+        estadoConfirmado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Confirmado').one()
+            
+        options_padres=[]
+        list_items = DBSession.query(VersionItem).\
+            filter(or_(VersionItem.estado==estado, 
+                       VersionItem.estado==estadoConfirmado)).\
+            filter(VersionItem.fase==fase).\
+            filter(VersionItem.ultima_version=='S').all()
+            
+        for item in list_items:
+            options_padres.append([item.id_version_item, item.item.nom_item])
+            
         tmpl_context.form = create_new_item
-        #options_ancestros =[(1,'Algo'),(2,'Otro'),(3,'Requerimientos')]
+               
         return dict(type_options = listTipoItem, 
-                    ancestros = options_ancestros)    	        
+                    ancestros = options_ancestros,
+                    padres = options_padres)    	        
     
     @validate(create_new_item,error_handler=newItem)
     @expose()
@@ -148,11 +169,79 @@ class ItemController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = int(kw['peso'])
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-                           
+                                 
+        '''ANTECESORES'''
         if len(kw['antecesor']) > 0:
             for antecesorID in kw['antecesor']:
                 nuevaVersionItem.Antecesores.append(Antecesor(antecesorID))
+        
+        '''PADRES'''
+                   
+        if len(kw['padres']) > 0:
             
+            padres_list=[]
+            for padreID in kw['padres']:
+                existe=True
+                try:
+                    unPadre = DBSession.query(Padre).\
+                        filter(Padre.id_version_item == int(padreID)).one()
+                except NoResultFound,e:                    
+                    nuevaVersionItem.Padres.append(Padre(int(padreID)))
+                    existe=False
+                
+                if existe:
+                    elPadre = DBSession.query(Padre).\
+                        filter(Padre.id_version_item==int(padreID)).one()
+                    nuevaVersionItem.Padres.append(elPadre)
+         
+            ''' CONTROL CON GRAFO
+            aprobado = DBSession.query(Estado).\
+                filter(Estado.nom_estado == 'Aprobado').one()
+            
+            confirmado = DBSession.query(Estado).\
+                filter(Estado.nom_estado == 'Confirmado').one()
+            
+            list= DBSession.query(VersionItem).\
+                filter(or_(VersionItem.estado==aprobado, 
+                       VersionItem.estado==confirmado)).\
+                filter(VersionItem.id_fase==Globals.current_phase.id_fase).\
+                filter(VersionItem.ultima_version=='S').all()            
+        
+            graph_rel =graph()
+            graph_rel.add_node(int(nuevaVersionItem.id_version_item))
+            for nodo in list:
+                graph_rel.add_node(nodo.id_version_item)
+                       
+            nodos_list = graph_rel.nodes()
+            
+            for nodo in nodos_list:
+                #Padres del item actual                            
+                item=DBSession.query(VersionItem).\
+                    filter(VersionItem.id_version_item == nodo).one()
+                
+                if item.Padres != None:
+                    for obj in item.Padres:
+                        if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
+                            graph_rel.add_edge((nodo,int(obj.id_version_item)))
+                                                    
+                #Hijos del item actual                                
+                try:
+                    padre=DBSession.query(Padre).\
+                        filter(Padre.id_version_item == int(nodo)).one()
+                except NoResultFound,e:
+                    padre = None
+                 
+                if padre != None:                                  
+                    for obj in padre.hijos:
+                        if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
+                            graph_rel.add_edge((nodo,int(obj.id_version_item)))                        
+                        
+            ciclos = find_cycle(graph_rel)
+            if len(ciclos) > 0:
+                DBSession.rollback()
+                flash(_('Modifique su Seleccion de Padres: Se ha detectado uno o más ciclos'),'warning')
+                redirect('newItem')
+            '''   
         for atributo in DBSession.query(Atributo).filter(Atributo.tipoItem==tipoItem):
             nuevoAtributoItem = AtributoItem()
             nuevoAtributoItem.atributo = atributo
@@ -160,40 +249,105 @@ class ItemController(BaseController):
             nuevoAtributoItem.val_atributo = atributo.val_default
             DBSession.add(nuevoAtributoItem)   
         
-        flash(_("Se ha creado un nuevo Item: %s") %kw['nomItem'],'info')
-        
+        flash(_("Se ha creado un nuevo Item: %s") %kw['nomItem'],'info')        
         redirect("adminItem?faseid="+str(Globals.current_phase.id_fase))
-
+           
     @expose('projectmanager.templates.items.atributosItem')
     def atributosItem(self, **kw):                        
-        unaVersionItem = DBSession.query(VersionItem).filter(VersionItem.id_version_item==kw['id_version']).one()
+        unaVersionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==kw['id_version']).one()
+        
         Globals.current_item = unaVersionItem
-        atributosItem = DBSession.query(AtributoItem).filter(AtributoItem.versionItem==unaVersionItem)                
+        
+        atributosItem = DBSession.query(AtributoItem).\
+            filter(AtributoItem.versionItem==unaVersionItem).all()                
+            
         return dict(atributosItem=atributosItem)            
 
     @expose('projectmanager.templates.items.editAtributo')
     def editAtributo(self, **kw):
-        Globals.current_atributo = DBSession.query(AtributoItem).\
-            filter(AtributoItem.id_atributo==int(kw['id_atributo'])).\
-            filter(AtributoItem.id_version_item==int(kw['id_version_item'])).\
-            one()
         
-        if Globals.current_atributo.atributo.tipoDatoAtributo.\
-           nom_tipo_dato == 'fecha':           
-            tmpl_context.form = edit_atributo_fecha
+        if 'id_atributo' in kw and int(kw['id_atributo'])>=0:
+            Globals.current_atributo = DBSession.query(AtributoItem).\
+                filter(AtributoItem.id_atributo==int(kw['id_atributo'])).\
+                filter(AtributoItem.id_version_item==int(kw['id_version_item'])).\
+                one()
         
-        elif Globals.current_atributo.atributo.tipoDatoAtributo.\
-            nom_tipo_dato == 'numerico':
-            tmpl_context.form = edit_atributo_numerico
+            if Globals.current_atributo.atributo.tipoDatoAtributo.\
+                nom_tipo_dato == 'fecha':           
+                tmpl_context.form = edit_atributo_fecha
+        
+            elif Globals.current_atributo.atributo.tipoDatoAtributo.\
+                nom_tipo_dato == 'numerico':
+                tmpl_context.form = edit_atributo_numerico
             
-        elif Globals.current_atributo.atributo.tipoDatoAtributo.\
-            nom_tipo_dato == 'texto':
-            tmpl_context.form = edit_atributo_texto
+            elif Globals.current_atributo.atributo.tipoDatoAtributo.\
+                nom_tipo_dato == 'texto':
+                tmpl_context.form = edit_atributo_texto
                
-        return dict(idAtributo = Globals.current_atributo.id_atributo,
+            return dict(idAtributo = Globals.current_atributo.id_atributo,
                     idVersionItem = Globals.current_atributo.id_version_item,
                     value = Globals.current_atributo.val_atributo)
-
+        
+        elif 'peso' in kw or ('id_atributo' in kw and int(kw['id_atributo']) == -1):
+            tmpl_context.form = edit_atributo_peso
+            
+            return dict(idAtributo = -1,
+                        idVersionItem = Globals.current_item.id_version_item,
+                        value = Globals.current_item.peso)  
+        
+        elif 'obs' in kw or ('id_atributo' in kw and int(kw['id_atributo']) == -2):
+            tmpl_context.form = edit_atributo_texto
+            
+            return dict(idAtributo = -2,
+                        idVersionItem = Globals.current_item.id_version_item,
+                        value = Globals.current_item.observaciones)
+    
+    @validate(edit_atributo_peso, error_handler=editAtributo)
+    @expose()
+    def updateAtributoPeso(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+            
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = int(kw['valor'])
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionitem.padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            DBSession.add(nuevoAtributoItem)
+              
+        Globals.current_item = nuevaVersionItem
+        
+        redirect('atributosItem?id_version=' +\
+            str(Globals.current_item.id_version_item))  
+                   
     @validate(edit_atributo_fecha,error_handler=editAtributo)
     @expose()
     def updateAtributoFecha(self, **kw):
@@ -221,6 +375,9 @@ class ItemController(BaseController):
         
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
+            
+        for padre in versionItem.Padres:
+            nuevaVersionitem.padres.append(padre)
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -271,6 +428,9 @@ class ItemController(BaseController):
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        for padre in versionItem.Padres:
+            nuevaVersionitem.padres.append(padre)
+            
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
             filter(AtributoItem.id_atributo != int(kw['id_atributo'])).all():
@@ -313,7 +473,10 @@ class ItemController(BaseController):
         nuevaVersionItem.tipoItem = versionItem.tipoItem         
         nuevaVersionItem.usuarioModifico = usuario
         nuevaVersionItem.fecha = str(datetime.now())
-        nuevaVersionItem.observaciones = versionItem.observaciones
+        if int(kw['id_atributo']) < 0:
+            nuevaVersionItem.observaciones = kw['valor']
+        else:
+            nuevaVersionItem.observaciones = versionItem.observaciones
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
@@ -321,22 +484,35 @@ class ItemController(BaseController):
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
-        for atributo in DBSession.query(AtributoItem).\
-            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
-            filter(AtributoItem.id_atributo != int(kw['id_atributo'])).all():
+        for padre in versionItem.Padres:
+            nuevaVersionitem.padres.append(padre)
+            
+        if int(kw['id_atributo']) < 0:
+            for atributo in DBSession.query(AtributoItem).\
+                filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
                 
-            nuevoAtributoItem = AtributoItem()
-            nuevoAtributoItem.id_atributo = atributo.id_atributo
-            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
-            nuevoAtributoItem.val_atributo = atributo.val_atributo
-            DBSession.add(nuevoAtributoItem)
+                nuevoAtributoItem = AtributoItem()
+                nuevoAtributoItem.id_atributo = atributo.id_atributo
+                nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+                nuevoAtributoItem.val_atributo = atributo.val_atributo
+                DBSession.add(nuevoAtributoItem)
+        else:
+            for atributo in DBSession.query(AtributoItem).\
+                filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
+                filter(AtributoItem.id_atributo != int(kw['id_atributo'])).all():
+                
+                nuevoAtributoItem = AtributoItem()
+                nuevoAtributoItem.id_atributo = atributo.id_atributo
+                nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+                nuevoAtributoItem.val_atributo = atributo.val_atributo
+                DBSession.add(nuevoAtributoItem)
        
-        nuevoAtributoItem = AtributoItem()
-        nuevoAtributoItem.id_atributo = int(kw['id_atributo'])
-        nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
-        nuevoAtributoItem.val_atributo = kw['valor']
-        DBSession.add(nuevoAtributoItem)
-        
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = int(kw['id_atributo'])
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
+            nuevoAtributoItem.val_atributo = kw['valor']
+            DBSession.add(nuevoAtributoItem)
+    
         Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\

@@ -15,7 +15,15 @@
     <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
     <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
     <a><h2>Item: ${g.current_item.item.nom_item}</h2></a>    
-    <a><h2>Editar Atributo: ${g.current_atributo.atributo.nom_atributo}</h2></a>
+    <span py:if="g.current_atributo.atributo != None">
+        <a><h2>Editar Atributo: ${g.current_atributo.atributo.nom_atributo}</h2></a>
+    </span>
+    <span py:if="g.current_atributo.atributo == None and idAtributo==-1">
+        <a><h2>Editar Atributo: Peso</h2></a>
+    </span>
+    <span py:if="g.current_atributo.atributo == None and idAtributo==-2">
+        <a><h2>Editar Atributo: Observaciones</h2></a>
+    </span>    
     <hr width="100%" color="#6699FF" size="2"/>
         
     <div py:replace="tmpl_context.form(value=dict(id_atributo=idAtributo,

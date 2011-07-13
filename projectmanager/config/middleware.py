@@ -3,7 +3,7 @@
 
 from projectmanager.config.app_cfg import base_config
 from projectmanager.config.environment import load_environment
-##import tw2.core as twc
+#import tw.dynforms as twd
 
 
 __all__ = ['make_app']
@@ -34,7 +34,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
    
     """
     app = make_base_app(global_conf, full_stack=True, **app_conf)
-    #custom = lambda app : twc.make_middleware(app, default_engine='genshi')
+    #custom = lambda app : twd.make_middleware(app, default_engine='genshi')
     #app = make_base_app(global_conf, wrap_app=custom, full_stack=True, **app_conf)
     
     # Wrap your base TurboGears 2 application with custom middleware here
