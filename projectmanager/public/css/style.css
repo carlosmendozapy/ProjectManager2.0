@@ -333,10 +333,9 @@ table {
     width:100%;
 }
 
-tr:hover{
-    background-color:#CEE3F6;
+table tr td table tr.odd{
+    background: #DCE8FE;
 }
-
 
 /******************************************* MENU *****************************************************/
 

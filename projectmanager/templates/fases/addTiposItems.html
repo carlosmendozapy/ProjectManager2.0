@@ -30,12 +30,12 @@
 			 <li><a href="/fase/importTipoItem">Importar Tipos de Item</a></li>
 		</ul>
     </div>
-    <table rules='rows'>
+    <table rules='all'>
           <tr>
-          <th width="5%" height="20"></th>                          
-          <th width="10%"  height="20">Identificador</th>
-          <th width="20%"  height="20">Nombre</th>
-          <th width="65%"  height="20">Atributos</th>                             
+          <th width="5%"></th>                          
+          <th width="10%" align='center'>Identificador</th>
+          <th width="20%" align='center'>Nombre</th>
+          <th width="65%" align='center'>Atributos</th>                             
           </tr>
           <tr py:for="i, tipo in enumerate(tiposItem)" class="${i%2 and 'even' or 'odd'}">
             <td>
@@ -45,20 +45,22 @@
                 </span>
             </td>            
             <td align='center'>${tipo.id_tipo_item}</td> 
-            <td><a><b>${tipo.nom_tipo_item}</b></a></td>
+            <td align='center'><a><b>${tipo.nom_tipo_item}</b></a></td>
             <td>
-				<table>                    
-					<tr py:for="i, atributo in enumerate(tipo.Atributo)" class="${i%2 and 'even' or 'odd'}">
+				<table rules='rows'>                    
+					<th></th>
+                    <th>Tipo de Dato</th>
+                    <th>Valor por defecto</th>
+                    <tr py:for="i, atributo in enumerate(tipo.Atributo)" class="${i%2 and 'even' or 'odd'}">
 					   <td>
                             <span py:if="tipo.cont_prefijo == 0 and (h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('eliminar','Atributo de Item',g.current_phase.id_fase))">
                               <a href="/fase/delAtributo?id_atributo=${atributo.id_atributo}">
                               <img src="${tg.url('/images/remove.png')}" alt="Eliminar" height="16" width="16"/></a>
                             </span>
-                           <b>${atributo.nom_atributo} </b> [${atributo.tipoDatoAtributo.nom_tipo_dato}]
+                           <b>${atributo.nom_atributo}</b>
                        </td>
-                       <td>
-                            : ${atributo.val_default}
-                       </td>
+                       <td> ${atributo.tipoDatoAtributo.nom_tipo_dato}</td>
+                       <td> ${atributo.val_default}</td>
 				    </tr>
                     <tr>
                     <td>
