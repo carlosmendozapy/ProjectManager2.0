@@ -329,6 +329,15 @@ text-align: center;
 	clear: both;
 }
 
+table {
+    width:100%;
+}
+
+tr:hover{
+    background-color:#CEE3F6;
+}
+
+
 /******************************************* MENU *****************************************************/
 
 .menu{
@@ -348,12 +357,12 @@ text-align: center;
 	padding:0;
     text-shadow: 0.1Em 0.1Em 0.2Em #084C88
     }
-.menu li{
+.menu li{       
 		float:left;
 		padding:0px;
         }
 .menu li a{
-		background:#333333 url(".../images/seperator.gif") bottom right no-repeat;
+		background:#333333 url(".../images/seperator.gif") bottom right no-repeat;       
 		color:#cccccc;
 		display:block;
 		font-weight:normal;
@@ -364,7 +373,7 @@ text-align: center;
 		text-decoration:none;
         }
 .menu li a:hover, .menu ul li:hover a{
-			background: #2580a2 url(".../images/hover.gif") bottom center no-repeat;
+			background: #2580a2 url(".../images/hover.gif") bottom center no-repeat;           
 			color:#FFFFFF;
 			text-decoration:none;
 			}
@@ -379,7 +388,7 @@ text-align: center;
 		width:225px;
 		z-index:200;
 		/*top:1em;
-		/*left:0;*/
+		left:0;*/
 		}
 .menu li:hover ul{
 		display:block;
@@ -407,10 +416,10 @@ text-align: center;
 		text-align:left;
 		}
 .menu li ul a:hover, .menu li ul li:hover a{
-			background:#2580a2 url('.../images/hover_sub.gif') center left no-repeat;
+			background:#2580a2 url('.../images/hover_sub.gif') center left no-repeat;          
 			border:0px;
 			color:#ffffff;
-			text-decoration:none;
+			text-decoration:none;            
 			}
 .menu p{
 		clear:left;

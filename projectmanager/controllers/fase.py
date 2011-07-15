@@ -20,6 +20,7 @@ from projectmanager.model.entities import VersionItem
 from projectmanager.model.entities import Item
 from projectmanager.model.entities import TipoItem
 from projectmanager.model.entities import Atributo
+from projectmanager.model.entities import AtributoItem
 from projectmanager.model.entities import TipoDatoAtributo
 from projectmanager.model.roles import Usuario
 from projectmanager.model.roles import RolFaseUsuario
@@ -384,16 +385,40 @@ class FaseController(BaseController):
         tipoDato = DBSession.query(TipoDatoAtributo).\
             filter(TipoDatoAtributo.id_tipo_dato==int(kw['tipo_dato'])).one()
 		
-        newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
+        if int(kw['save_as']) == 0:
+            newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
         
-        if tipoDato.nom_tipo_dato == 'numerico':
-            newAtri.val_default = kw['def_numerico']
+            if tipoDato.nom_tipo_dato == 'numerico':
+                newAtri.val_default = kw['def_numerico']
         
-        elif tipoDato.nom_tipo_dato == 'texto':
-            newAtri.val_default = kw['def_texto']
+            elif tipoDato.nom_tipo_dato == 'texto':
+                newAtri.val_default = kw['def_texto']
             
-        elif tipoDato.nom_tipo_dato == 'fecha':
-            newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+            elif tipoDato.nom_tipo_dato == 'fecha':
+                newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+        
+        else:
+            newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
+        
+            if tipoDato.nom_tipo_dato == 'numerico':
+                newAtri.val_default = kw['def_numerico']
+        
+            elif tipoDato.nom_tipo_dato == 'texto':
+                newAtri.val_default = kw['def_texto']
+            
+            elif tipoDato.nom_tipo_dato == 'fecha':
+                newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+                
+            item_list = DBSession.query(VersionItem).\
+                filter(VersionItem.ultima_version == 'S').\
+                filter(VersionItem.tipoItem==tipoItem).all()
+                
+            for item in item_list:
+                atriItem = AtributoItem()
+                atriItem.atributo = newAtri
+                atriItem.id_version_item = item.id_version_item
+                atriItem.val_atributo = newAtri.val_default
+                DBSession.add(atriItem)
 				
         redirect('/fase/addTiposItem')
         
