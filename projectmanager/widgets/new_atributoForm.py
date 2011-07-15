@@ -1,4 +1,5 @@
 import sys
+import tw.dynforms as twd
 from sys import maxint
 from tw.api import WidgetsList
 from tw.forms import TableForm
@@ -23,7 +24,7 @@ class FilteringSchema(Schema):
     allow_extra_fields = True
     ignore_key_missing = False
 
-class NewAtributoForm(TableForm):
+class NewAtributoForm(twd.HidingTableForm):
 
     hover_help = True
     show_errors = True   
@@ -38,10 +39,15 @@ class NewAtributoForm(TableForm):
        nom_atributo= TextField(label_text='Nombre Atributo', 
                               help_text='Nombre del atributo')        
         
-       tipo_dato = SingleSelectField(label_text='Tipo de Dato',
+       tipo_dato = twd.HidingSingleSelectField(label_text='Tipo de Dato',
                                     help_text='El tipo de dato del atributo',
                                     options= tipo_dato_options,
-                                    validator=NotEmpty)   
+                                    validator=NotEmpty,
+                                    mapping={
+										1:['def_texto'],
+										2:['def_numerico'],
+										3:['def_fecha'],                                    
+                                    })   
        
        subtitulo = CheckBoxList(label_text='Valor por Defecto:',options=[])
        
