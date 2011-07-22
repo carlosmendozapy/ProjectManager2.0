@@ -8,8 +8,27 @@ from tw.forms import PasswordField
 from tw.forms.validators import Int
 from tw.forms.validators import NotEmpty
 from tw.forms.validators import DateConverter
+import formencode
 from formencode import *
+from projectmanager.model import DeclarativeBase, metadata, DBSession
+from projectmanager.model.roles import Rol
+
+class FilteringSchema(Schema):
+    filter_extra_fields = False
+    allow_extra_fields = True
+    ignore_key_missing = False
     
+class UniqueRolName(formencode.FancyValidator):
+    rolnames=[]        
+    def _to_python(self, value, state):
+        roles = DBSession.query(Rol).all()
+        for rol in roles:
+            self.rolnames.append(rol.nom_rol)      
+        if value in self.rolnames:
+            raise formencode.Invalid(u'Este nombre de rol ya existe, favor utilice otro',\
+                    value, state)
+        return value        
+        
 class NewRolForm(TableForm):
 
     hover_help = True
@@ -26,7 +45,7 @@ class NewRolForm(TableForm):
                                 maxlength=20,
                                 size=20,
                                 help_text='Nombre del Rol: Maximo 20 Caracteres',                              
-                                validator=NotEmpty)        
+                                validator=formencode.All(NotEmpty,UniqueRolName()))        
         descripcion = TextArea(label_text='Descripcion',
                                 help_text='Breve Descripcion del Rol: Maximo 200 Caracteres',
                                 cols=40,

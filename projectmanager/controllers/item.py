@@ -332,7 +332,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
         
         for padre in versionItem.Padres:
-            nuevaVersionitem.padres.append(padre)
+            nuevaVersionItem.padres.append(padre)
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -377,7 +377,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
             
         for padre in versionItem.Padres:
-            nuevaVersionitem.padres.append(padre)
+            nuevaVersionItem.padres.append(padre)
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -429,7 +429,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
         
         for padre in versionItem.Padres:
-            nuevaVersionitem.padres.append(padre)
+            nuevaVersionItem.padres.append(padre)
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -485,7 +485,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
         
         for padre in versionItem.Padres:
-            nuevaVersionitem.padres.append(padre)
+            nuevaVersionItem.padres.append(padre)
             
         if int(kw['id_atributo']) < 0:
             for atributo in DBSession.query(AtributoItem).\
@@ -517,61 +517,7 @@ class ItemController(BaseController):
         
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))
-    
-    @expose('projectmanager.templates.relacionesItem')
-    def relacionesItem(self, **kw):        
-        unaVersionItem = DBSession.query(VersionItem).filter(VersionItem.id_version_item==kw['id']).one()
-        relacionesItem = DBSession.query(RelacionItem).filter(RelacionItem.versionItem==unaVersionItem)                
-        return dict(versionItem=unaVersionItem,relacionesItem=relacionesItem)            
-
-    	
-    
-    @expose('projectmanager.templates.revivirItem')
-    def revivirItem(self, **kw):        
-        idFaseItem = session.get('idFaseItem',None)
         
-        query = DBSession.query(VersionItem)             
-        query = query.from_statement('SELECT VI.id_version_item,VI.id_item,VI.id_estado,VI.id_tipo_item,VI.id_usuario_modifico,VI.nro_version_item, VI.observaciones, VI.fecha, VI.peso FROM "VERSION_ITEM" VI INNER JOIN (SELECT id_item as ID, MAX(id_version_item) as MAX_VERSION FROM "VERSION_ITEM" GROUP BY id_item) MAX ON VI.id_item=MAX.ID AND VI.id_version_item=MAX.MAX_VERSION INNER JOIN "TIPO_ITEM" AS TIP ON VI.id_tipo_item = TIP.id_tipo_item INNER JOIN "FASE" AS FAS ON TIP.id_fase = FAS.id_fase INNER JOIN "ESTADO" AS EST ON EST.id_estado = VI.id_estado WHERE FAS.id_fase=:idFase AND EST.nom_estado=\'Eliminado\'')
-        query = query.params(idFase=idFaseItem)
-        items = list(query)                
-        return dict(page='Recuperar Item Eliminado', items=items, idFase=idFaseItem)
-        
-    @expose()
-    def recuperarItem(self, **kw):        
-        idVersionItem = kw['id']        
-        idFaseItem = session.get('idFaseItem',None)
-        
-        versionItemRecuperado = DBSession.query(VersionItem).filter (VersionItem.id_version_item==idVersionItem).one()            
-        
-        estadoEnModificacion = DBSession.query(Estado).filter_by(nom_estado="En Modificacion").one()
-
-        versionItemRecuperado.estado = estadoEnModificacion
-        DBSession.flush()
-
-        redirect("revivirItem?id="+idFaseItem)
-
-        
-    @expose()
-    def delete(self, **kw):
-        idFaseItem = session.get('idFaseItem',None)
-        
-        quedarianHuerfanos = false
-
-        #OBSERVACION RELACION_ITEM ACTUALMENTE NO PUEDE SER AUTOSECUENCIAL
-
-        '''for relacionItem in DBSession.query(RelacionItem).filter_by(RelacionItem.versionItem.id_version_item=unTipoItem):
-            nuevoAtributoItem = AtributoItem()
-            nuevoAtributoItem.atributo = atributo
-            nuevoAtributoItem.versionItem = nuevaVersionItem        
-            nuevoAtributoItem.val_atributo = atributo.val_default
-            DBSession.add(nuevoAtributoItem)   '''
-       
-        idVersionItem = DBSession.query(VersionItem).filter(VersionItem.id_version_item==kw['id']).one()
-	estadoEliminado = DBSession.query(Estado).filter_by(nom_estado="Eliminado").one()
-	idVersionItem.estado = estadoEliminado
-        DBSession.flush()
-        redirect("adminItem?faseid="+idFaseItem)
-    
     @expose('projectmanager.templates.items.items')
     def search(self, **kw):
         word = kw['key']

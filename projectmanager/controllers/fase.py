@@ -414,9 +414,43 @@ class FaseController(BaseController):
                 filter(VersionItem.tipoItem==tipoItem).all()
                 
             for item in item_list:
+                        
+                item.ultima_version = 'N'
+        
+                lg_name=request.identity['repoze.who.userid']
+                usuario = DBSession.query(Usuario).\
+                    filter(Usuario.login_name==lg_name).one()
+            
+                nuevaVersionItem = VersionItem()
+                nuevaVersionItem.item = item.item        
+                nuevaVersionItem.nro_version_item = item.nro_version_item+1
+                nuevaVersionItem.estado = item.estado       
+                nuevaVersionItem.tipoItem = item.tipoItem         
+                nuevaVersionItem.usuarioModifico = usuario
+                nuevaVersionItem.fecha = str(datetime.now())
+                nuevaVersionItem.observaciones = item.observaciones
+                nuevaVersionItem.ultima_version = 'S'
+                nuevaVersionItem.peso = item.peso
+                nuevaVersionItem.id_fase = item.id_fase
+                        
+                for antecesor in item.Antecesores:
+                    nuevaVersionItem.Antecesores.append(antecesor)
+        
+                for padre in item.Padres:
+                    nuevaVersionItem.padres.append(padre)
+            
+                for atributo in DBSession.query(AtributoItem).\
+                    filter(AtributoItem.id_version_item == item.id_version_item).all():
+                
+                    nuevoAtributoItem = AtributoItem()
+                    nuevoAtributoItem.id_atributo = atributo.id_atributo
+                    nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+                    nuevoAtributoItem.val_atributo = atributo.val_atributo
+                    DBSession.add(nuevoAtributoItem)
+                                
                 atriItem = AtributoItem()
                 atriItem.atributo = newAtri
-                atriItem.id_version_item = item.id_version_item
+                atriItem.id_version_item = nuevaVersionItem.id_version_item
                 atriItem.val_atributo = newAtri.val_default
                 DBSession.add(atriItem)
 				

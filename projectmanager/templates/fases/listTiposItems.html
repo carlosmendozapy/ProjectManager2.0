@@ -24,21 +24,21 @@
        <input type="submit" value="Buscar"/>
     </form>
     </div>
-    <table rules='rows'>
+    <table rules='all'>
           <tr>                  
-          <th height="20">Identificador</th>
-          <th height="20">Codigo</th>
-          <th height="20">Nombre</th>
-          <th height="20">Atributos</th>          
+          <th width="5%" align="center">Identificador</th>
+          <th width="10%" align="center">Codigo</th>
+          <th width="15%" align="center">Nombre</th>
+          <th width="70%" align="center">Atributos</th>          
           </tr>
           <tr py:for="i, tipo in enumerate(tiposItem)" class="${i%2 and 'even' or 'odd'}">
             <td align='center'>${tipo.id_tipo_item}</td> 
-            <td>$tipo.prefijo</td>
-            <td><a><b>${tipo.nom_tipo_item}</b></a></td>
+            <td align="center">$tipo.prefijo</td>
+            <td align="center"><a><b>${tipo.nom_tipo_item}</b></a></td>
             <td>
-                <table>
+                <table rules='rows'>
                     <tr py:for="i, atributo in enumerate(tipo.Atributo)" class="${i%2 and 'even' or 'odd'}">
-                        <td><b>${atributo.nom_atributo}:</b> ${atributo.tipoDatoAtributo.nom_tipo_dato}</td>
+                        <td><b>${atributo.nom_atributo}: </b> ${atributo.tipoDatoAtributo.nom_tipo_dato}</td>
                     </tr>
                 </table>
 				
