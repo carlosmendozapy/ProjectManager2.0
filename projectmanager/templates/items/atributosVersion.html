@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Atributo</title>
+</head>
+
+<body> 
+   <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+   <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+   <a><h2>Lista de Atributos del item: ${g.current_item.item.nom_item} (Version ${g.current_item.nro_version_item})</h2></a>
+   <hr width="100%" color="#6699FF" size="2"/>    
+  <div>
+    ${search()}
+  </div>
+  <div id="AdministrarItem">
+    <a><h2>Administracion de Atributos de Item</h2></a>
+    <!--<form action="/item/newAtributo?id=${versionItem.id_version_item}" >
+        <input type="submit" value="Crear Nuevo Atributo" />  
+    </form>    -->
+    <table rules='rows'>
+      <tr>              
+        <th width="20%">Atributo  </th>
+        <th width="15%">Tipo de Dato  </th>
+        <th width="65%">Valor  </th>                    
+      </tr>
+      <tr>       
+        <td>Peso</td>
+        <td>numerico</td>
+        <td>          
+          ${g.current_item.peso}
+        </td>
+      </tr>
+      <tr>        
+        <td>Observaciones</td>
+        <td>texto</td>
+        <td>          
+          ${g.current_item.observaciones}
+        </td>
+      </tr>
+	  <tr py:for="i, atributoItem in enumerate(atributosItem)" class="${i%2 and 'even' or 'odd'}">                      
+        <td>${atributoItem.atributo.nom_atributo} </td>
+	    <td>${atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato}</td>            
+	    <td>
+		  <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">		    
+            <a align="center" href="${tg.url('/file_upload/file_upload', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
+              <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/> 
+              <span py:if="atributoItem.atributoArchivo == None">Adjuntar</span>
+            </a>
+                <span py:if="atributoItem.atributoArchivo != None">
+                    ${atributoItem.atributoArchivo.filename}
+                    <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
+                    <img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> 
+                </span>                
+          </span>
+		  <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">		    
+            ${atributoItem.val_atributo}            
+		  </span>
+	    </td>
+      </tr>
+    </table>
+    <a href='/item/history?id_item=${g.current_item.item.id_item}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

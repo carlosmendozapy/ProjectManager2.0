@@ -55,17 +55,17 @@ class NewAtributoForm(twd.HidingTableForm):
                                     options= tipo_dato_options,                                    
                                     validator=NotEmpty(messages={'missing':'Por favor seleccione un Tipo de Dato'}),                                    
                                     mapping=mapy)       
-       
-		def_numerico = TextField(label_text='Valor por Defecto',
+                              
+        def_numerico = TextField(label_text='Valor por Defecto',
                                 validator=formencode.All(Int(min=(-sys.maxint-1), max=sys.maxint)),
                                 help_text='Favor Escriba un valor por defecto')                  
                                     
-		def_fecha = CalendarDatePicker(label_text='Valor por Defecto',
+        def_fecha = CalendarDatePicker(label_text='Valor por Defecto',
                                       date_format='%d/%m/%Y',
                                       validator=formencode.All(DateConverter(month_style='dd/mm/yyyy')),
                                       help_text='Favor escoja una fecha por defecto')
                                   
-		def_texto = TextArea(label_text='Valor por Defecto', 
+        def_texto = TextArea(label_text='Valor por Defecto', 
                             attrs={'maxlength':255},
                             cols=51,
                             rows=5,                            

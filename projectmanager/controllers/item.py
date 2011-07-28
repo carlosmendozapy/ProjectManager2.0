@@ -63,7 +63,8 @@ class ItemController(BaseController):
         if 'msg' in kw:
            flash(_(kw['msg']),'warning')
                
-        Globals.current_phase = DBSession.query(Fase).filter(Fase.id_fase == int(faseid)).one()
+        Globals.current_phase = DBSession.query(Fase).\
+            filter(Fase.id_fase == int(faseid)).one()
         estado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
             
@@ -262,7 +263,19 @@ class ItemController(BaseController):
         atributosItem = DBSession.query(AtributoItem).\
             filter(AtributoItem.versionItem==unaVersionItem).all()                
             
-        return dict(atributosItem=atributosItem)            
+        return dict(atributosItem=atributosItem)  
+        
+    @expose('projectmanager.templates.items.atributosVersion')
+    def atributosVersion(self, **kw):                        
+        unaVersionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==kw['id_version']).one()
+        
+        Globals.current_item = unaVersionItem
+        
+        atributosItem = DBSession.query(AtributoItem).\
+            filter(AtributoItem.versionItem==unaVersionItem).all()                
+            
+        return dict(atributosItem=atributosItem)
 
     @expose('projectmanager.templates.items.editAtributo')
     def editAtributo(self, **kw):
@@ -517,7 +530,21 @@ class ItemController(BaseController):
         
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))
+    
+    @expose('projectmanager.templates.items.itemHistory')
+    def history(self, **kw):
+        estado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
         
+        item_list = DBSession.query(VersionItem).\
+            filter(VersionItem.id_item == int(kw['id_item'])).\
+            filter(VersionItem.estado != estado)
+        
+        return dict(versiones = item_list)
+        
+        
+            
+    #**************************** BUSQUEDA Y OTROS **********************************    
     @expose('projectmanager.templates.items.items')
     def search(self, **kw):
         word = kw['key']
@@ -535,13 +562,7 @@ class ItemController(BaseController):
                 items_list.append(item)
                 
         return dict(items=items_list)
-
-    '''@expose()
-    def calcularImpactoHaciaAtras(self, idVersionItem):
-	for relacionItem in DBSession.query(RelacionItem).filter_by(RelacionItem.versionItem.id_version_item=idVersionItem):        
-	    sumaPeso = sumaPeso + calcularImpactoHaciaAtras(relacionItem.versionItem.id_version_item)
-        sumaPeso = sumaPeso'''
-
+    
     @expose(content_type=CUSTOM_CONTENT_TYPE)
     def download(self, **kw):
         idAtributo = kw['idAtributo']
@@ -552,19 +573,9 @@ class ItemController(BaseController):
         q=  q.params(idAtributoArch=idAtributo)
         q=  q.params(idVersionItemArch=idVersionItem)        
         atributoItem = q.first()        
-
-        #archivo = UploadedFile.byFilename(filename)
+       
         archivoAtributo = DBSession.query(AtributoArchivo).filter(AtributoArchivo.id == atributoItem.id_archivo).first()
-        
-        '''return serve_file(archivoAtributo.abspath,contentType="application/x-download",dispositon="attachment", archivo.filename)'''
-
-        '''log.debug(os.path.join(os.path.dirname(projectmanager.__file__)))'''
-
-        '''response.headers["Content-disposition"] = "attachment; filename="+archivoAtributo.filename
-	response.headers["Content-Type"] = archivoAtributo.filecontent
-	response.write(archivoAtributo.filecontent)
-	return response'''
-
+               
         content_types = {
             'download': {'.png': 'image/jpeg', '.jpeg':'image/jpeg', '.jpg':'image/jpeg', '.gif':'image/jpeg', '.txt': 'text/plain', '.pdf':'application/pdf', '.zip':'application/zip', '.rar':'application/x-rar-compressed'}
         }        
@@ -576,7 +587,4 @@ class ItemController(BaseController):
             '''response.headers["Content-Type"] = "text/plain"'''
             response.headers["Content-Type"] =  content_types['download']
             response.headers["Content-Disposition"] = 'attachment; filename="'+archivoAtributo.filename+'"'
-        return archivoAtributo.filecontent
-
-        '''return serve_file(log.debug(os.path.join(os.path.dirname(projectmanager.__file__))) + archivoAtributo.filename,"application/x-download","attachment")'''
-
+        return archivoAtributo.filecontent        

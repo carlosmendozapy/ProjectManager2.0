@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Lista de Items</title>
+</head>
+
+<body>   
+   <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+   <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+   <a><h2>Versiones del Item: ${versiones.first().item.nom_item}</h2></a>
+   <hr width="100%" color="#6699FF" size="2"/>   
+  <div>
+    ${search()}
+  </div>
+
+<div class="menu">
+		<ul>
+			<span>
+              <li><a href="/item/newItem">Nuevo Item</a></li>
+            </span>			
+		</ul>
+	</div>
+
+  <div id="AdministrarItem">    
+    
+    <table rules='rows'>
+          <tr>          
+            <th width="3%"></th>
+            <th width="3%"></th>            
+            <th width="10%">Version</th>
+            <th width="10%">Estado</th>                     
+            <th width="15%">Usuario Modifico</th>
+            <th width="15%">Fecha Modificacion</th>                                             
+          </tr>
+          <tr py:for="i, version in enumerate(versiones)" class="${i%2 and 'even' or 'odd'}">
+            <td>
+                <a href="#">
+                <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
+                </a>
+            </td>
+            <td></td>
+            <td><a href="/item/atributosVersion?id_version=${version.id_version_item}">${version.nro_version_item}</a></td>            
+            <td>${version.estado.nom_estado}</td>            
+            <td>${version.usuarioModifico.login_name}</td>
+            <td>${version.fecha}</td>                        
+          </tr>
+        </table>
+
+        <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+  </div>
+
+  <div class="clearingdiv" />  
+</body>
+</html>
