@@ -16,9 +16,7 @@
    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
    <a><h2>Comparacion de Atributos</h2></a>
    <hr width="100%" color="#6699FF" size="2"/>  
-   
-    <a><h2>Administracion de Atributos de Item</h2></a>    
-    
+   <a><h2>Item: ${g.current_item.item.nom_item}</h2></a>  
     <div class='TablaComparacion'>
     <table rules='all'>
       <tr>
@@ -28,14 +26,15 @@
       </tr>
       <tr>
         <td py:for="i, query in enumerate(atributos)" class="${i%2 and 'even' or 'odd'}" align="center">
-            <table rules='rows' class='AtributosComparacion'>
+            <p>
+            <table rules='rows' class='AtributosComparacion'>              
               <tr class='odd'>       
                 <td><b>Peso</b></td>               
-                <td>${query.first().versionItem.peso}</td>
+                <td>: ${query.first().versionItem.peso}</td>
               </tr>
               <tr>        
                 <td><b>Observaciones</b></td>                
-                <td>${query.first().versionItem.observaciones}</td>
+                <td>: ${query.first().versionItem.observaciones}</td>
               </tr>
               <tr py:for="i, atributoItem in enumerate(query)" class="${i%2 and 'even' or 'odd'}">                      
                 <td><b>${atributoItem.atributo.nom_atributo}</b></td>                            
@@ -49,8 +48,9 @@
                         : ${atributoItem.val_atributo}            
                     </span>
                 </td>
-              </tr>
+              </tr>              
             </table>
+            </p>
         </td>        
       </tr>      
     </table>

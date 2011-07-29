@@ -202,7 +202,7 @@ class AtributoItem(DeclarativeBase):
     
     #{ Relations
 
-    atributo  = relation("Atributo", backref=backref('AtributoItem', order_by=id_atributo))	
+    atributo  = relation("Atributo", backref=backref('AtributoItem'),order_by=Atributo.nom_atributo)	
     versionItem = relation("VersionItem", backref=backref('AtributoItem', order_by=id_atributo))	
     atributoArchivo = relation("AtributoArchivo", backref=backref('AtributoItem', order_by=id_atributo))	   
      

@@ -14,7 +14,7 @@
 <body>   
    <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
-   <a><h2>Versiones del Item: ${versiones.first().item.nom_item}</h2></a>
+   <a><h2>Versiones del Item: ${g.current_item.item.nom_item}</h2></a>
    <hr width="100%" color="#6699FF" size="2"/>   
   <div>
     ${search()}
@@ -29,9 +29,9 @@
 	</div>
 
   <div id="AdministrarItem">    
-    
     <form name="input" action="/item/comparar">
       <table rules='rows'>
+          
           <tr>          
             <th width="3%"></th>
             <th width="3%"></th>            
@@ -44,8 +44,8 @@
           <tr py:for="i, version in enumerate(versiones)" class="${i%2 and 'even' or 'odd'}">
             <td><input type="checkbox" name="item" value="${version.id_version_item}"/> </td>
             <td>
-                <a href="#">
-                <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
+                <a href="/item/revertir?id_item=${version.id_version_item}">
+                <img src="${tg.url('/images/revertir.png')}" width="16" height="16"/>
                 </a>
             </td>            
             <td align='center'><a href="/item/atributosVersion?id_version=${version.id_version_item}">${version.nro_version_item}</a></td>            
@@ -54,7 +54,9 @@
             <td>${version.fecha}</td>
             <td></td>                        
           </tr>
-      </table>
+          <p class="pagelist">            
+          </p>          
+      </table>       
       <input type="submit" value="Comparar" />
     </form>
 

@@ -8,6 +8,8 @@ from tg import expose, tmpl_context, response, request
 from tg import redirect, validate, flash
 from tg import session
 from tg.controllers import CUSTOM_CONTENT_TYPE
+from tg.decorators import paginate as paginatedeco
+from webhelpers import paginate
 
 # third party imports
 from datetime import datetime
@@ -73,7 +75,7 @@ class ItemController(BaseController):
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\
             filter(VersionItem.id_estado!=estado.id_estado).\
-            order_by(VersionItem.fecha).all()
+            order_by(VersionItem.item).all()
 
         return dict(items=list_items)
         
@@ -262,7 +264,8 @@ class ItemController(BaseController):
         Globals.current_item = unaVersionItem
         
         atributosItem = DBSession.query(AtributoItem).\
-            filter(AtributoItem.versionItem==unaVersionItem).all()                
+            filter(AtributoItem.versionItem==unaVersionItem).\
+            order_by(AtributoItem.id_atributo).all()                
             
         return dict(atributosItem=atributosItem)  
         
@@ -274,7 +277,8 @@ class ItemController(BaseController):
         Globals.current_item = unaVersionItem
         
         atributosItem = DBSession.query(AtributoItem).\
-            filter(AtributoItem.versionItem==unaVersionItem).all()                
+            filter(AtributoItem.versionItem==unaVersionItem).\
+            order_by(AtributoItem.id_atributo).all()                
             
         return dict(atributosItem=atributosItem)
 
@@ -355,6 +359,7 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_atributo = atributo.id_atributo
             nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
             nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
               
         Globals.current_item = nuevaVersionItem
@@ -401,6 +406,7 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_atributo = atributo.id_atributo
             nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
             nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
        
         nuevoAtributoItem = AtributoItem()
@@ -453,6 +459,7 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_atributo = atributo.id_atributo
             nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
             nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
        
         nuevoAtributoItem = AtributoItem()
@@ -509,6 +516,7 @@ class ItemController(BaseController):
                 nuevoAtributoItem.id_atributo = atributo.id_atributo
                 nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
                 nuevoAtributoItem.val_atributo = atributo.val_atributo
+                nuevoAtributoItem.id_archivo = atributo.id_archivo
                 DBSession.add(nuevoAtributoItem)
         else:
             for atributo in DBSession.query(AtributoItem).\
@@ -519,6 +527,7 @@ class ItemController(BaseController):
                 nuevoAtributoItem.id_atributo = atributo.id_atributo
                 nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
                 nuevoAtributoItem.val_atributo = atributo.val_atributo
+                nuevoAtributoItem.id_archivo = atributo.id_archivo
                 DBSession.add(nuevoAtributoItem)
        
             nuevoAtributoItem = AtributoItem()
@@ -532,26 +541,32 @@ class ItemController(BaseController):
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))
     
-    @expose('projectmanager.templates.items.itemHistory')
+    
+    @expose('projectmanager.templates.items.itemHistory')   
     def history(self, **kw):
+                        
         estado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
-        
-        item_list = DBSession.query(VersionItem).\
+              
+        versiones = DBSession.query(VersionItem).\
             filter(VersionItem.id_item == int(kw['id_item'])).\
             filter(VersionItem.estado != estado)
         
-        Globals.current_item = item_list.first()
-        return dict(versiones = item_list)
+        Globals.current_item = versiones.first()
+                
+        return dict(versiones = versiones)
         
     @expose('projectmanager.templates.items.atributosComparar')
     def comparar(self, **kw):        
-        
         atributos_list = []
-        for id in kw['item']:
-            atributos = DBSession.query(AtributoItem).\
-                filter(AtributoItem.id_version_item == int(id))
-            atributos_list.append(atributos)
+                                
+        if str(type(kw['item'])) == '<type \'list\'>' :            
+            for id in kw['item']:
+                atributos = DBSession.query(AtributoItem).\
+                    filter(AtributoItem.id_version_item == int(id))
+                atributos_list.append(atributos)
+        else:
+            flash(_('Favor Seleccione al menos dos elementos'), 'warning')
        
         return dict(atributos = atributos_list)
             
