@@ -49,15 +49,9 @@
 	    <td>${atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato}</td>            
 	    <td>
 		  <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">		    
-            <a align="center" href="${tg.url('/file_upload/file_upload', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
-              <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/> 
-              <span py:if="atributoItem.atributoArchivo == None">Adjuntar</span>
-            </a>
-                <span py:if="atributoItem.atributoArchivo != None">
-                    ${atributoItem.atributoArchivo.filename}
-                    <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
-                    <img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> 
-                </span>                
+            <span py:if="atributoItem.atributoArchivo != None">
+                ${atributoItem.atributoArchivo.filename}                    
+            </span>                
           </span>
 		  <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">		    
             ${atributoItem.val_atributo}            

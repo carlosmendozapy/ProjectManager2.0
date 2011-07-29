@@ -330,11 +330,24 @@ text-align: center;
 }
 
 table {
-    width:100%;
+    width:100%;    
 }
 
+table.TablaComparacion tr td table tr td{
+    width:800px;
+    height:800px;
+    overflow-x: scroll;
+}
 table tr td table tr.odd{
     background: #DCE8FE;
+}
+
+th{
+    text-align : center;
+}
+
+td{
+    vertical-align: top;    
 }
 
 /******************************************* MENU *****************************************************/

@@ -218,5 +218,5 @@ class AtributoArchivo(DeclarativeBase):
     
     id = Column(Integer, primary_key=True)
     filename = Column(Unicode(255), nullable=False)
-    filecontent = Column(Binary)
+    filecontent = Column(LargeBinary)
     

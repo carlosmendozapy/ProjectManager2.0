@@ -25,6 +25,7 @@ from pygraph.readwrite.dot import write
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.query import Query
 
 
 # project specific imports
@@ -540,9 +541,19 @@ class ItemController(BaseController):
             filter(VersionItem.id_item == int(kw['id_item'])).\
             filter(VersionItem.estado != estado)
         
+        Globals.current_item = item_list.first()
         return dict(versiones = item_list)
         
+    @expose('projectmanager.templates.items.atributosComparar')
+    def comparar(self, **kw):        
         
+        atributos_list = []
+        for id in kw['item']:
+            atributos = DBSession.query(AtributoItem).\
+                filter(AtributoItem.id_version_item == int(id))
+            atributos_list.append(atributos)
+       
+        return dict(atributos = atributos_list)
             
     #**************************** BUSQUEDA Y OTROS **********************************    
     @expose('projectmanager.templates.items.items')

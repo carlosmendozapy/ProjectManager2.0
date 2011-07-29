@@ -48,28 +48,20 @@ class FileUploadController(BaseController):
     @expose('projectmanager.templates.file_upload')
     def file_upload(self, **kw):
         
+        aFile=[]
         if 'validate' in kw:
             flash(_('Favor seleccione un archivo'),'warning')
-            current_files=[]
+            aFile=[]
             
         else:
-            Globals.current_atributo = DBSession.query(Atributo).\
-                filter(Atributo.id_atributo==int(kw['idAtributo'])).one()
-            idAtributo = kw['idAtributo']
-            idVersionItem = kw['idVersionItem']
-
-            session['idAtributo'] = idAtributo
-            session['idVersionItem'] = idVersionItem
-            session.save()               
-
-            q = DBSession.query(AtributoItem)
-            q = q.from_statement('SELECT * FROM \"ATRIBUTO_ITEM\" WHERE id_atributo=:idAtributoArch AND id_version_item=:idVersionItemArch')
-            q=  q.params(idAtributoArch=idAtributo)
-            q=  q.params(idVersionItemArch=idVersionItem)        
-            atributoItem = q.first()        
-
-            current_files = DBSession.query(AtributoArchivo).filter(AtributoArchivo.id == atributoItem.id_archivo)
-        return dict(current_files=current_files, idVersionItem=Globals.current_item.id_version_item)
+            Globals.current_atributo = DBSession.query(AtributoItem).\
+                filter(AtributoItem.id_atributo==int(kw['idAtributo'])).\
+                filter(AtributoItem.id_version_item==int(kw['idVersionItem'])).\
+                one()
+            
+            aFile = Globals.current_atributo.atributoArchivo
+            
+        return dict(current_file=aFile)
         
     @expose()
     def save(self, userfile):
@@ -79,6 +71,7 @@ class FileUploadController(BaseController):
                 redirect('file_upload?validate=error')
             elif userfile.filename.find(forbidden_file) != -1:
                 return redirect("/")
+        
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == Globals.\
                    current_item.id_version_item).one()
@@ -117,6 +110,7 @@ class FileUploadController(BaseController):
             nuevoAtributoItem.id_atributo = atributo.id_atributo
             nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
             nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
         
         filecontent = userfile.file.read()
@@ -129,20 +123,8 @@ class FileUploadController(BaseController):
         nuevoAtributoItem.atributoArchivo = new_file
         DBSession.add(nuevoAtributoItem)
         
-        Globals.current_item = nuevaVersionItem
-        
-        '''
-        idAtributo = session.get('idAtributo',None)
-        idVersionItem = session.get('idVersionItem',None)
-        q = DBSession.query(AtributoItem)
-        q = q.from_statement('SELECT * FROM \"ATRIBUTO_ITEM\" WHERE id_atributo=:idAtributoArch AND id_version_item=:idVersionItemArch')
-        q=  q.params(idAtributoArch=idAtributo)
-        q=  q.params(idVersionItemArch=idVersionItem)        
-        atributoItem = q.first()        
-	
-        atributoItem.atributoArchivo = new_file
-        DBSession.flush()
-        '''
+        Globals.current_item = nuevaVersionItem        
+       
         redirect("/item/atributosItem?id_version="+str(Globals.current_item.id_version_item))
     
     @expose(content_type=CUSTOM_CONTENT_TYPE)

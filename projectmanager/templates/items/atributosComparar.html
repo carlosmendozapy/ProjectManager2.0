@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Atributo</title>
+</head>
+
+<body> 
+   <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+   <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+   <a><h2>Comparacion de Atributos</h2></a>
+   <hr width="100%" color="#6699FF" size="2"/>    
+  <div>
+    ${search()}
+  </div>
+  <div id="AtributosComparar">
+    <a><h2>Administracion de Atributos de Item</h2></a>    
+    <table rules='all' id="TablaComparacion">
+      <tr>
+        <th py:for="i, query in enumerate(atributos)" class="${i%2 and 'even' or 'odd'}" align="center">
+            Version ${query.first().versionItem.nro_version_item}
+        </th>        
+      </tr>
+      <tr>
+        <td py:for="i, query in enumerate(atributos)" class="${i%2 and 'even' or 'odd'}" align="center">
+            <table rules='rows'>
+              <tr>       
+                <td>Peso</td>               
+                <td>${query.first().versionItem.peso}</td>
+              </tr>
+              <tr>        
+                <td>Observaciones</td>                
+                <td>${query.first().versionItem.observaciones}</td>
+              </tr>
+              <tr py:for="i, atributoItem in enumerate(query)" class="${i%2 and 'even' or 'odd'}">                      
+                <td>${atributoItem.atributo.nom_atributo} </td>                            
+                <td>
+                    <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">	                       
+                        <span py:if="atributoItem.atributoArchivo != None">
+                            ${atributoItem.atributoArchivo.filename}                            
+                        </span>                
+                    </span>
+                    <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">		    
+                        ${atributoItem.val_atributo}            
+                    </span>
+                </td>
+              </tr>
+            </table>
+        </td>        
+      </tr>      
+    </table>
+    <a href='/item/history?id_item=${g.current_item.item.id_item}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+  </div>
+  <div class="clearingdiv" />  
+</body>
+</html>

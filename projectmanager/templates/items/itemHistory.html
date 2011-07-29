@@ -30,28 +30,33 @@
 
   <div id="AdministrarItem">    
     
-    <table rules='rows'>
+    <form name="input" action="/item/comparar">
+      <table rules='rows'>
           <tr>          
             <th width="3%"></th>
             <th width="3%"></th>            
             <th width="10%">Version</th>
             <th width="10%">Estado</th>                     
             <th width="15%">Usuario Modifico</th>
-            <th width="15%">Fecha Modificacion</th>                                             
+            <th width="20%">Fecha Modificacion</th>
+            <th width='39%'></th>                                             
           </tr>
           <tr py:for="i, version in enumerate(versiones)" class="${i%2 and 'even' or 'odd'}">
+            <td><input type="checkbox" name="item" value="${version.id_version_item}"/> </td>
             <td>
                 <a href="#">
                 <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
                 </a>
-            </td>
-            <td></td>
-            <td><a href="/item/atributosVersion?id_version=${version.id_version_item}">${version.nro_version_item}</a></td>            
-            <td>${version.estado.nom_estado}</td>            
-            <td>${version.usuarioModifico.login_name}</td>
-            <td>${version.fecha}</td>                        
+            </td>            
+            <td align='center'><a href="/item/atributosVersion?id_version=${version.id_version_item}">${version.nro_version_item}</a></td>            
+            <td align='center'>${version.estado.nom_estado}</td>            
+            <td align='center'>${version.usuarioModifico.login_name}</td>
+            <td>${version.fecha}</td>
+            <td></td>                        
           </tr>
-        </table>
+      </table>
+      <input type="submit" value="Comparar" />
+    </form>
 
         <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
   </div>
