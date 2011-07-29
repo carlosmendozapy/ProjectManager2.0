@@ -15,39 +15,38 @@
    <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
    <a><h2>Comparacion de Atributos</h2></a>
-   <hr width="100%" color="#6699FF" size="2"/>    
-  <div>
-    ${search()}
-  </div>
-  <div id="AtributosComparar">
+   <hr width="100%" color="#6699FF" size="2"/>  
+   
     <a><h2>Administracion de Atributos de Item</h2></a>    
-    <table rules='all' id="TablaComparacion">
+    
+    <div class='TablaComparacion'>
+    <table rules='all'>
       <tr>
         <th py:for="i, query in enumerate(atributos)" class="${i%2 and 'even' or 'odd'}" align="center">
-            Version ${query.first().versionItem.nro_version_item}
+            <a>Version ${query.first().versionItem.nro_version_item}</a>
         </th>        
       </tr>
       <tr>
         <td py:for="i, query in enumerate(atributos)" class="${i%2 and 'even' or 'odd'}" align="center">
-            <table rules='rows'>
-              <tr>       
-                <td>Peso</td>               
+            <table rules='rows' class='AtributosComparacion'>
+              <tr class='odd'>       
+                <td><b>Peso</b></td>               
                 <td>${query.first().versionItem.peso}</td>
               </tr>
               <tr>        
-                <td>Observaciones</td>                
+                <td><b>Observaciones</b></td>                
                 <td>${query.first().versionItem.observaciones}</td>
               </tr>
               <tr py:for="i, atributoItem in enumerate(query)" class="${i%2 and 'even' or 'odd'}">                      
-                <td>${atributoItem.atributo.nom_atributo} </td>                            
+                <td><b>${atributoItem.atributo.nom_atributo}</b></td>                            
                 <td>
                     <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">	                       
                         <span py:if="atributoItem.atributoArchivo != None">
-                            ${atributoItem.atributoArchivo.filename}                            
+                            : ${atributoItem.atributoArchivo.filename}                            
                         </span>                
                     </span>
                     <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">		    
-                        ${atributoItem.val_atributo}            
+                        : ${atributoItem.val_atributo}            
                     </span>
                 </td>
               </tr>
@@ -55,8 +54,9 @@
         </td>        
       </tr>      
     </table>
+    </div>
     <a href='/item/history?id_item=${g.current_item.item.id_item}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
-  </div>
+  
   <div class="clearingdiv" />  
 </body>
 </html>

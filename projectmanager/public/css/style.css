@@ -11,7 +11,7 @@ body {
 	margin: 0 auto;
 	padding: 0;
 	font-size: 12px;
-	font-family:"Lucida Grande","Lucida Sans Unicode",geneva,verdana,sans-serif;
+	font-family:"Lucida Grande","Lucida Sans Unicode",geneva,verdana,sans-serif;   
 }
 
 a {
@@ -333,11 +333,15 @@ table {
     width:100%;    
 }
 
-table.TablaComparacion tr td table tr td{
-    width:800px;
-    height:800px;
-    overflow-x: scroll;
+div.TablaComparacion{
+    width: 920px;    
+    overflow-x: auto;
 }
+
+table.AtributosComparacion{
+    width: 250px;
+}
+
 table tr td table tr.odd{
     background: #DCE8FE;
 }
