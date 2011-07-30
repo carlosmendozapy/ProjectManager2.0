@@ -550,9 +550,12 @@ class ItemController(BaseController):
               
         versiones = DBSession.query(VersionItem).\
             filter(VersionItem.id_item == int(kw['id_item'])).\
-            filter(VersionItem.estado != estado)
+            filter(VersionItem.estado != estado).\
+            order_by(VersionItem.nro_version_item)
         
-        Globals.current_item = versiones.first()
+        Globals.current_item = DBSession.query(VersionItem).\
+            filter(VersionItem.id_item == int(kw['id_item'])).\
+            filter(VersionItem.ultima_version == 'S').one()
                 
         return dict(versiones = versiones)
         
@@ -569,7 +572,54 @@ class ItemController(BaseController):
             flash(_('Favor Seleccione al menos dos elementos'), 'warning')
        
         return dict(atributos = atributos_list)
+    
+    @expose()
+    def revertir(self, **kw):
+        anteriorVersion = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == int(kw['id_item'])).one()
             
+        ultimaVersion = DBSession.query(VersionItem).\
+            filter(VersionItem.id_item == anteriorVersion.id_item).\
+            filter(VersionItem.ultima_version == 'S').one()
+            
+        ultimaVersion.ultima_version = 'N'
+                        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+        
+        estadoPendiente = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Pendiente').one()
+            
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = anteriorVersion.item        
+        nuevaVersionItem.nro_version_item = ultimaVersion.nro_version_item+1
+        nuevaVersionItem.estado = estadoPendiente       
+        nuevaVersionItem.tipoItem = anteriorVersion.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = anteriorVersion.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = anteriorVersion.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+                      
+        for padre in anteriorVersion.Padres:
+            nuevaVersionItem.padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == anteriorVersion.id_version_item):
+                            
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+                      
+        Globals.current_item = nuevaVersionItem
+        
+        redirect('/item/history?id_item=' + str(Globals.current_item.id_item))
+        
     #**************************** BUSQUEDA Y OTROS **********************************    
     @expose('projectmanager.templates.items.items')
     def search(self, **kw):

@@ -339,6 +339,13 @@ div.TablaComparacion{
     overflow-x: auto;
 }
 
+div.VersionesItem{
+    height: 300px;
+    border: 1.5px solid #cce;
+    overflow-y: auto;
+    
+}
+
 table.AtributosComparacion{
     width: 100%;    
 }

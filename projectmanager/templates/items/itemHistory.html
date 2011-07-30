@@ -22,16 +22,13 @@
 
 <div class="menu">
 		<ul>
-			<span>
-              <li><a href="/item/newItem">Nuevo Item</a></li>
-            </span>			
+					
 		</ul>
-	</div>
-
-  <div id="AdministrarItem">    
+	</div>      
     <form name="input" action="/item/comparar">
-      <table rules='rows'>
-          
+      <div class="VersionesItem">
+      <table rules='rows'>          
+          <thead>
           <tr>          
             <th width="3%"></th>
             <th width="3%"></th>            
@@ -41,12 +38,16 @@
             <th width="20%">Fecha Modificacion</th>
             <th width='39%'></th>                                             
           </tr>
+          </thead>          
+          <tbody>
           <tr py:for="i, version in enumerate(versiones)" class="${i%2 and 'even' or 'odd'}">
             <td><input type="checkbox" name="item" value="${version.id_version_item}"/> </td>
             <td>
+              <span py:if="g.current_item.estado.nom_estado != 'Pendiente'">
                 <a href="/item/revertir?id_item=${version.id_version_item}">
                 <img src="${tg.url('/images/revertir.png')}" width="16" height="16"/>
                 </a>
+              </span>
             </td>            
             <td align='center'><a href="/item/atributosVersion?id_version=${version.id_version_item}">${version.nro_version_item}</a></td>            
             <td align='center'>${version.estado.nom_estado}</td>            
@@ -54,14 +55,15 @@
             <td>${version.fecha}</td>
             <td></td>                        
           </tr>
-          <p class="pagelist">            
-          </p>          
+          </tbody>          
+          <tfoot></tfoot>         
       </table>       
+      </div>
       <input type="submit" value="Comparar" />
     </form>
-
+    
         <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
-  </div>
+  
 
   <div class="clearingdiv" />  
 </body>
