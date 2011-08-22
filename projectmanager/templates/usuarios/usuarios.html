@@ -9,6 +9,21 @@
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
   <title>Bienvenido a PyProject v1.0</title>  
+  <script type="text/javascript">
+    function confirmar(id)
+    {
+        var r=confirm("Confirma que desea borrar este usuario" + document.getElementById('login_name').innerHTML);
+        if (r==true)
+        {
+            window.location.replace("./delete?id=" + id);
+            window.alert("Se ha eliminado el usuario con exito");
+        }
+        else
+        {
+            window.alert("You pressed Cancel!")
+        }
+    }
+  </script>
 </head>
 
 <body>    
@@ -38,12 +53,13 @@
             <td><a href='./editUser?id=${usuario.id_usuario}'><img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a></td>
             <td>
                 <span py:if="not usuario.login_name == 'admin'">
-                    <a href='./delete?id=${usuario.id_usuario}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16"/></a>
+                    <!--<a href='./delete?id=${usuario.id_usuario}' >-->
+                    <img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" onclick="confirmar(${usuario.id_usuario});"/>
                 </span>
             </td>
             <td align='center'>${usuario.id_usuario}</td>
             <td>${usuario.groups}</td>
-            <td>${usuario.login_name}</td>
+            <td id='login_name'>${usuario.login_name}</td>
             <td>${usuario.nom_usuario}</td>            
           </tr>
         </table>      

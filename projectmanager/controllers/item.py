@@ -58,8 +58,17 @@ class ItemController(BaseController):
     
     # The predicate that must be met for all the actions in this controller:
     allow_only = not_anonymous(msg='Debe Ingresar al Sistema para ver esta pagina')    
-    
+      
+    def __init__(self):
+        self.eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
         
+        self.rechazado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Rechazado').one()
+            
+        self.pendiente = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Pendiente').one()
+            
     @expose('projectmanager.templates.items.items')
     def adminItem(self, faseid,**kw):                       
 	    
@@ -68,13 +77,12 @@ class ItemController(BaseController):
                
         Globals.current_phase = DBSession.query(Fase).\
             filter(Fase.id_fase == int(faseid)).one()
-        estado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Eliminado').one()
-            
+                   
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\
-            filter(VersionItem.id_estado!=estado.id_estado).\
+            filter(VersionItem.estado!=self.eliminado).\
+            filter(VersionItem.estado!=self.rechazado).\
             order_by(VersionItem.item).all()
 
         return dict(items=list_items)
@@ -544,13 +552,9 @@ class ItemController(BaseController):
     
     @expose('projectmanager.templates.items.itemHistory')   
     def history(self, **kw):
-                        
-        estado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Eliminado').one()
               
         versiones = DBSession.query(VersionItem).\
             filter(VersionItem.id_item == int(kw['id_item'])).\
-            filter(VersionItem.estado != estado).\
             order_by(VersionItem.nro_version_item)
         
         Globals.current_item = DBSession.query(VersionItem).\
@@ -562,8 +566,9 @@ class ItemController(BaseController):
     @expose('projectmanager.templates.items.atributosComparar')
     def comparar(self, **kw):        
         atributos_list = []
+        
                                 
-        if str(type(kw['item'])) == '<type \'list\'>' :            
+        if 'item' in kw and str(type(kw['item'])) == '<type \'list\'>' :            
             for id in kw['item']:
                 atributos = DBSession.query(AtributoItem).\
                     filter(AtributoItem.id_version_item == int(id))
@@ -587,14 +592,11 @@ class ItemController(BaseController):
         lg_name=request.identity['repoze.who.userid']
         usuario = DBSession.query(Usuario).\
                   filter(Usuario.login_name==lg_name).one()
-        
-        estadoPendiente = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Pendiente').one()
-            
+                  
         nuevaVersionItem = VersionItem()
         nuevaVersionItem.item = anteriorVersion.item        
         nuevaVersionItem.nro_version_item = ultimaVersion.nro_version_item+1
-        nuevaVersionItem.estado = estadoPendiente       
+        nuevaVersionItem.estado = self.pendiente       
         nuevaVersionItem.tipoItem = anteriorVersion.tipoItem         
         nuevaVersionItem.usuarioModifico = usuario
         nuevaVersionItem.fecha = str(datetime.now())
@@ -604,7 +606,12 @@ class ItemController(BaseController):
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
                       
         for padre in anteriorVersion.Padres:
-            nuevaVersionItem.padres.append(padre)
+            itemPadre = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item == padre.id_version_item).\
+                one()
+            
+            if itemPadre.estado != self.eliminado:
+                nuevaVersionItem.padres.append(padre)
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == anteriorVersion.id_version_item):

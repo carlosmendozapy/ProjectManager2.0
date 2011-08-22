@@ -25,7 +25,7 @@
         <li py:if="request.identity" id="admin" class="loginlogout">            
             <a py:if="h.is_type('admin')" href="${tg.url('/admin')}">Administrar</a></li>
         <li py:if="request.identity" id="user" class="loginlogout">            
-            <a py:if="h.is_type('user')" href="${tg.url('/proyecto/adminProject')}">Mis Proyectos</a></li>
+            <a py:if="h.is_type('user')" href="${tg.url('/proyecto/adminProject')}" onmouseover="window.status='';return true;">Mis Proyectos</a></li>
            
     </span>
   </ul>

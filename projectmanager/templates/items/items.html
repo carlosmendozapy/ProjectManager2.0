@@ -23,7 +23,12 @@
 <div class="menu">
 		<ul>
 			<span>
-              <li><a href="/item/newItem">Nuevo Item</a></li>
+              <li><a href="#" id="current">Item</a>
+                <ul>
+                    <li><a href="/item/newItem">Nuevo Item</a></li>
+                    <li><a href="/item/revivirItem">Revivir Item</a></li>
+                </ul>
+              </li>              
             </span>
 			<span py:if="h.has_AnyFasePriv('Usuario',g.current_phase.id_fase) or h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
 			  <li><a href="#" id="current">Usuarios</a>
@@ -57,23 +62,55 @@
     <table rules='rows'>
           <tr>          
             <th width="3%"></th>
+            <th width="3%"></th>
             <th width="3%"></th>            
             <th width="10%">Codigo</th>
             <th width="10%">Nombre</th>
-            <th width="14%">Estado</th>          
+            <th width="15%">Estado</th>          
             <th width="10%">Tipo Item</th>          
             <th width="15%">Usuario Modifico</th>
             <th width="15%">Fecha Modificacion</th>                                             
           </tr>
           <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
             <td>
+                <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
+                  <a href="#">
+                  <img src="${tg.url('/images/del.png')}" width="16" height="16"/>
+                  </a>
+                </span>
+            </td>
+            <td>
+                <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
+                  <a href="#">
+                  <img src="${tg.url('/images/save.png')}" width="16" height="16"/>
+                  </a>
+                </span>
+                <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
+                  <a href="#">
+                  <img src="${tg.url('/images/confirmar.png')}" width="16" height="16"/>
+                  </a>
+                </span>
+            </td>
+            <td>
+                <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
                 <a href="/item/history?id_item=${versionItem.id_item}">
                 <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
                 </a>
-            </td>
-            <td></td>
+                </span>
+                <span py:if="versionItem.estado.nom_estado == 'Aprobado'">
+                <a href="/item/history?id_item=${versionItem.id_item}">
+                <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
+                </a>
+                </span>
+            </td>            
             <td>${versionItem.item.cod_item}</td>
-            <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a>                
+            <td>
+                <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
+                    <a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a>                
+                </span>
+                <span py:if="versionItem.estado.nom_estado == 'Aprobado'">
+                    ${versionItem.item.nom_item}
+                </span>
             </td>
             <td>${versionItem.estado.nom_estado}</td>
             <td>${versionItem.tipoItem.nom_tipo_item}</td>

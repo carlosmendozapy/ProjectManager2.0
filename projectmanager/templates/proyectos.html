@@ -32,7 +32,7 @@
           <th>Descripcion</th>          
           </tr>
           <tr py:for="i, proyecto in enumerate(proyectos)" class="${i%2 and 'even' or 'odd'}">
-            <td><a href='./editProject?id=${proyecto.id_proyecto}'><img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a></td>
+            <td><a href='./editProject?id=${proyecto.id_proyecto}'  onFocus="javascript: window.status = ' ';return true; ">a<img src="${tg.url('/images/edit.png')}" alt="Editar" height="16" width="16"/></a></td>
             <td><a href='./delete?id=${proyecto.id_proyecto}'><img src="${tg.url('/images/delete.png')}" alt="Eliminar" height="16" width="16" /></a></td>
             <td>${proyecto.id_proyecto}</td>
             <td>${proyecto.nom_proyecto}</td>
