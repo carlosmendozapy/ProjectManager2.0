@@ -84,6 +84,28 @@
 	    </td>
       </tr>
     </table>
+    <a><h2>Administracion de Relaciones de Item</h2></a>
+    <table rules='all'>
+        <tr>
+            <th width="25%">Padres</th>
+            <th width="25%">Hijos</th>
+            <th width="25%">Antecesores</th>
+            <th width="25%">Sucesores</th>        
+        </tr>
+        <tr py:for="i, padre in enumerate(padres)" class="${i%2 and 'even' or 'odd'}">
+            <td>${padre.item.nom_item}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr align='center'>
+            <td><a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar padre</a></td>
+            <td><a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar hijo</a></td>
+            <td><a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar antecesor</a></td>
+            <td><a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar sucesor</a></td>
+        </tr>
+    </table>
+    
     <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
   </div>
   <div class="clearingdiv" />  

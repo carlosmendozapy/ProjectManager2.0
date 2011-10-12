@@ -75,35 +75,30 @@
             <td>
                 <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
                   <a href="#">
-                  <img src="${tg.url('/images/del.png')}" width="16" height="16"/>
+                  <img src="${tg.url('/images/del.png')}" width="16" height="16" title='Eliminar Item'/>
                   </a>
                 </span>
             </td>
             <td>
                 <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
                   <a href="#">
-                  <img src="${tg.url('/images/save.png')}" width="16" height="16"/>
+                  <img src="${tg.url('/images/save.png')}" width="16" height="16" title='Guardar para Aprobacion'/>
                   </a>
                 </span>
                 <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
-                  <a href="#">
-                  <img src="${tg.url('/images/confirmar.png')}" width="16" height="16"/>
+                  <a href="/item/confirmar?id_version_item=${versionItem.id_version_item}">
+                  <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar Item'/>
                   </a>
                 </span>
             </td>
             <td>
                 <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
                 <a href="/item/history?id_item=${versionItem.id_item}">
-                <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
+                <img src="${tg.url('/images/versions.png')}" width="16" height="16" title='Versiones de Item'/>
                 </a>
-                </span>
-                <span py:if="versionItem.estado.nom_estado == 'Aprobado'">
-                <a href="/item/history?id_item=${versionItem.id_item}">
-                <img src="${tg.url('/images/versions.png')}" width="16" height="16"/>
-                </a>
-                </span>
+                </span>                
             </td>            
-            <td>${versionItem.item.cod_item}</td>
+            <td align='center'>${versionItem.item.cod_item}</td>
             <td>
                 <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
                     <a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a>                

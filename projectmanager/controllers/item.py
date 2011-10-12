@@ -68,6 +68,9 @@ class ItemController(BaseController):
             
         self.pendiente = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Pendiente').one()
+        
+        self.confirmado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Confirmado').one()
             
     @expose('projectmanager.templates.items.items')
     def adminItem(self, faseid,**kw):                       
@@ -274,8 +277,15 @@ class ItemController(BaseController):
         atributosItem = DBSession.query(AtributoItem).\
             filter(AtributoItem.versionItem==unaVersionItem).\
             order_by(AtributoItem.id_atributo).all()                
-            
-        return dict(atributosItem=atributosItem)  
+        
+        Padres = []
+        for padre in unaVersionItem.Padres:
+            unPadre = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item == padre.id_version_item).\
+                one()
+            Padres.append(unPadre)    
+        
+        return dict(atributosItem=atributosItem, padres=Padres)  
         
     @expose('projectmanager.templates.items.atributosVersion')
     def atributosVersion(self, **kw):                        
@@ -358,7 +368,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
         
         for padre in versionItem.Padres:
-            nuevaVersionItem.padres.append(padre)
+            nuevaVersionItem.Padres.append(padre)
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -404,7 +414,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
             
         for padre in versionItem.Padres:
-            nuevaVersionItem.padres.append(padre)
+            nuevaVersionItem.Padres.append(padre)
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -457,7 +467,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
         
         for padre in versionItem.Padres:
-            nuevaVersionItem.padres.append(padre)
+            nuevaVersionItem.Padres.append(padre)
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -514,7 +524,7 @@ class ItemController(BaseController):
             nuevaVersionItem.Antecesores.append(antecesor)
         
         for padre in versionItem.Padres:
-            nuevaVersionItem.padres.append(padre)
+            nuevaVersionItem.Padres.append(padre)
             
         if int(kw['id_atributo']) < 0:
             for atributo in DBSession.query(AtributoItem).\
@@ -549,7 +559,49 @@ class ItemController(BaseController):
         redirect('atributosItem?id_version=' +\
             str(Globals.current_item.id_version_item))
     
-    
+    @expose()
+    def confirmar(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = self.confirmado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionItem.Padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+                   
+        redirect('adminItem?faseid=' +\
+            str(nuevaVersionItem.id_fase)) 
+           
     @expose('projectmanager.templates.items.itemHistory')   
     def history(self, **kw):
               
