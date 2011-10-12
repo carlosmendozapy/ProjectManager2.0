@@ -1,3 +1,4 @@
+"""HOLA"""
 # -*- coding: utf-8 -*-
 """Sample controller with all its actions protected."""
 from tg import expose, flash
