@@ -46,9 +46,9 @@
             <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
               <li><a href="/fase/usersRol">Roles por Usuarios</a></li>
             </span>
-            <span py:if="h.has_AnyFasePriv('Linea Base',g.current_phase.id_fase)">             
+            <!--<span py:if="h.has_AnyFasePriv('Linea Base',g.current_phase.id_fase)">             -->
             <li><a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}' >Administrar Lineas Base</a></li>    			
-            </span>
+            <!--</span>-->
             <li><a href="#">Tipos de Item</a>
               <ul>
                 <li><a href="/fase/listTiposItem">Listar Tipos de Item de Fase</a></li>

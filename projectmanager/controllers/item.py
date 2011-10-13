@@ -79,7 +79,7 @@ class ItemController(BaseController):
            flash(_(kw['msg']),'warning')
                
         Globals.current_phase = DBSession.query(Fase).\
-            filter(Fase.id_fase == int(faseid)).one()
+            filter(Fase.id_fase == faseid).one()
                    
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\

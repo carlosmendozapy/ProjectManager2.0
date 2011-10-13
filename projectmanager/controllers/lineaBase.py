@@ -82,7 +82,20 @@ class lineabaseController(BaseController):
                
     @expose('projectmanager.templates.lineaBase.nuevaLineaBase')
     def nuevaLineaBase(self, **kw):
+        estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Confirmado').one()
         
+        list_options = DBSession.query(VersionItem).\
+        filter(VersionItem.id_fase == Globals.current_phase.id_fase).\
+        filter(VersionItem.estado == estado).\
+        filter(VersionItem.ultima_version == u'S').all()
+		
+        options =[]
+        for itemEnviar in list_options:
+            print '***************************************************************************'
+            print 'LINEA BASE ITEMS ' + itemEnviar.item.nom_item
+            options.append([itemEnviar.id_version_item,itemEnviar.item.nom_item])
+			
+        """
         listLineasBase =[]
         listItems =[]
         
@@ -162,7 +175,10 @@ class lineabaseController(BaseController):
         tmpl_context.form = creacion_nueva_lineaBase
        
         
-        #options = DBSession.query(item.id_tipo, TipoRol.nom_tipo_rol)                
+        #options = DBSession.query(item.id_tipo, TipoRol.nom_tipo_rol) 
+        """
+        tmpl_context.form = creacion_nueva_lineaBase
+                 
         return dict(page='Nueva Linea Base', type_options = options)
     
     #ACA SE DEBE USAR TRANSACCION     
