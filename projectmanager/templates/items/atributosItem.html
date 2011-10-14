@@ -92,9 +92,9 @@
             <th width="25%">Antecesores</th>
             <th width="25%">Sucesores</th>        
         </tr>
-        <tr py:for="i, padre in enumerate(padres)" class="${i%2 and 'even' or 'odd'}">
-            <td>${padre.item.nom_item}</td>
-            <td></td>
+        <tr>
+            <td><li py:for="padre in relaciones[0]">${padre.item.nom_item}</li></td>
+            <td><li py:for="hijo in relaciones[1]">item: ${hijo.item.nom_item}; version_id: ${hijo.id_version_item}; version: ${hijo.nro_version_item}</li></td>
             <td></td>
             <td></td>
         </tr>

@@ -278,14 +278,42 @@ class ItemController(BaseController):
             filter(AtributoItem.versionItem==unaVersionItem).\
             order_by(AtributoItem.id_atributo).all()                
         
+        Relaciones=[]
+        #Recuperar Nombre de los Padres de esta Version de Item
         Padres = []
-        for padre in unaVersionItem.Padres:
+        for padre in unaVersionItem.Padres:            
             unPadre = DBSession.query(VersionItem).\
                 filter(VersionItem.id_version_item == padre.id_version_item).\
-                one()
+                one()            
             Padres.append(unPadre)    
+            
+        #Recuperar Nombre de los Hijos de esta Version de Item
+        existe=True
+        try:
+            yoPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
+        except NoResultFound,e:                    
+            existe=False
         
-        return dict(atributosItem=atributosItem, padres=Padres)  
+        '''
+        Hijos = []
+        if existe:    
+            yoPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
+            for hijo in yoPadre.hijos:
+                if hijo.ultima_version == 'S':
+                    Hijos.append(hijo)
+        '''
+        yoPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
+                
+        Hijos = DBSession.query(VersionItem).\
+            filter(VersionItem.Padres.contains(yoPadre)).\
+            filter(VersionItem.ultima_version == 'S').all()
+            
+        Relaciones.append(Padres)
+        Relaciones.append(Hijos)
+        return dict(atributosItem=atributosItem, relaciones=Relaciones)  
         
     @expose('projectmanager.templates.items.atributosVersion')
     def atributosVersion(self, **kw):                        
@@ -602,6 +630,49 @@ class ItemController(BaseController):
         redirect('adminItem?faseid=' +\
             str(nuevaVersionItem.id_fase)) 
            
+    @expose()
+    def aPendiente(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = self.pendiente       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionItem.Padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+                   
+        redirect('adminItem?faseid=' +\
+            str(nuevaVersionItem.id_fase)) 
+            
     @expose('projectmanager.templates.items.itemHistory')   
     def history(self, **kw):
               

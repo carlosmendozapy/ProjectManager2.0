@@ -12,6 +12,24 @@ from tw.forms.validators import DateConverter
 from tw.forms.validators import FieldsMatch
 import formencode
 from formencode import *
+from projectmanager.model import DeclarativeBase, metadata, DBSession
+from projectmanager.model.entities import Item
+
+class FilteringSchema(Schema):
+    filter_extra_fields = False
+    allow_extra_fields = True
+    ignore_key_missing = False
+    
+class UniqueItemName(formencode.FancyValidator):
+    itemnames=[]        
+    def _to_python(self, value, state):
+        items = DBSession.query(Item).all()
+        for item in items:
+            self.itemnames.append(item.nom_item)      
+        if value in self.itemnames:
+            raise formencode.Invalid(u'Este nombre de item ya existe, favor utilice otro',\
+                    value, state)
+        return value    
     
 class NewItemForm(TableForm):
 
@@ -26,7 +44,7 @@ class NewItemForm(TableForm):
                                 maxlength=25,
                                 size=25,
                                 help_text='Nombre del Item: Maximo 25 Caracteres',                              
-                                validator=NotEmpty)
+                                validator=formencode.All(NotEmpty,UniqueItemName))
         
         tipoItem = SingleSelectField(label_text='Tipo de Item',                                
                                 validator=NotEmpty,

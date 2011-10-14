@@ -81,7 +81,7 @@
             </td>
             <td>
                 <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
-                  <a href="#">
+                  <a href="/item/aPendiente?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/save.png')}" width="16" height="16" title='Guardar para Aprobacion'/>
                   </a>
                 </span>
