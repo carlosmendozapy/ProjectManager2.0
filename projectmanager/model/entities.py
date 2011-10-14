@@ -63,7 +63,7 @@ class Item(DeclarativeBase):
     id_tipo_item = Column(Integer, ForeignKey('TIPO_ITEM.id_tipo_item'))
     
     #{ Relations
-    tipoItem = relation("TipoItem", backref=backref('Item', order_by=id_item))    
+    tipoItem = relation("TipoItem", backref=backref('Item', order_by=cod_item))    
      
 class Estado(DeclarativeBase):
 
@@ -128,7 +128,7 @@ class VersionItem(DeclarativeBase):
 
     #{ Relations
     
-    item = relation("Item", backref=backref('VersionItem', order_by=id_version_item))
+    item = relation("Item", backref=backref('VersionItem', order_by=id_version_item),order_by="Item.cod_item")
     estado = relation("Estado", backref=backref('VersionItem', order_by=id_version_item))
     tipoItem = relation("TipoItem", backref=backref('VersionItem', order_by=id_version_item))
     usuarioModifico  = relation("Usuario", backref=backref('VersionItem', order_by=id_version_item))	    

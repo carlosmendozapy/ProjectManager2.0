@@ -73,13 +73,13 @@ class ItemController(BaseController):
             filter(Estado.nom_estado == 'Confirmado').one()
             
     @expose('projectmanager.templates.items.items')
-    def adminItem(self, faseid,**kw):                       
+    def adminItem(self, **kw):                       
 	    
         if 'msg' in kw:
            flash(_(kw['msg']),'warning')
                
         Globals.current_phase = DBSession.query(Fase).\
-            filter(Fase.id_fase == faseid).one()
+            filter(Fase.id_fase == kw['faseid']).one()
                    
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\
@@ -288,28 +288,16 @@ class ItemController(BaseController):
             Padres.append(unPadre)    
             
         #Recuperar Nombre de los Hijos de esta Version de Item
-        existe=True
+        Hijos=[]
         try:
             yoPadre = DBSession.query(Padre).\
                 filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
-        except NoResultFound,e:                    
-            existe=False
-        
-        '''
-        Hijos = []
-        if existe:    
-            yoPadre = DBSession.query(Padre).\
-                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
-            for hijo in yoPadre.hijos:
-                if hijo.ultima_version == 'S':
-                    Hijos.append(hijo)
-        '''
-        yoPadre = DBSession.query(Padre).\
-                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
                 
-        Hijos = DBSession.query(VersionItem).\
+            Hijos = DBSession.query(VersionItem).\
             filter(VersionItem.Padres.contains(yoPadre)).\
             filter(VersionItem.ultima_version == 'S').all()
+        except NoResultFound,e:                    
+            existe=False
             
         Relaciones.append(Padres)
         Relaciones.append(Hijos)
