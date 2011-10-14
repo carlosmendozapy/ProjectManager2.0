@@ -14,6 +14,7 @@ import formencode
 from formencode import *
 from projectmanager.model import DeclarativeBase, metadata, DBSession
 from projectmanager.model.entities import Item
+from projectmanager.lib.app_globals import Globals
 
 class FilteringSchema(Schema):
     filter_extra_fields = False
@@ -23,7 +24,7 @@ class FilteringSchema(Schema):
 class UniqueItemName(formencode.FancyValidator):
     itemnames=[]        
     def _to_python(self, value, state):
-        items = DBSession.query(Item).all()
+        items = DBSession.query(Item).filter(Item.tipoItem.has(id_fase = Globals.current_phase.id_fase)).all()
         for item in items:
             self.itemnames.append(item.nom_item)      
         if value in self.itemnames:
