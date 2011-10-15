@@ -299,8 +299,31 @@ class ItemController(BaseController):
         except NoResultFound,e:                    
             existe=False
             
+        #Recuperar Nombre de los Antecesores de esta Version de Item
+        Antecesores=[]
+        for antecesor in unaVersionItem.Antecesores:
+            unAntecesor = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item==antecesor.id_version_item).\
+                one()
+            Antecesores.append(unAntecesor)
+            
+        #Recuperar Nombre de los Sucesores de esta Version de Item
+        Sucesores=[]
+        try:
+            yoAntecesor = DBSession.query(Antecesor).\
+                filter(Antecesor.id_version_item==unaVersionItem.id_version_item).one()
+                
+            Sucesores= DBSession.query(VersionItem).\
+            filter(VersionItem.Antecesores.contains(yoAntecesor)).\
+            filter(VersionItem.ultima_version == 'S').all()
+        except NoResultFound,e:                    
+            existe=False
+            
         Relaciones.append(Padres)
         Relaciones.append(Hijos)
+        Relaciones.append(Antecesores)
+        Relaciones.append(Sucesores)
+        
         return dict(atributosItem=atributosItem, relaciones=Relaciones)  
         
     @expose('projectmanager.templates.items.atributosVersion')
@@ -314,7 +337,53 @@ class ItemController(BaseController):
             filter(AtributoItem.versionItem==unaVersionItem).\
             order_by(AtributoItem.id_atributo).all()                
             
-        return dict(atributosItem=atributosItem)
+        Relaciones=[]
+        #Recuperar Nombre de los Padres de esta Version de Item
+        Padres = []
+        for padre in unaVersionItem.Padres:            
+            unPadre = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item == padre.id_version_item).\
+                one()            
+            Padres.append(unPadre)    
+            
+        #Recuperar Nombre de los Hijos de esta Version de Item
+        Hijos=[]
+        try:
+            yoPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
+                
+            Hijos = DBSession.query(VersionItem).\
+            filter(VersionItem.Padres.contains(yoPadre)).\
+            filter(VersionItem.ultima_version == 'S').all()
+        except NoResultFound,e:                    
+            existe=False
+            
+        #Recuperar Nombre de los Antecesores de esta Version de Item
+        Antecesores=[]
+        for antecesor in unaVersionItem.Antecesores:
+            unAntecesor = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item==antecesor.id_version_item).\
+                one()
+            Antecesores.append(unAntecesor)
+            
+        #Recuperar Nombre de los Sucesores de esta Version de Item
+        Sucesores=[]
+        try:
+            yoAntecesor = DBSession.query(Antecesor).\
+                filter(Antecesor.id_version_item==unaVersionItem.id_version_item).one()
+                
+            Sucesores= DBSession.query(VersionItem).\
+            filter(VersionItem.Antecesores.contains(yoAntecesor)).\
+            filter(VersionItem.ultima_version == 'S').all()
+        except NoResultFound,e:                    
+            existe=False
+            
+        Relaciones.append(Padres)
+        Relaciones.append(Hijos)
+        Relaciones.append(Antecesores)
+        Relaciones.append(Sucesores)
+        
+        return dict(atributosItem=atributosItem, relaciones=Relaciones)
 
     @expose('projectmanager.templates.items.editAtributo')
     def editAtributo(self, **kw):

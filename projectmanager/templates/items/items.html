@@ -85,7 +85,7 @@
                   <img src="${tg.url('/images/del.png')}" width="16" height="16" title='Eliminar Item'/>
                   </a>
                 </span>
-                <span py:if="versionItem.estado.nom_estado != 'En Modificacion'">
+                <span py:if="versionItem.estado.nom_estado != 'En Modificacion' and versionItem.estado.nom_estado != 'Aprobado'">
                   <a href="#">
                   <img src="${tg.url('/images/edit.png')}" width="16" height="16" title='Pasar a estado de Modificacion de Item'/>
                   </a>
@@ -104,14 +104,7 @@
                 </span>
             </td>                     
             <td align='center'>${versionItem.item.cod_item}</td>
-            <td>
-                <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
-                    <a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a>                
-                </span>
-                <span py:if="versionItem.estado.nom_estado == 'Aprobado'">
-                    ${versionItem.item.nom_item}
-                </span>
-            </td>
+            <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item}">${versionItem.item.nom_item}</a></td>
             <td align='center'>${versionItem.estado.nom_estado}</td>
             <td align='center'>${versionItem.tipoItem.nom_tipo_item}</td>
             <td align='center'>${versionItem.usuarioModifico.login_name}</td>

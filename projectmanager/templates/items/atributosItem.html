@@ -104,12 +104,12 @@
                     <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar hijo</a>
                 </span>
             </td>
-            <td>
+            <td><li py:for="antecesor in relaciones[2]">${antecesor.item.nom_item}</li>
                 <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
                     <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar antecesor</a>
                 </span>
             </td>
-            <td>
+            <td><li py:for="sucesor in relaciones[3]">${sucesor.item.nom_item}</li>
                 <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
                     <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar sucesor</a>
                 </span>
