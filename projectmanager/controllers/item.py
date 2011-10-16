@@ -84,14 +84,20 @@ class ItemController(BaseController):
         if 'msg' in kw:
            flash(_(kw['msg']),'warning')
                
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
+        
+        rechazado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Rechazado').one()
+            
         Globals.current_phase = DBSession.query(Fase).\
             filter(Fase.id_fase == kw['faseid']).one()
                    
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\
-            filter(VersionItem.estado!=self.eliminado).\
-            filter(VersionItem.estado!=self.rechazado).all()
+            filter(VersionItem.id_estado!=eliminado.id_estado).\
+            filter(VersionItem.id_estado!=rechazado.id_estado).all()
 
         return dict(items=list_items)
         
