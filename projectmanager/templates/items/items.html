@@ -81,12 +81,12 @@
             </td>   
             <td>
                 <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
-                  <a href="#">
+                  <a href="/item/aEliminar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/del.png')}" width="16" height="16" title='Eliminar Item'/>
                   </a>
                 </span>
                 <span py:if="versionItem.estado.nom_estado != 'En Modificacion' and versionItem.estado.nom_estado != 'Aprobado'">
-                  <a href="#">
+                  <a href="/item/aModificar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/edit.png')}" width="16" height="16" title='Pasar a estado de Modificacion de Item'/>
                   </a>
                 </span>
@@ -95,6 +95,11 @@
                 <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
                   <a href="/item/aPendiente?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/save.png')}" width="16" height="16" title='Guardar para Aprobacion'/>
+                  </a>
+                </span>
+                <span py:if="versionItem.estado.nom_estado == 'Eliminar'">
+                  <a href="/item/aEliminado?id_version_item=${versionItem.id_version_item}">
+                  <img src="${tg.url('/images/rconfirmar.png')}" width="16" height="16" title='Confirmar la Eliminación'/>
                   </a>
                 </span>
                 <span py:if="versionItem.estado.nom_estado == 'Pendiente'">

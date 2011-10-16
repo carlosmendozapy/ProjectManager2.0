@@ -63,6 +63,9 @@ class ItemController(BaseController):
         self.eliminado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
         
+        self.eliminar = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminar').one()
+        
         self.rechazado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Rechazado').one()
             
@@ -71,6 +74,9 @@ class ItemController(BaseController):
         
         self.confirmado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Confirmado').one()
+            
+        self.modificacion = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'En Modificacion').one()
             
     @expose('projectmanager.templates.items.items')
     def adminItem(self, **kw):                       
@@ -85,8 +91,7 @@ class ItemController(BaseController):
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\
             filter(VersionItem.estado!=self.eliminado).\
-            filter(VersionItem.estado!=self.rechazado).\
-            order_by(VersionItem.item).all()
+            filter(VersionItem.estado!=self.rechazado).all()
 
         return dict(items=list_items)
         
@@ -685,7 +690,50 @@ class ItemController(BaseController):
             DBSession.add(nuevoAtributoItem)
                    
         redirect('adminItem?faseid=' +\
-            str(nuevaVersionItem.id_fase)) 
+            str(nuevaVersionItem.id_fase))
+    
+    @expose()
+    def aModificar(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = self.modificacion       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionItem.Padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+                   
+        redirect('adminItem?faseid=' +\
+            str(nuevaVersionItem.id_fase))
            
     @expose()
     def aPendiente(self, **kw):
@@ -728,7 +776,95 @@ class ItemController(BaseController):
             DBSession.add(nuevoAtributoItem)
                    
         redirect('adminItem?faseid=' +\
+            str(nuevaVersionItem.id_fase))
+            
+    @expose()
+    def aEliminar(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = self.eliminar       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionItem.Padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+                   
+        redirect('adminItem?faseid=' +\
             str(nuevaVersionItem.id_fase)) 
+    
+    @expose()
+    def aEliminado(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   int(kw['id_version_item'])).one()
+        
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = self.eliminado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        for padre in versionItem.Padres:
+            nuevaVersionItem.Padres.append(padre)
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+        
+        DBSession.flush()
+                   
+        redirect('adminItem?faseid=' +\
+            str(nuevaVersionItem.id_fase))
             
     @expose('projectmanager.templates.items.itemHistory')   
     def history(self, **kw):
