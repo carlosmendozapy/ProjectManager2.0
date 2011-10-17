@@ -13,10 +13,16 @@
 
 <body>
     
-    <h1>Registrar Nuevo Item</h1>    
-    <div py:replace="tmpl_context.form(child_args=dict(tipoItem=dict(options=type_options),
+    <h1>Registrar Nuevo Item</h1>
+    <span py:if="ciclo == 1">
+        <img src="${tg.url('/images/ciclo.png')}" alt="Ciclo Formado"/><br />
+        <a href='/item/newItem'><img src="${tg.url('/images/back.png')}"/> ATRAS</a> 
+    </span>    
+    <span py:if="ciclo == 0">
+        <div py:replace="tmpl_context.form(child_args=dict(tipoItem=dict(options=type_options),
                                                        antecesor=dict(options=ancestros),
                                                        padres=dict(options=padres)))">Input Form</div>
+    </span>
   
 </body>
 </html>

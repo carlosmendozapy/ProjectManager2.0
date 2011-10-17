@@ -111,6 +111,9 @@ class ItemController(BaseController):
     @expose('projectmanager.templates.items.newItem')
     def newItem(self, **kw):
 	
+        if 'ciclo' in kw:
+            return dict(ciclo=1)
+            
         fase = DBSession.query(Fase).\
             filter(Fase.id_fase==Globals.current_phase.id_fase).one()
 	
@@ -164,7 +167,8 @@ class ItemController(BaseController):
                
         return dict(type_options = listTipoItem, 
                     ancestros = options_ancestros,
-                    padres = options_padres)    	        
+                    padres = options_padres,
+                    ciclo= 0)    	        
     
     @validate(create_new_item,error_handler=newItem)
     @expose()
@@ -187,7 +191,7 @@ class ItemController(BaseController):
             ciclo = self.controlCiclo(kw['padres'],999999)
             if ciclo:
                 flash(_("Se ha detectado un ciclo: Favor seleccione otro padre"), 'warning')
-                redirect('/item/newItem')
+                redirect('/item/newItem?ciclo=1')
             
         item = Item()
         item.cod_item = str(tipoItem.prefijo) + str(tipoItem.cont_prefijo)
@@ -969,7 +973,7 @@ class ItemController(BaseController):
         
         graph_rel =graph()        
         for nodo in AllItems:
-            graph_rel.add_node(nodo.id_version_item,[('nombre',nodo.item.nom_item)])
+            graph_rel.add_node(nodo.id_version_item,[('label',nodo.item.nom_item)])
                                    
         nodos_list = graph_rel.nodes()
             
@@ -981,10 +985,10 @@ class ItemController(BaseController):
             if item.Padres != None:
                 for obj in item.Padres:
                     if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
-                        graph_rel.add_edge((nodo,int(obj.id_version_item)),wt=1,label='Padre')
+                        graph_rel.add_edge((nodo,int(obj.id_version_item)))
                     
         
-        graph_rel.add_node(itemActual)
+        graph_rel.add_node(itemActual,[('label','Nuevo'),('color','gold')])
         
         for padre in padres:
             graph_rel.add_edge((itemActual,int(padre)))
@@ -993,7 +997,7 @@ class ItemController(BaseController):
         dot = write(graph_rel)
         gvv = gv.readstring(dot)
         gv.layout(gvv,'dot')
-        gv.render(gvv,'png','ciclo.png')
+        gv.render(gvv,'png',os.path.abspath("projectmanager/public/images/ciclo.png"))
         
         ciclos = find_cycle(graph_rel)
         if len(ciclos) > 0:            
