@@ -24,6 +24,13 @@ from pygraph.algorithms.searching import breadth_first_search
 from pygraph.algorithms.cycles import *
 from pygraph.readwrite.dot import write
 
+# Import graphviz
+import sys
+sys.path.append('..')
+sys.path.append('/usr/share/pyshared/')
+sys.path.append('/usr/lib/pyshared/python2.6/')
+import gv
+
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound
@@ -962,8 +969,8 @@ class ItemController(BaseController):
         
         graph_rel =graph()        
         for nodo in AllItems:
-            graph_rel.add_node(nodo.id_version_item)
-                       
+            graph_rel.add_node(nodo.id_version_item,[('nombre',nodo.item.nom_item)])
+                                   
         nodos_list = graph_rel.nodes()
             
         for nodo in nodos_list:
@@ -975,25 +982,19 @@ class ItemController(BaseController):
                 for obj in item.Padres:
                     if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
                         graph_rel.add_edge((nodo,int(obj.id_version_item)))
+                    
         
         graph_rel.add_node(itemActual)
         
         for padre in padres:
             graph_rel.add_edge((itemActual,int(padre)))
             
-            '''
-            #Hijos del item actual                                
-            try:
-                padre=DBSession.query(Padre).\
-                    filter(Padre.id_version_item == int(nodo)).one()
-            except NoResultFound,e:
-                padre = None
-                 
-            if padre != None:                                  
-                for obj in padre.hijos:
-                    if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
-                        graph_rel.add_edge((nodo,int(obj.id_version_item)))                        
-            '''            
+           
+        dot = write(graph_rel)
+        gvv = gv.readstring(dot)
+        gv.layout(gvv,'dot')
+        gv.render(gvv,'png','ciclo.png')
+        
         ciclos = find_cycle(graph_rel)
         if len(ciclos) > 0:            
             print '************************************************************'
