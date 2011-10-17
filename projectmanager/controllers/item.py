@@ -981,7 +981,7 @@ class ItemController(BaseController):
             if item.Padres != None:
                 for obj in item.Padres:
                     if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
-                        graph_rel.add_edge((nodo,int(obj.id_version_item)))
+                        graph_rel.add_edge((nodo,int(obj.id_version_item)),wt=1,label='Padre')
                     
         
         graph_rel.add_node(itemActual)
