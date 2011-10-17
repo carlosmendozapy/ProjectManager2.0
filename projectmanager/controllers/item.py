@@ -176,6 +176,12 @@ class ItemController(BaseController):
         lg_name=request.identity['repoze.who.userid']
         usuario = DBSession.query(Usuario).filter(Usuario.login_name==lg_name).one()
         
+        if len(kw['padres']) > 0:
+            ciclo = self.controlCiclo(kw['padres'],999999)
+            if ciclo:
+                flash(_("Se ha detectado un ciclo: Favor seleccione otro padre"), 'warning')
+                redirect('/item/newItem')
+            
         item = Item()
         item.cod_item = str(tipoItem.prefijo) + str(tipoItem.cont_prefijo)
         tipoItem.cont_prefijo = tipoItem.cont_prefijo + 1
@@ -195,79 +201,24 @@ class ItemController(BaseController):
         nuevaVersionItem.ultima_version = 'S'
         nuevaVersionItem.peso = int(kw['peso'])
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-                                 
+        
+        '''PADRES'''                   
+        if len(kw['padres']) > 0:
+        
+            padres_list=[]
+            for padreID in kw['padres']:                    
+                try:
+                    unPadre = DBSession.query(Padre).\
+                        filter(Padre.id_version_item == int(padreID)).one()
+                    nuevaVersionItem.Padres.append(unPadre)
+                except NoResultFound,e:                    
+                    nuevaVersionItem.Padres.append(Padre(int(padreID)))
+            
         '''ANTECESORES'''
         if len(kw['antecesor']) > 0:
             for antecesorID in kw['antecesor']:
                 nuevaVersionItem.Antecesores.append(Antecesor(antecesorID))
-        
-        '''PADRES'''
-                   
-        if len(kw['padres']) > 0:
-            
-            padres_list=[]
-            for padreID in kw['padres']:
-                existe=True
-                try:
-                    unPadre = DBSession.query(Padre).\
-                        filter(Padre.id_version_item == int(padreID)).one()
-                except NoResultFound,e:                    
-                    nuevaVersionItem.Padres.append(Padre(int(padreID)))
-                    existe=False
-                
-                if existe:
-                    elPadre = DBSession.query(Padre).\
-                        filter(Padre.id_version_item==int(padreID)).one()
-                    nuevaVersionItem.Padres.append(elPadre)
-         
-            ''' CONTROL CON GRAFO
-            aprobado = DBSession.query(Estado).\
-                filter(Estado.nom_estado == 'Aprobado').one()
-            
-            confirmado = DBSession.query(Estado).\
-                filter(Estado.nom_estado == 'Confirmado').one()
-            
-            list= DBSession.query(VersionItem).\
-                filter(or_(VersionItem.estado==aprobado, 
-                       VersionItem.estado==confirmado)).\
-                filter(VersionItem.id_fase==Globals.current_phase.id_fase).\
-                filter(VersionItem.ultima_version=='S').all()            
-        
-            graph_rel =graph()
-            graph_rel.add_node(int(nuevaVersionItem.id_version_item))
-            for nodo in list:
-                graph_rel.add_node(nodo.id_version_item)
-                       
-            nodos_list = graph_rel.nodes()
-            
-            for nodo in nodos_list:
-                #Padres del item actual                            
-                item=DBSession.query(VersionItem).\
-                    filter(VersionItem.id_version_item == nodo).one()
-                
-                if item.Padres != None:
-                    for obj in item.Padres:
-                        if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
-                            graph_rel.add_edge((nodo,int(obj.id_version_item)))
-                                                    
-                #Hijos del item actual                                
-                try:
-                    padre=DBSession.query(Padre).\
-                        filter(Padre.id_version_item == int(nodo)).one()
-                except NoResultFound,e:
-                    padre = None
-                 
-                if padre != None:                                  
-                    for obj in padre.hijos:
-                        if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
-                            graph_rel.add_edge((nodo,int(obj.id_version_item)))                        
-                        
-            ciclos = find_cycle(graph_rel)
-            if len(ciclos) > 0:
-                DBSession.rollback()
-                flash(_('Modifique su Seleccion de Padres: Se ha detectado uno o más ciclos'),'warning')
-                redirect('newItem')
-            '''   
+                                                        
         for atributo in DBSession.query(Atributo).filter(Atributo.tipoItem==tipoItem):
             nuevoAtributoItem = AtributoItem()
             nuevoAtributoItem.atributo = atributo
@@ -993,3 +944,66 @@ class ItemController(BaseController):
             response.headers["Content-Type"] =  content_types['download']
             response.headers["Content-Disposition"] = 'attachment; filename="'+archivoAtributo.filename+'"'
         return archivoAtributo.filecontent        
+        
+    @expose()
+    def controlCiclo(self, padres, itemActual):
+        #CONTROL CON GRAFO
+        aprobado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Aprobado').one()
+        
+        confirmado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Confirmado').one()
+        
+        AllItems= DBSession.query(VersionItem).\
+            filter(or_(VersionItem.estado==aprobado, 
+                    VersionItem.estado==confirmado)).\
+            filter(VersionItem.id_fase==Globals.current_phase.id_fase).\
+            filter(VersionItem.ultima_version=='S').all()            
+        
+        graph_rel =graph()        
+        for nodo in AllItems:
+            graph_rel.add_node(nodo.id_version_item)
+                       
+        nodos_list = graph_rel.nodes()
+            
+        for nodo in nodos_list:
+            #Padres del item actual                            
+            item=DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item == nodo).one()
+                
+            if item.Padres != None:
+                for obj in item.Padres:
+                    if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
+                        graph_rel.add_edge((nodo,int(obj.id_version_item)))
+        
+        graph_rel.add_node(itemActual)
+        
+        for padre in padres:
+            graph_rel.add_edge((itemActual,int(padre)))
+            
+            '''
+            #Hijos del item actual                                
+            try:
+                padre=DBSession.query(Padre).\
+                    filter(Padre.id_version_item == int(nodo)).one()
+            except NoResultFound,e:
+                padre = None
+                 
+            if padre != None:                                  
+                for obj in padre.hijos:
+                    if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
+                        graph_rel.add_edge((nodo,int(obj.id_version_item)))                        
+            '''            
+        ciclos = find_cycle(graph_rel)
+        if len(ciclos) > 0:            
+            print '************************************************************'
+            print 'CICLOS DETECTADOS'
+            #flash(_('Modifique su Seleccion de Padres: Se ha detectado uno o mas ciclos'),'warning')
+            #redirect('newItem')
+            return True
+        else:
+            print '************************************************************'
+            print 'CICLOS NO DETECTADOS'
+            flash(_('No Se han detectado ciclos'),'info')
+            return False
+        

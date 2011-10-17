@@ -30,7 +30,7 @@ class UniqueItemName(formencode.FancyValidator):
         if value in self.itemnames:
             raise formencode.Invalid(u'Este nombre de item ya existe, favor utilice otro',\
                     value, state)
-        return value    
+        return value
     
 class NewItemForm(TableForm):
 
