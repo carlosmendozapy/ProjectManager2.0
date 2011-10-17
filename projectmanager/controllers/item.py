@@ -910,6 +910,12 @@ class ItemController(BaseController):
         Globals.current_item = nuevaVersionItem
         
         redirect('/item/history?id_item=' + str(Globals.current_item.id_item))
+    
+        
+    @expose()
+    def revivirItem(self, **kw):
+            flash(_("Todavia no esta implementado la funcion de revivir"),'info')
+            redirect("/item/adminItem?faseid=" + str(Globals.current_phase.id_fase))
         
     #**************************** BUSQUEDA Y OTROS **********************************    
     @expose('projectmanager.templates.items.items')
@@ -957,6 +963,11 @@ class ItemController(BaseController):
         return archivoAtributo.filecontent        
         
     @expose()
+    def advertirItemsRelacionados(self, itemVersion):
+        lista_items = []
+        return lista_items
+        
+    @expose()
     def controlCiclo(self, padres, itemActual):
         #CONTROL CON GRAFO
         aprobado = DBSession.query(Estado).\
@@ -1000,15 +1011,9 @@ class ItemController(BaseController):
         gv.render(gvv,'png',os.path.abspath("projectmanager/public/images/ciclo.png"))
         
         ciclos = find_cycle(graph_rel)
-        if len(ciclos) > 0:            
-            print '************************************************************'
-            print 'CICLOS DETECTADOS'
-            #flash(_('Modifique su Seleccion de Padres: Se ha detectado uno o mas ciclos'),'warning')
-            #redirect('newItem')
+        if len(ciclos) > 0: 
             return True
-        else:
-            print '************************************************************'
-            print 'CICLOS NO DETECTADOS'
+        else:           
             flash(_('No Se han detectado ciclos'),'info')
             return False
         
