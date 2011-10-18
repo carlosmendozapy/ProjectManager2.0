@@ -143,6 +143,7 @@ def setup_app(command, conf, vars):
                             model.Estado(u'En Revision'),
                             model.Estado(u'Abierta'),
                             model.Estado(u'Confirmado'),
+                            model.Estado(u'Eliminar'),
                             model.Privilegios(u'crear',u'Permite la Creacion de una entidad'),
                             model.Privilegios(u'modificar',u'Permite la Modificacion de una entidad'),
                             model.Privilegios(u'eliminar',u'Permite la Eliminacion de una entidad'),
@@ -175,6 +176,13 @@ def setup_app(command, conf, vars):
     admin_lb.nom_rol=u'Admin de LB'
     admin_lb.des_rol=u'Rol que se encarga de administrar las Lineas Bases de un proyecto'
     admin_lb.tipoRol= tipo_proyecto
+    
+    permisos = model.Permisos()
+    permisos.entidad = lb
+    for privilegio in model.DBSession.query(model.Privilegios).all():                
+                permisos.privilegios.append(privilegio)
+                
+    admin_lb.permisos.append(permisos)             
     
     model.DBSession.add(admin_lb)
     
