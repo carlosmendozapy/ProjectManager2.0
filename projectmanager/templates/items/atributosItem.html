@@ -144,8 +144,12 @@
             </td>
         </tr>        
     </table>
-    
-    <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+    <span py:if="frompage == u'item'">
+        <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+    </span>
+    <span py:if="frompage == 'revivir'">
+        <a href='/item/revivirItem'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+    </span>
   </div>
   <div class="clearingdiv" />  
 </body>

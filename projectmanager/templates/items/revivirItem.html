@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Lista de Items</title>
+</head>
+
+<body>   
+   <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+   <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+   <a><h2>Revivir Items Eliminados</h2></a>
+   <hr width="100%" color="#6699FF" size="2"/>   
+  <div>
+    ${search()}
+  </div>
+
+  <div id="AdministrarItem">    
+    <table rules='rows'>
+          <tr>          
+            <th width="3%"></th>            
+            <th width="10%">Codigo</th>
+            <th width="10%">Nombre</th>
+            <th width="15%">Estado</th>          
+            <th width="10%">Tipo Item</th>          
+            <th width="15%">Usuario Modifico</th>
+            <th width="15%">Fecha Modificacion</th>                                             
+          </tr>
+          <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
+            <td>
+                <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
+                <a href="/item/revivir?id_item=${versionItem.id_item}">
+                <img src="${tg.url('/images/revivir.png')}" width="16" height="16" title='Versiones de Item'/>
+                </a>
+                </span>                
+            </td>                                    
+            <td align='center'>${versionItem.item.cod_item}</td>
+            <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item};frompage=${'revivir'}">${versionItem.item.nom_item}</a></td>
+            <td align='center'>${versionItem.estado.nom_estado}</td>
+            <td align='center'>${versionItem.tipoItem.nom_tipo_item}</td>
+            <td align='center'>${versionItem.usuarioModifico.login_name}</td>
+            <td>${versionItem.fecha}</td>                        
+          </tr>
+        </table>
+
+        <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
+  </div>
+
+  <div class="clearingdiv" />  
+</body>
+</html>

@@ -296,8 +296,10 @@ class ItemController(BaseController):
         Relaciones.append(Hijos)
         Relaciones.append(Antecesores)
         Relaciones.append(Sucesores)
-        
-        return dict(atributosItem=atributosItem, relaciones=Relaciones)  
+        print '*************************************************************************************'
+        print kw['frompage']
+        return dict(atributosItem=atributosItem, relaciones=Relaciones,\
+                    frompage = str(kw['frompage']))  
         
     @expose('projectmanager.templates.items.atributosVersion')
     def atributosVersion(self, **kw):                        
@@ -912,10 +914,15 @@ class ItemController(BaseController):
         redirect('/item/history?id_item=' + str(Globals.current_item.id_item))
     
         
-    @expose()
+    @expose('projectmanager.templates.items.revivirItem')
     def revivirItem(self, **kw):
-            flash(_("Todavia no esta implementado la funcion de revivir"),'info')
-            redirect("/item/adminItem?faseid=" + str(Globals.current_phase.id_fase))
+        listItems = DBSession.query(VersionItem).\
+            filter(VersionItem.fase == Globals.current_phase).\
+            filter(VersionItem.ultima_version == 'S').\
+            filter(VersionItem.estado == self.eliminado).\
+            order_by(VersionItem.item).all()
+            
+        return dict(items=listItems)        
         
     #**************************** BUSQUEDA Y OTROS **********************************    
     @expose('projectmanager.templates.items.items')
