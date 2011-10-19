@@ -103,7 +103,7 @@
                     ${padre.item.nom_item} -> (${padre.estado.nom_estado})<br />
                 </span>
                 <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                    <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar padre</a>
+                    <a href='#'><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar padre</a>
                 </span>                
             </td>
             <td><span py:for="hijo in relaciones[1]">
@@ -115,7 +115,7 @@
                     ${hijo.item.nom_item} -> (${hijo.estado.nom_estado})<br />
                 </span>
                 <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                    <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar hijo</a>
+                    <a href='#'><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar hijo</a>
                 </span>
             </td>
             <td><span py:for="antecesor in relaciones[2]">
@@ -127,7 +127,7 @@
                     ${antecesor.item.nom_item} -> (${antecesor.estado.nom_estado})<br />
                 </span>
                 <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                    <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar antecesor</a>
+                    <a href='#'><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar antecesor</a>
                 </span>
             </td>
             <td><span py:for="sucesor in relaciones[3]">
@@ -139,7 +139,7 @@
                     ${sucesor.item.nom_item} -> (${sucesor.estado.nom_estado})<br />
                 </span>
                 <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                    <a href='#'><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar sucesor</a>
+                    <a href='#'><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar sucesor</a>
                 </span>
             </td>
         </tr>        

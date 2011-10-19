@@ -258,7 +258,9 @@ class ItemController(BaseController):
             unPadre = DBSession.query(VersionItem).\
                 filter(VersionItem.id_version_item == padre.id_version_item).\
                 one()            
-            Padres.append(unPadre)    
+            
+            if unPadre.ultima_version == 'S':
+                Padres.append(unPadre)    
             
         #Recuperar Nombre de los Hijos de esta Version de Item
         Hijos=[]
@@ -278,7 +280,8 @@ class ItemController(BaseController):
             unAntecesor = DBSession.query(VersionItem).\
                 filter(VersionItem.id_version_item==antecesor.id_version_item).\
                 one()
-            Antecesores.append(unAntecesor)
+            if unAntecesor.ultima_version == 'S':
+                Antecesores.append(unAntecesor)
             
         #Recuperar Nombre de los Sucesores de esta Version de Item
         Sucesores=[]
@@ -296,8 +299,7 @@ class ItemController(BaseController):
         Relaciones.append(Hijos)
         Relaciones.append(Antecesores)
         Relaciones.append(Sucesores)
-        print '*************************************************************************************'
-        print kw['frompage']
+        
         return dict(atributosItem=atributosItem, relaciones=Relaciones,\
                     frompage = str(kw['frompage']))  
         
@@ -424,11 +426,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = int(kw['valor'])
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+         # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -470,11 +502,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
+        
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
             
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
         
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -523,11 +585,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+         # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).\
@@ -580,11 +672,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
        
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         if int(kw['id_atributo']) < 0:
             for atributo in DBSession.query(AtributoItem).\
@@ -643,11 +765,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -686,11 +838,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -729,11 +911,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -750,6 +962,11 @@ class ItemController(BaseController):
             
     @expose()
     def aEliminar(self, **kw):
+        
+        if self.quedanHuerfanos(kw['id_version_item']):
+            flash(_("La Eliminacion de este Item producira huerfanos en la siguiente fase"),'warning')
+            redirect("/item/adminItem?faseid=" + str(Globals.current_phase.id_fase))
+            
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -772,11 +989,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -793,6 +1040,7 @@ class ItemController(BaseController):
     
     @expose()
     def aEliminado(self, **kw):
+                
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -815,11 +1063,41 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
             nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
@@ -916,13 +1194,20 @@ class ItemController(BaseController):
         
     @expose('projectmanager.templates.items.revivirItem')
     def revivirItem(self, **kw):
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
+            
         listItems = DBSession.query(VersionItem).\
             filter(VersionItem.fase == Globals.current_phase).\
             filter(VersionItem.ultima_version == 'S').\
-            filter(VersionItem.estado == self.eliminado).\
+            filter(VersionItem.estado == eliminado).\
             order_by(VersionItem.item).all()
             
-        return dict(items=listItems)        
+        return dict(items=listItems)
+    
+    @expose()
+    def revivir(self, **kw):
+        return false        
         
     #**************************** BUSQUEDA Y OTROS **********************************    
     @expose('projectmanager.templates.items.items')
@@ -990,26 +1275,39 @@ class ItemController(BaseController):
             filter(VersionItem.ultima_version=='S').all()            
         
         graph_rel =graph()        
+        
         for nodo in AllItems:
             graph_rel.add_node(nodo.id_version_item,[('label',nodo.item.nom_item)])
-                                   
-        nodos_list = graph_rel.nodes()
-            
-        for nodo in nodos_list:
-            #Padres del item actual                            
+        
+        for nodo in graph_rel.nodes():
+            #Padres del nodo item actual                            
             item=DBSession.query(VersionItem).\
                 filter(VersionItem.id_version_item == nodo).one()
                 
             if item.Padres != None:
                 for obj in item.Padres:
-                    if not graph_rel.has_edge((nodo,int(obj.id_version_item))):
-                        graph_rel.add_edge((nodo,int(obj.id_version_item)))
-                    
+                    itemPadre = DBSession.query(VersionItem).\
+                    filter(VersionItem.id_version_item== obj.id_version_item).\
+                    one()
+                    print '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+                    print 'nodos: ' +  str(graph_rel.nodes())
+                    print 'nodo: ' + str(nodo)
+                    print 'Padre: ' + str(itemPadre.id_version_item)
+                    if itemPadre.ultima_version=='S' and\
+                        (itemPadre.estado.nom_estado=='Aprobado' or\
+                         itemPadre.estado.nom_estado=='Confirmado') and\
+                         not graph_rel.has_edge((obj.id_version_item,int(nodo))):                        
+                        print graph_rel.edges()
+                        print 'Padre: ' + str(itemPadre.id_version_item)
+                        print 'Hijo: ' + str(nodo)
+                        graph_rel.add_edge((itemPadre.id_version_item,int(nodo)))
         
         graph_rel.add_node(itemActual,[('label','Nuevo'),('color','gold')])
         
         for padre in padres:
             graph_rel.add_edge((itemActual,int(padre)))
+            
+        
             
            
         dot = write(graph_rel)
@@ -1023,4 +1321,29 @@ class ItemController(BaseController):
         else:           
             flash(_('No Se han detectado ciclos'),'info')
             return False
+            
+    @expose()
+    def quedanHuerfanos(self, id_version):
+        
+        Sucesores=[]
+        existe = True
+        try:
+            yoAntecesor = DBSession.query(Antecesor).\
+                filter(Antecesor.id_version_item==id_version).one()
+                
+            Sucesores= DBSession.query(VersionItem).\
+            filter(VersionItem.Antecesores.contains(yoAntecesor)).\
+            filter(VersionItem.ultima_version == 'S').all()
+        except NoResultFound,e:                    
+            existe=False
+        
+        if existe==False:
+            return False
+        else:
+            for sucesor in Sucesores:
+                antecesores = sucesor.Antecesores
+                print '**************************************************************************'
+                print antecesores.length()                
+            
+        return false
         
