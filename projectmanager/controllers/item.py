@@ -104,7 +104,8 @@ class ItemController(BaseController):
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\
             filter(VersionItem.id_estado!=eliminado.id_estado).\
-            filter(VersionItem.id_estado!=rechazado.id_estado).all()
+            filter(VersionItem.id_estado!=rechazado.id_estado).\
+            order_by(VersionItem.id_item).all()
 
         return dict(items=list_items)
         
@@ -1289,26 +1290,18 @@ class ItemController(BaseController):
                     itemPadre = DBSession.query(VersionItem).\
                     filter(VersionItem.id_version_item== obj.id_version_item).\
                     one()
-                    print '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
-                    print 'nodos: ' +  str(graph_rel.nodes())
-                    print 'nodo: ' + str(nodo)
-                    print 'Padre: ' + str(itemPadre.id_version_item)
+                   
                     if itemPadre.ultima_version=='S' and\
-                        (itemPadre.estado.nom_estado=='Aprobado' or\
-                         itemPadre.estado.nom_estado=='Confirmado') and\
-                         not graph_rel.has_edge((obj.id_version_item,int(nodo))):                        
-                        print graph_rel.edges()
-                        print 'Padre: ' + str(itemPadre.id_version_item)
-                        print 'Hijo: ' + str(nodo)
+                      (itemPadre.estado.nom_estado=='Aprobado' or\
+                       itemPadre.estado.nom_estado=='Confirmado') and\
+                       not graph_rel.has_edge((obj.id_version_item,int(nodo))):                        
+                       
                         graph_rel.add_edge((itemPadre.id_version_item,int(nodo)))
         
         graph_rel.add_node(itemActual,[('label','Nuevo'),('color','gold')])
         
         for padre in padres:
             graph_rel.add_edge((itemActual,int(padre)))
-            
-        
-            
            
         dot = write(graph_rel)
         gvv = gv.readstring(dot)
@@ -1325,25 +1318,38 @@ class ItemController(BaseController):
     @expose()
     def quedanHuerfanos(self, id_version):
         
+        itemEliminar = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==id_version).one()
+            
         Sucesores=[]
         existe = True
         try:
             yoAntecesor = DBSession.query(Antecesor).\
-                filter(Antecesor.id_version_item==id_version).one()
+                filter(Antecesor.id_version_item==int(id_version)).one()
                 
-            Sucesores= DBSession.query(VersionItem).\
-            filter(VersionItem.Antecesores.contains(yoAntecesor)).\
-            filter(VersionItem.ultima_version == 'S').all()
-        except NoResultFound,e:                    
-            existe=False
-        
-        if existe==False:
-            return False
-        else:
-            for sucesor in Sucesores:
-                antecesores = sucesor.Antecesores
-                print '**************************************************************************'
-                print antecesores.length()                
+            Sucesores= yoAntecesor.sucesores
             
-        return false
+        except NoResultFound,e:                    
+            return False
+        
+        existe = False        
+        for sucesor in Sucesores:            
+            if sucesor.ultima_version=='S' and\
+            sucesor.estado.nom_estado != 'Eliminado':
+                existe = True
+                antecesores = sucesor.Antecesores
+                for antecesor in antecesores:
+                    item = DBSession.query(VersionItem).\
+                    filter(VersionItem.id_version_item==antecesor.id_version_item).\
+                    one()                    
+                    
+                    if item.id_item != int(itemEliminar.id_item):                        
+                        # Si encuentra al menos otro item antecesor, 
+                        # entonces se puede eliminar
+                        return False                                   
+        
+        if existe:    
+            return True
+        else:
+            return False
         
