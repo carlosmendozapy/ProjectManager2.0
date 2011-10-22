@@ -64,6 +64,7 @@
             <th width="3%"></th>
             <th width="3%"></th>
             <th width="3%"></th>            
+            <th width="3%"></th>            
             <th width="10%">Codigo</th>
             <th width="10%">Nombre</th>
             <th width="15%">Estado</th>          
@@ -82,7 +83,7 @@
             <td>
                 <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
                   <a href="/item/aEliminar?id_version_item=${versionItem.id_version_item}">
-                  <img src="${tg.url('/images/del.png')}" width="16" height="16" title='Eliminar Item'/>
+                  <img src="${tg.url('/images/delete.png')}" width="16" height="16" title='Eliminar Item'/>
                   </a>
                 </span>
                 <span py:if="versionItem.estado.nom_estado != 'En Modificacion' and versionItem.estado.nom_estado != 'Aprobado'">
@@ -99,15 +100,27 @@
                 </span>
                 <span py:if="versionItem.estado.nom_estado == 'Eliminar'">
                   <a href="/item/aEliminado?id_version_item=${versionItem.id_version_item}">
-                  <img src="${tg.url('/images/rconfirmar.png')}" width="16" height="16" title='Confirmar la Eliminación'/>
-                  </a>
+                  <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar la Eliminación'/>
+                  </a>                   
                 </span>
                 <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
                   <a href="/item/confirmar?id_version_item=${versionItem.id_version_item}">
-                  <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar Item'/>
-                  </a>
+                  <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar Modificacion'/>
+                  </a>                                    
                 </span>
-            </td>                     
+            </td> 
+            <td>
+                <span py:if="versionItem.estado.nom_estado == 'Eliminar'">
+                  <a href="/item/rechazar?id_version_item=${versionItem.id_version_item}">
+                  <img src="${tg.url('/images/eliminar.png')}" width="16" height="16" title='Rechazar Eliminacion'/>
+                  </a>   
+                </span>
+                <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
+                    <a href="/item/rechazar?id_version_item=${versionItem.id_version_item}">
+                  <img src="${tg.url('/images/eliminar.png')}" width="16" height="16" title='Rechazar Modificacion'/>
+                  </a>                  
+                </span>
+            </td>                    
             <td align='center'>${versionItem.item.cod_item}</td>
             <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item};frompage=${'item'}">${versionItem.item.nom_item}</a></td>
             <td align='center'>${versionItem.estado.nom_estado}</td>

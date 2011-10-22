@@ -13,7 +13,7 @@ from tw.forms.validators import FieldsMatch
 import formencode
 from formencode import *
 from projectmanager.model import DeclarativeBase, metadata, DBSession
-from projectmanager.model.entities import Item
+from projectmanager.model.entities import VersionItem
 from projectmanager.lib.app_globals import Globals
 
 class FilteringSchema(Schema):
@@ -22,12 +22,16 @@ class FilteringSchema(Schema):
     ignore_key_missing = False
     
 class UniqueItemName(formencode.FancyValidator):
-    itemnames=[]        
-    def _to_python(self, value, state):
-        items = DBSession.query(Item).filter(Item.tipoItem.has(id_fase = Globals.current_phase.id_fase)).all()
-        for item in items:
-            self.itemnames.append(item.nom_item)      
-        if value in self.itemnames:
+            
+    def _to_python(self, value, state):        
+        items = DBSession.query(VersionItem).\
+            filter(VersionItem.id_fase==Globals.current_phase.id_fase).all()
+        
+        itemnames=[]
+        for version in items:
+            itemnames.append(version.item.nom_item)      
+                
+        if value in itemnames:
             raise formencode.Invalid(u'Este nombre de item ya existe, favor utilice otro',\
                     value, state)
         return value

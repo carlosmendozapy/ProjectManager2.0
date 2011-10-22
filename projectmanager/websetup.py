@@ -79,6 +79,12 @@ def setup_app(command, conf, vars):
     item.des_entidad = u'Identifica a los Items de los proyectos'
     model.DBSession.add(item)
     
+    #ESTADOS DE ITEM
+    estadosItem = model.EntidadSistema()
+    estadosItem.nom_entidad = u'Estados de Item'
+    estadosItem.des_entidad = u'Indentifica a los estados de los items'
+    model.DBSession.add(estadosItem)
+    
     #LINEA BASE
     lb = model.EntidadSistema()
     lb.nom_entidad = u'Linea Base'

@@ -37,7 +37,7 @@
           <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
             <td>
                 <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
-                <a href="/item/revivir?id_item=${versionItem.id_item}">
+                <a href="/item/revivir?id_item=${versionItem.id_version_item}">
                 <img src="${tg.url('/images/revivir.png')}" width="16" height="16" title='Versiones de Item'/>
                 </a>
                 </span>                
