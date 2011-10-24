@@ -8,6 +8,7 @@ from sqlalchemy.types import Integer, Unicode
 from sqlalchemy.orm import relation, backref
 
 from projectmanager.model import DeclarativeBase, metadata, DBSession
+from sqlalchemy.orm.exc import NoResultFound
 from projectmanager.model.roles import Usuario
 
 PadreVersionItem = Table('PADRE_VERSIONITEM', metadata,
@@ -112,6 +113,119 @@ class VersionItem(DeclarativeBase):
             
     __tablename__ = 'VERSION_ITEM'
     
+    def getRelacionesDer(self,idVersion):
+        derecha=[]
+        f = open("derecha.txt","a")
+        f.write("Llamada a derecha\n")
+        sucesores = self.getSucesores(idVersion)
+        derecha.extend(sucesores)
+                
+        for item in derecha:
+            sucesores = self.getSucesores(item.id_version_item)
+            derecha.extend(sucesores)
+            hijos=self.getHijos(item.id_version_item)
+            derecha.extend(hijos)
+            f.write(item.item.nom_item + "\n")
+            
+        f.close()
+        return derecha
+        
+    def getRelacionesIzq(self, idVersion):
+        
+        izquierda=[]
+        f=open("izquierda.txt","a")
+        f.write("Llamada a izquierda\n")       
+        antecesores = self.getAntecesores(idVersion)               
+        izquierda.extend(antecesores)
+        
+        for item in izquierda:
+            antecesores = self.getAntecesores(item.id_version_item)
+            izquierda.extend(antecesores)
+            hijos = self.getHijos(item.id_version_item)                        
+            izquierda.extend(hijos)
+            f.write(item.item.nom_item + "\n")
+                
+        f.close()
+        return izquierda
+        
+    def getAntecesoresAll(self, lista):
+        for item in lista:
+            lista.extend(self.getAntecesores(item.id_version_item))
+            
+        return lista
+    
+    def getSucesoresAll(self, lista):
+        
+        for item in lista:
+            lista.extend(self.getSucesores(item.id_version_item))
+            
+        return lista
+        
+    def getHijosNietos(self, lista):
+        
+        for item in lista:
+            lista.extend(self.getHijos(item.id_version_item))            
+        
+        return lista
+        
+    def getSucesores(self, idVersion):
+        sucesores=[]
+        try:
+            yoAntecesor=DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item==int(idVersion)).one()
+            
+            for sucesor in yoAntecesor.sucesores:
+                if sucesor.ultima_version=='S' and\
+                sucesor.estado.nom_estado!='Eliminado':
+                    sucesores.append(sucesor)                    
+            
+        except NoResultFound,e:
+            existe=False
+            
+        return sucesores
+                    
+    def getAntecesores(self, idVersion):
+        itemVersion = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == int(idVersion)).one()
+                   
+        antecesores=[]
+        
+        for antecesor in itemVersion.Antecesores:
+            unItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==antecesor.id_version_item).one()
+            
+            if unItem.ultima_version=='S' and\
+            unItem.estado.nom_estado!='Eliminado':
+                antecesores.append(unItem)
+        
+        return antecesores
+        
+    def getHijos(self, idVersion):
+        hijos=[]
+        f = open("hijos.txt","a")
+        try:
+            print '#########################################################################3333'
+            print 'Entrando en el metodo de hijos'
+            
+            itemPadre=DBSession.query(Padre).\
+            filter(Padre.id_version_item==int(idVersion)).\
+            one()
+            
+            for hijo in itemPadre.hijos:
+                if hijo.ultima_version=='S' and\
+                hijo.estado.nom_estado!='Eliminado':
+                    hijos.append(hijo)
+                    print '#########################################################################3333'
+                    print hijo.item.nom_item
+                    f.write(hijo.item.nom_item + "\n")
+                    
+        except NoResultFound,e:
+            existe=False
+            
+        f.close()
+        return hijos
+            
+        
     #{ Columns    
 
     id_version_item = Column(Integer, Sequence('id_VersionItem_seq'), primary_key=True)                                       

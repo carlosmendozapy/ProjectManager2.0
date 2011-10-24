@@ -244,6 +244,9 @@ class ItemController(BaseController):
     def atributosItem(self, **kw):                        
         unaVersionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item==kw['id_version']).one()
+            
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Eliminado').one()
         
         Globals.current_item = unaVersionItem
         
@@ -259,7 +262,8 @@ class ItemController(BaseController):
                 filter(VersionItem.id_version_item == padre.id_version_item).\
                 one()            
             
-            if unPadre.ultima_version == 'S':
+            if unPadre.ultima_version == 'S' and\
+            unPadre.id_estado != eliminado.id_estado:
                 Padres.append(unPadre)    
             
         #Recuperar Nombre de los Hijos de esta Version de Item
@@ -270,7 +274,8 @@ class ItemController(BaseController):
                 
             Hijos = DBSession.query(VersionItem).\
             filter(VersionItem.Padres.contains(yoPadre)).\
-            filter(VersionItem.ultima_version == 'S').all()
+            filter(VersionItem.ultima_version == 'S').\
+            filter(VersionItem.id_estado!=eliminado.id_estado).all()
         except NoResultFound,e:                    
             existe=False
             
@@ -280,7 +285,8 @@ class ItemController(BaseController):
             unAntecesor = DBSession.query(VersionItem).\
                 filter(VersionItem.id_version_item==antecesor.id_version_item).\
                 one()
-            if unAntecesor.ultima_version == 'S':
+            if unAntecesor.ultima_version == 'S' and\
+            unAntecesor.id_estado != eliminado.id_estado:
                 Antecesores.append(unAntecesor)
             
         #Recuperar Nombre de los Sucesores de esta Version de Item
@@ -291,7 +297,8 @@ class ItemController(BaseController):
                 
             Sucesores= DBSession.query(VersionItem).\
             filter(VersionItem.Antecesores.contains(yoAntecesor)).\
-            filter(VersionItem.ultima_version == 'S').all()
+            filter(VersionItem.ultima_version == 'S').\
+            filter(VersionItem.id_estado!=eliminado.id_estado).all()
         except NoResultFound,e:                    
             existe=False
             
@@ -299,6 +306,8 @@ class ItemController(BaseController):
         Relaciones.append(Hijos)
         Relaciones.append(Antecesores)
         Relaciones.append(Sucesores)
+        
+        self.graficarRelaciones(unaVersionItem.id_version_item)
         
         return dict(atributosItem=atributosItem, relaciones=Relaciones,\
                     frompage = str(kw['frompage']))  
@@ -1551,11 +1560,7 @@ class ItemController(BaseController):
             
         except NoResultFound,e:                    
             existeSucesores= False
-        
-        print '***********************************************************************************'    
-        print 'Existen Sucesores: ' + str(existeSucesores)
-        print 'Existen Huerfanos: ' + str(huerfanos)
-         
+                
         if existeSucesores and huerfanos:
             return True
                           
@@ -1613,4 +1618,123 @@ class ItemController(BaseController):
             return True
         else:
             return False
+      
+    @expose()
+    def graficarRelaciones(self, itemVersion):
+        unaVersionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == itemVersion).one()
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Eliminado').one()
+            
+        graph_rel = graph()
+                
+        graph_rel.add_node(unaVersionItem.id_version_item,\
+                           [('label',unaVersionItem.item.nom_item),\
+                           ('color','gold')])
+                           
+        #Recuperar Nombre de los Padres de esta Version de Item        
+        for padre in unaVersionItem.Padres:            
+            unPadre = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item == padre.id_version_item).\
+                one()            
+            
+            if unPadre.ultima_version == 'S' and\
+            unPadre.id_estado != eliminado.id_estado:                
+                graph_rel.add_node(unPadre.id_version_item,\
+                                   [('label',unPadre.item.nom_item)])
+                graph_rel.add_edge((unPadre.id_version_item,\
+                                   unaVersionItem.id_version_item))
+            
+        #Recuperar Nombre de los Hijos de esta Version de Item        
+        try:
+            yoPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item==unaVersionItem.id_version_item).one()
+                
+            Hijos = DBSession.query(VersionItem).\
+            filter(VersionItem.Padres.contains(yoPadre)).\
+            filter(VersionItem.ultima_version == 'S').\
+            filter(VersionItem.id_estado!=eliminado.id_estado).all()
+            
+            for hijo in Hijos:
+                graph_rel.add_node(hijo.id_version_item,\
+                                   [('label',hijo.item.nom_item)])
+                graph_rel.add_edge((unaVersionItem.id_version_item,\
+                                    hijo.id_version_item))
+                                    
+        except NoResultFound,e:                    
+            existe=False
+            
+        #Recuperar Nombre de los Antecesores de esta Version de Item
+        for antecesor in unaVersionItem.Antecesores:
+            unAntecesor = DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item==antecesor.id_version_item).\
+                one()
+            if unAntecesor.ultima_version == 'S' and\
+            unAntecesor.id_estado != eliminado.id_estado:
+                graph_rel.add_node(unAntecesor.id_version_item,\
+                                  [('label',unAntecesor.item.nom_item)])
+                graph_rel.add_edge((unAntecesor.id_version_item,\
+                                    unaVersionItem.id_version_item))
+            
+        #Recuperar Nombre de los Sucesores de esta Version de Item
+        try:
+            yoAntecesor = DBSession.query(Antecesor).\
+                filter(Antecesor.id_version_item==unaVersionItem.id_version_item).one()
+                
+            Sucesores= DBSession.query(VersionItem).\
+            filter(VersionItem.Antecesores.contains(yoAntecesor)).\
+            filter(VersionItem.ultima_version == 'S').\
+            filter(VersionItem.id_estado!=eliminado.id_estado).all()
+            
+            for sucesor in Sucesores:
+                graph_rel.add_node(sucesor.id_version_item,\
+                                  [('label',sucesor.item.nom_item)])
+                graph_rel.add_edge((unaVersionItem.id_version_item,\
+                                    sucesor.id_version_item))
+                                    
+        except NoResultFound,e:                    
+            existe=False
+            
+        dot = write(graph_rel)        
+        gvv = gv.readstring(dot)                
+        gv.layout(gvv,'dot')
+        gv.render(gvv,'png',os.path.abspath("projectmanager/public/images/esquemaRelaciones.png"))
+        
+    @expose('projectmanager.templates.items.calculoImpacto')
+    def calcularImpacto(self,**kw):
+     
+        itemVersion = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == kw['idVersion']).\
+            one()
+        
+        izquierda=[]
+        derecha=[]
+        abajo=[]
+        sumaIzq = 0
+        sumaDer = 0
+        sumaAbj = 0
+        
+        derecha.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
+        izquierda.extend(itemVersion.getRelacionesIzq(itemVersion.id_version_item))
+        hijos=itemVersion.getHijos(itemVersion.id_version_item)
+        abajo.extend(itemVersion.getHijosNietos(hijos))
+        
+        
+        for item in izquierda:                    
+            sumaIzq = sumaIzq + item.peso
+            
+        for item in derecha:
+            sumaDer = sumaDer + item.peso
+    
+        for item in abajo:
+            sumaAbj = sumaAbj + item.peso
+            
+        print '***************************************************************************************'
+        print 'Izquierda: ' + str(sumaIzq)         
+        print 'Derecha: ' + str(sumaDer)        
+        print 'Abajo: ' + str(sumaAbj)
+        print hijos
+        print abajo
+                        
+        return dict(page='calculol')
         

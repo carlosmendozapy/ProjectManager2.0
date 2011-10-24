@@ -9,6 +9,9 @@
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
   <title>Atributo</title>
+  <script type='text/javascript'>         
+        function popitup(url) {window.open(url,'htmlname','width=800,height=600,resizable=1');}
+  </script>
 </head>
 
 <body> 
@@ -21,9 +24,14 @@
   </div>
   <div id="AdministrarItem">
     <a><h2>Administracion de Atributos de Item</h2></a>
-    <!--<form action="/item/newAtributo?id=${versionItem.id_version_item}" >
-        <input type="submit" value="Crear Nuevo Atributo" />  
-    </form>    -->
+    <span py:if="frompage == u'item'">
+        <div class='menu'>
+            <ul>
+                <li><a href="/item/calcularImpacto?idVersion=${g.current_item.id_version_item}">Calculo de Impacto</a></li>
+            </ul>
+        </div>
+       
+    </span>
     <table rules='rows'>
       <tr>
         <th width="3%"></th>          
@@ -85,6 +93,7 @@
       </tr>
     </table>
     <a><h2>Administracion de Relaciones de Item</h2></a>
+    <button type='button' onclick="javascript:popitup('${tg.url('/images/esquemaRelaciones.png')}')">Representacion Grafica</button>
     <table rules='all'>
         <tr>
             <th width="25%">Padres</th>
@@ -106,17 +115,9 @@
                     <a href='/agregarPadre?id_version=${g.current_item.id_version_item}'><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar padre</a>
                 </span>                
             </td>
-            <td><span py:for="hijo in relaciones[1]">
-                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                        <a href=''>
-                        <img src="${tg.url('/images/eliminar.png')}" alt="Eliminar" height="16" width="16" title='Eliminar Relacion'/>
-                        </a> 
-                    </span>
+            <td><span py:for="hijo in relaciones[1]">                    
                     ${hijo.item.nom_item} -> (${hijo.estado.nom_estado})<br />
-                </span>
-                <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                    <a href=''><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar hijo</a>
-                </span>
+                </span>                
             </td>
             <td><span py:for="antecesor in relaciones[2]">
                     <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
@@ -130,17 +131,9 @@
                     <a href=''><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar antecesor</a>
                 </span>
             </td>
-            <td><span py:for="sucesor in relaciones[3]">
-                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                        <a href=''>
-                        <img src="${tg.url('/images/eliminar.png')}" alt="Eliminar" height="16" width="16" title='Eliminar Relacion'/>
-                        </a> 
-                    </span>
+            <td><span py:for="sucesor in relaciones[3]">                    
                     ${sucesor.item.nom_item} -> (${sucesor.estado.nom_estado})<br />
-                </span>
-                <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                    <a href=''><br /><img src="${tg.url('/images/add.png')}" alt="Agregar" height="16" width="16"/>agregar sucesor</a>
-                </span>
+                </span>                
             </td>
         </tr>        
     </table>
