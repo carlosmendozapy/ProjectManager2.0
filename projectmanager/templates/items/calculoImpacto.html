@@ -13,7 +13,12 @@
 
 <body> 
    <img src="${tg.url('/images/calculoImpacto.png')}" alt="Calculo de Impacto"/><br />
-   
+   <h3>Impacto a la izquierda: ${impactoIzq}</h3>
+   <h3>Impacto a la derecha: ${impactoDer}</h3>
+   <h3>Impacto en hijos: ${impactoAbj}</h3>
+   <h2>Impacto Total: ${impactoTot}</h2>
    <a href="/item/atributosItem?id_version=${g.current_item.id_version_item};frompage=${'item'}"><img src="${tg.url('/images/back.png')}"/> ATRAS</a>  
+   
+   
 </body>
 </html>

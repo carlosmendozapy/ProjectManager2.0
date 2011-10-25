@@ -1679,7 +1679,7 @@ class ItemController(BaseController):
                 graph_rel.add_edge((unAntecesor.id_version_item,
                                     unaVersionItem.id_version_item),
                                     label='Antecesor')
-            
+                            
         #Recuperar Nombre de los Sucesores de esta Version de Item
         try:
             yoAntecesor = DBSession.query(Antecesor).\
@@ -1721,6 +1721,7 @@ class ItemController(BaseController):
         sumaIzq = 0
         sumaDer = 0
         sumaAbj = 0
+        total = 0
         
         derecha.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
         izquierda.extend(itemVersion.getRelacionesIzq(itemVersion.id_version_item))
@@ -1737,14 +1738,10 @@ class ItemController(BaseController):
         for item in abajo:
             sumaAbj = sumaAbj + item.peso
             
-        itemVersion.drawGraph()
-        
-        print '***************************************************************************************'
-        print 'Izquierda: ' + str(sumaIzq)         
-        print 'Derecha: ' + str(sumaDer)        
-        print 'Abajo: ' + str(sumaAbj)
-        print hijos
-        print abajo
+        total = itemVersion.peso + sumaIzq + sumaDer + sumaAbj
                         
-        return dict(page='calculol')
+        return dict(impactoIzq=sumaIzq,
+                    impactoDer=sumaDer,
+                    impactoAbj=sumaAbj,
+                    impactoTot=total)
         
