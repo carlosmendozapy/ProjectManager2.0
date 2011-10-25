@@ -28,6 +28,13 @@
         <div class='menu'>
             <ul>
                 <li><a href="/item/calcularImpacto?idVersion=${g.current_item.id_version_item}">Calculo de Impacto</a></li>
+                <li><a href="#" id="current">Relaciones</a>
+			    <ul>
+					<li><a href="#">Agregar Padres</a></li>
+				    <li><a href="#">Agregar Antecesores</a></li>		
+                    <li><a href="javascript:popitup('${tg.url('/images/esquemaRelaciones.png')}')">Representacion Grafica</a></li>                                                       
+                </ul>
+              </li>
             </ul>
         </div>
        
@@ -92,8 +99,7 @@
 	    </td>
       </tr>
     </table>
-    <a><h2>Administracion de Relaciones de Item</h2></a>
-    <button type='button' onclick="javascript:popitup('${tg.url('/images/esquemaRelaciones.png')}')">Representacion Grafica</button>
+    <a><h2>Administracion de Relaciones de Item</h2></a>    
     <table rules='all'>
         <tr>
             <th width="25%">Padres</th>
