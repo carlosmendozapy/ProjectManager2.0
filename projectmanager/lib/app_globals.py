@@ -4,6 +4,7 @@
 
 __all__ = ['Globals']
 
+
 from projectmanager import model
 from projectmanager.model.entities import Estado
 from projectmanager.model.entities import VersionItem
@@ -12,6 +13,8 @@ from projectmanager.model.proyecto import Proyecto
 from projectmanager.model.proyecto import Fase
 from projectmanager.model.roles import Rol
 from projectmanager.model import DBSession, metadata
+
+from pygraph.classes.digraph import digraph
 
 class Globals(object):
     """Container for objects available throughout the life of the application.
@@ -29,7 +32,7 @@ class Globals(object):
     lista_actualizados = []
     lista_no_actualizados = []
     lista_version_anterior = []
-    
+            
     id_user_to_edit = 0
     nro_fase_to_edit = 0
      

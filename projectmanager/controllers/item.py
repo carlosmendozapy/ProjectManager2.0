@@ -1626,8 +1626,8 @@ class ItemController(BaseController):
         eliminado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
             
-        graph_rel = graph()
-                
+        graph_rel = digraph()
+                       
         graph_rel.add_node(unaVersionItem.id_version_item,\
                            [('label',unaVersionItem.item.nom_item),\
                            ('color','gold')])
@@ -1640,10 +1640,11 @@ class ItemController(BaseController):
             
             if unPadre.ultima_version == 'S' and\
             unPadre.id_estado != eliminado.id_estado:                
-                graph_rel.add_node(unPadre.id_version_item,\
+                graph_rel.add_node(unPadre.id_version_item,
                                    [('label',unPadre.item.nom_item)])
-                graph_rel.add_edge((unPadre.id_version_item,\
-                                   unaVersionItem.id_version_item))
+                graph_rel.add_edge((unPadre.id_version_item,
+                                   unaVersionItem.id_version_item),
+                                   label='Padre')
             
         #Recuperar Nombre de los Hijos de esta Version de Item        
         try:
@@ -1656,10 +1657,11 @@ class ItemController(BaseController):
             filter(VersionItem.id_estado!=eliminado.id_estado).all()
             
             for hijo in Hijos:
-                graph_rel.add_node(hijo.id_version_item,\
+                graph_rel.add_node(hijo.id_version_item,
                                    [('label',hijo.item.nom_item)])
-                graph_rel.add_edge((unaVersionItem.id_version_item,\
-                                    hijo.id_version_item))
+                graph_rel.add_edge((unaVersionItem.id_version_item,
+                                    hijo.id_version_item),
+                                    label='Hijo')
                                     
         except NoResultFound,e:                    
             existe=False
@@ -1671,10 +1673,12 @@ class ItemController(BaseController):
                 one()
             if unAntecesor.ultima_version == 'S' and\
             unAntecesor.id_estado != eliminado.id_estado:
-                graph_rel.add_node(unAntecesor.id_version_item,\
-                                  [('label',unAntecesor.item.nom_item)])
-                graph_rel.add_edge((unAntecesor.id_version_item,\
-                                    unaVersionItem.id_version_item))
+                graph_rel.add_node(unAntecesor.id_version_item,
+                                  [('label',unAntecesor.item.nom_item),
+                                  ('shape','box')])
+                graph_rel.add_edge((unAntecesor.id_version_item,
+                                    unaVersionItem.id_version_item),
+                                    label='Antecesor')
             
         #Recuperar Nombre de los Sucesores de esta Version de Item
         try:
@@ -1687,16 +1691,18 @@ class ItemController(BaseController):
             filter(VersionItem.id_estado!=eliminado.id_estado).all()
             
             for sucesor in Sucesores:
-                graph_rel.add_node(sucesor.id_version_item,\
-                                  [('label',sucesor.item.nom_item)])
-                graph_rel.add_edge((unaVersionItem.id_version_item,\
-                                    sucesor.id_version_item))
+                graph_rel.add_node(sucesor.id_version_item,
+                                  [('label',sucesor.item.nom_item),
+                                  ('shape','box')])
+                graph_rel.add_edge((unaVersionItem.id_version_item,
+                                    sucesor.id_version_item),
+                                    label='Sucesor')
                                     
         except NoResultFound,e:                    
             existe=False
             
         dot = write(graph_rel)        
-        gvv = gv.readstring(dot)                
+        gvv = gv.readstring(dot)                        
         gv.layout(gvv,'dot')
         gv.render(gvv,'png',os.path.abspath("projectmanager/public/images/esquemaRelaciones.png"))
         
@@ -1707,6 +1713,8 @@ class ItemController(BaseController):
             filter(VersionItem.id_version_item == kw['idVersion']).\
             one()
         
+        itemVersion.initGraph()
+                
         izquierda=[]
         derecha=[]
         abajo=[]
@@ -1729,6 +1737,8 @@ class ItemController(BaseController):
         for item in abajo:
             sumaAbj = sumaAbj + item.peso
             
+        itemVersion.drawGraph()
+        
         print '***************************************************************************************'
         print 'Izquierda: ' + str(sumaIzq)         
         print 'Derecha: ' + str(sumaDer)        

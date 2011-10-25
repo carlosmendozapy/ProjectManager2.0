@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Sample model module."""
-
+import os
 from sqlalchemy import *
 from sqlalchemy.orm import mapper, relation
 from sqlalchemy import Table, ForeignKey, Column
@@ -10,6 +10,20 @@ from sqlalchemy.orm import relation, backref
 from projectmanager.model import DeclarativeBase, metadata, DBSession
 from sqlalchemy.orm.exc import NoResultFound
 from projectmanager.model.roles import Usuario
+
+#Import pygraph
+from pygraph.classes.graph import graph
+from pygraph.classes.digraph import digraph
+from pygraph.algorithms.searching import breadth_first_search
+from pygraph.algorithms.cycles import *
+from pygraph.readwrite.dot import write
+
+# Import graphviz
+import sys
+sys.path.append('..')
+sys.path.append('/usr/share/pyshared/')
+sys.path.append('/usr/lib/pyshared/python2.6/')
+import gv
 
 PadreVersionItem = Table('PADRE_VERSIONITEM', metadata,
     Column('id_padre', Integer, ForeignKey('PADRE.id_padre')),
@@ -113,10 +127,20 @@ class VersionItem(DeclarativeBase):
             
     __tablename__ = 'VERSION_ITEM'
     
+    def initGraph(self):
+        self.impacto_graph = digraph()
+        
+    def drawGraph(self):
+        dot = write(self.impacto_graph)        
+        gvv = gv.readstring(dot)                        
+        gv.layout(gvv,'dot')
+        gv.render(gvv,'png',os.path.abspath("projectmanager/public/images/calculoImpacto.png"))
+    
     def getRelacionesDer(self,idVersion):
         derecha=[]
         f = open("derecha.txt","a")
         f.write("Llamada a derecha\n")
+        
         sucesores = self.getSucesores(idVersion)
         derecha.extend(sucesores)
                 
@@ -170,14 +194,31 @@ class VersionItem(DeclarativeBase):
         
     def getSucesores(self, idVersion):
         sucesores=[]
+        item = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == idVersion).one()
+            
         try:
             yoAntecesor=DBSession.query(Antecesor).\
             filter(Antecesor.id_version_item==int(idVersion)).one()
             
+            if not self.impacto_graph.has_node(idVersion):
+                self.impacto_graph.add_node(idVersion,
+                                        [('label',item.item.nom_item)])
+            
             for sucesor in yoAntecesor.sucesores:
                 if sucesor.ultima_version=='S' and\
                 sucesor.estado.nom_estado!='Eliminado':
-                    sucesores.append(sucesor)                    
+                    sucesores.append(sucesor)
+                    
+                    if not self.impacto_graph.\
+                           has_node(sucesor.id_version_item):
+                        self.impacto_graph.add_node(sucesor.id_version_item,
+                        [('label',sucesor.item.nom_item)])
+                        
+                    self.impacto_graph.add_edge((idVersion,
+                                            sucesor.id_version_item),
+                                            label='Sucesor',
+                                            wt=item.peso + sucesor.peso)                                        
             
         except NoResultFound,e:
             existe=False
@@ -187,7 +228,10 @@ class VersionItem(DeclarativeBase):
     def getAntecesores(self, idVersion):
         itemVersion = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == int(idVersion)).one()
-                   
+        
+        if not self.impacto_graph.has_node(idVersion):
+             self.impacto_graph.add_node(idVersion,
+                                     [('label',itemVersion.item.nom_item)])           
         antecesores=[]
         
         for antecesor in itemVersion.Antecesores:
@@ -197,27 +241,46 @@ class VersionItem(DeclarativeBase):
             if unItem.ultima_version=='S' and\
             unItem.estado.nom_estado!='Eliminado':
                 antecesores.append(unItem)
+                
+                if not self.impacto_graph.has_node(unItem.id_version_item):
+                    self.impacto_graph.add_node(unItem.id_version_item,
+                                            [('label',unItem.item.nom_item)])
+                
+                self.impacto_graph.add_edge((unItem.id_version_item,idVersion),
+                                        label='Antecesor',
+                                        wt=itemVersion.peso+unItem.peso)
         
         return antecesores
         
     def getHijos(self, idVersion):
+        item = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==idVersion).one()
+            
         hijos=[]
         f = open("hijos.txt","a")
         try:
-            print '#########################################################################3333'
-            print 'Entrando en el metodo de hijos'
             
             itemPadre=DBSession.query(Padre).\
             filter(Padre.id_version_item==int(idVersion)).\
             one()
             
+            if not self.impacto_graph.has_node(idVersion):
+                self.impacto_graph.add_node(idVersion,
+                                        [('label',item.item.nom_item)])
+                                        
             for hijo in itemPadre.hijos:
                 if hijo.ultima_version=='S' and\
                 hijo.estado.nom_estado!='Eliminado':
-                    hijos.append(hijo)
-                    print '#########################################################################3333'
-                    print hijo.item.nom_item
+                    hijos.append(hijo)                    
                     f.write(hijo.item.nom_item + "\n")
+                    
+                    if not self.impacto_graph.has_node(hijo.id_version_item):
+                        self.impacto_graph.add_node(hijo.id_version_item,
+                                          [('label',hijo.item.nom_item)])
+                                          
+                    self.impacto_graph.add_edge((idVersion,hijo.id_version_item),
+                                             label='Hijo',
+                                             wt=item.peso+hijo.peso)
                     
         except NoResultFound,e:
             existe=False
