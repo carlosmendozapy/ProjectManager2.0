@@ -1408,6 +1408,10 @@ class ItemController(BaseController):
 
     @expose('projectmanager.templates.items.addRelaciones')
     def addRelaciones(self,**kw):
+        itemVersion = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==\
+            int(kw['id_version_item'])).one()
+            
         fase = DBSession.query(Fase).\
             filter(Fase.id_fase==Globals.current_phase.id_fase).one()
 		
@@ -1435,7 +1439,7 @@ class ItemController(BaseController):
                         
             if items.count() != 0:                 
                 antList =[]
-                for antecesor in Globals.current_item.Antecesores:
+                for antecesor in itemVersion.Antecesores:
                     antList.append(antecesor.id_version_item)
 
                 for item in items.all():
@@ -1453,7 +1457,7 @@ class ItemController(BaseController):
             filter(VersionItem.ultima_version=='S').all()
         
         padList=[]
-        for padre in Globals.current_item.Padres:
+        for padre in itemVersion.Padres:
             padList.append(padre.id_version_item)
                     
         for item in list_items:
@@ -1547,9 +1551,11 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
         
-        DBSession.flush()
+        #DBSession.flush()        
+        Globals.current_item = nuevaVersionItem
         
-        redirect('/item/addRelaciones')
+        redirect('/item/addRelaciones?id_version_item=' +
+        str(Globals.current_item.id_version_item))
         
     @expose()
     def delPadre(self, **kw):
@@ -1611,11 +1617,11 @@ class ItemController(BaseController):
                 padresValidos.append(padre)
             
         if fases.first().nro_fase != Globals.current_phase.nro_fase and\
-        filengh(padresValidos) <= 0:
+        len(padresValidos) <= 0:
             flash(_("No se puede eliminar: El Item podria quedar huerfano"),'warning')
             redirect("/item/atributosItem?id_version="+\
                     str(Globals.current_item.id_version_item) +
-                    ";frompage='item'")
+                    ";frompage=${'item'}")
             
         for padre in versionItem.Padres:
             if padre.id_version_item != int(kw['id_version_item']):
@@ -1645,11 +1651,13 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
         
-        DBSession.flush()
+        #DBSession.flush()
+        
+        Globals.current_item = nuevaVersionItem
         
         redirect("/item/atributosItem?id_version="+\
                 str(Globals.current_item.id_version_item) +
-                ";frompage='item'")
+                ";frompage=${'item'}")
         
         
 #***********************************************************************

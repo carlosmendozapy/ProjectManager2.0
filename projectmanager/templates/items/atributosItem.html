@@ -31,7 +31,7 @@
                 <li><a href="#" id="current">Relaciones</a>
 			    <ul>
                     <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                        <li><a href="/item/addRelaciones">Agregar Relaciones</a></li>                 
+                        <li><a href="/item/addRelaciones?id_version_item=${g.current_item.id_version_item}">Agregar Relaciones</a></li>                 
                     </span>
                     <li><a href="javascript:popitup('${tg.url('/images/esquemaRelaciones.png')}')">Representacion Grafica</a></li>                                                       
                 </ul>
@@ -141,7 +141,7 @@
     <span py:if="frompage == u'item'">
         <a href='/item/adminItem?faseid=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
     </span>
-    <span py:if="frompage == 'revivir'">
+    <span py:if="frompage == u'revivir'">
         <a href='/item/revivirItem'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
     </span>
   </div>
