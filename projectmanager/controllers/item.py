@@ -105,7 +105,9 @@ class ItemController(BaseController):
             filter(VersionItem.fase==Globals.current_phase).\
             filter(VersionItem.id_estado!=eliminado.id_estado).\
             order_by(VersionItem.id_item).all()
-
+        
+        list_items.sort(cmp=None, key= lambda item: item.item.nom_item, reverse=False)
+        
         return dict(items=list_items)
         
     @expose('projectmanager.templates.items.newItem')
@@ -489,7 +491,8 @@ class ItemController(BaseController):
         Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
-            str(Globals.current_item.id_version_item))  
+            str(Globals.current_item.id_version_item) +\
+            ";frompage=item")  
                    
     @validate(edit_atributo_fecha,error_handler=editAtributo)
     @expose()
@@ -572,7 +575,8 @@ class ItemController(BaseController):
         Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
-            str(Globals.current_item.id_version_item))
+            str(Globals.current_item.id_version_item) +\
+            ";frompage=item")
     
     @validate(edit_atributo_numerico,error_handler=editAtributo)
     @expose()
@@ -655,7 +659,8 @@ class ItemController(BaseController):
         Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
-            str(Globals.current_item.id_version_item))    
+            str(Globals.current_item.id_version_item) +\
+            ";frompage=item")    
             
     @validate(edit_atributo_texto,error_handler=editAtributo)
     @expose()
@@ -753,7 +758,8 @@ class ItemController(BaseController):
         Globals.current_item = nuevaVersionItem
         
         redirect('atributosItem?id_version=' +\
-            str(Globals.current_item.id_version_item))
+            str(Globals.current_item.id_version_item) +\
+            ";frompage=item")
     
 # **********************************************************************
 # *********************** Modificar Estados ****************************    
@@ -1465,20 +1471,23 @@ class ItemController(BaseController):
                 options_padres.append(item)
         
         return dict(padres=options_padres,
-                    antecesores=options_ancestros)
+                    antecesores=options_ancestros,
+                    id_version_item=int(kw['id_version_item']))
         
     @expose()
     def addPadre(self, **kw):
+               
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
-                   Globals.current_item.id_version_item).one()
+                   int(kw['id_version_item'])).one()
         
         padres =[]
-        padres.append(int(kw['id_version_item']))     
-        ciclo = self.controlCiclo(padres,Globals.current_item.id_version_item)
+        padres.append(int(kw['id_padre']))     
+        ciclo = self.controlCiclo(padres,int(kw['id_version_item']))
         if ciclo:
             flash(_("Se ha detectado un ciclo: Favor seleccione otro padre"), 'warning')
-            redirect('/item/addRelaciones')
+            redirect('/item/addRelaciones?id_version_item=' +\
+                     str(kw['id_version_item']))
             
         versionItem.ultima_version = 'N'
         
@@ -1521,11 +1530,12 @@ class ItemController(BaseController):
             nuevaVersionItem.Padres.append(padre)
             
         try:
-            unPadre = DBSession.query(Padre).\
-                filter(Padre.id_version_item == int(kw['id_version_item'])).one()
-            versionItem.Padres.append(unPadre)
+            nuevoPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item == int(kw['id_padre'])).\
+                one()
+            nuevaVersionItem.Padres.append(nuevoPadre)
         except NoResultFound,e:                    
-            versionItem.Padres.append(Padre(int(kw['id_version_item'])))
+            nuevaVersionItem.Padres.append(Padre(int(kw['id_padre'])))
             
         # Agregar los hijos del item viejo
         try:
@@ -1542,7 +1552,7 @@ class ItemController(BaseController):
             existe=False
             
         for atributo in DBSession.query(AtributoItem).\
-            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+            filter(AtributoItem.id_version_item == versionItem.id_version_item).all():
                 
             nuevoAtributoItem = AtributoItem()
             nuevoAtributoItem.id_atributo = atributo.id_atributo
@@ -1551,11 +1561,10 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
         
-        #DBSession.flush()        
-        Globals.current_item = nuevaVersionItem
-        
-        redirect('/item/addRelaciones?id_version_item=' +
-        str(Globals.current_item.id_version_item))
+        DBSession.flush()
+               
+        redirect('/item/addRelaciones?id_version_item=' +\
+        str(nuevaVersionItem.id_version_item))
         
     @expose()
     def delPadre(self, **kw):
@@ -1650,14 +1659,12 @@ class ItemController(BaseController):
             nuevoAtributoItem.val_atributo = atributo.val_atributo
             nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
-        
-        #DBSession.flush()
-        
+               
         Globals.current_item = nuevaVersionItem
         
         redirect("/item/atributosItem?id_version="+\
                 str(Globals.current_item.id_version_item) +
-                ";frompage=${'item'}")
+                ";frompage=item")
         
         
 #***********************************************************************
@@ -1714,15 +1721,12 @@ class ItemController(BaseController):
     @expose()
     def controlCiclo(self, padres, itemActual):
         #CONTROL CON GRAFO
-        aprobado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Aprobado').one()
         
-        confirmado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Confirmado').one()
-        
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Eliminado').one()
+            
         AllItems= DBSession.query(VersionItem).\
-            filter(or_(VersionItem.estado==aprobado, 
-                    VersionItem.estado==confirmado)).\
+            filter(VersionItem.estado!= eliminado).\
             filter(VersionItem.id_fase==Globals.current_phase.id_fase).\
             filter(VersionItem.ultima_version=='S').all()            
         
@@ -1743,9 +1747,8 @@ class ItemController(BaseController):
                     one()
                    
                     if itemPadre.ultima_version=='S' and\
-                      (itemPadre.estado.nom_estado=='Aprobado' or\
-                       itemPadre.estado.nom_estado=='Confirmado') and\
-                       not graph_rel.has_edge((obj.id_version_item,int(nodo))):                        
+                    (itemPadre.estado.nom_estado!='Eliminado') and\
+                    not graph_rel.has_edge((obj.id_version_item,int(nodo))):                        
                        
                         graph_rel.add_edge((itemPadre.id_version_item,int(nodo)))
         

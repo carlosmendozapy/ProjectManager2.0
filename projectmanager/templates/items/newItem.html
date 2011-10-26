@@ -22,9 +22,10 @@
         <div py:replace="tmpl_context.form(child_args=dict(tipoItem=dict(options=type_options),
                                                        antecesor=dict(options=ancestros),
                                                        padres=dict(options=padres)))">Input Form</div>
+    
+        <a href="/item/adminItem?faseid=${g.current_phase.id_fase}">    
+        <img src="${tg.url('/images/back.png')}" border="0"/>Cancelar y Volver</a>
     </span>
-    <a href="/item/adminItem?faseid=${g.current_phase.id_fase}">    
-    <img src="${tg.url('/images/back.png')}" border="0"/>Cancelar y Volver</a>
 </body>
 </html>
 

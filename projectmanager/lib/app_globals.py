@@ -14,8 +14,6 @@ from projectmanager.model.proyecto import Fase
 from projectmanager.model.roles import Rol
 from projectmanager.model import DBSession, metadata
 
-from pygraph.classes.digraph import digraph
-
 class Globals(object):
     """Container for objects available throughout the life of the application.
 
