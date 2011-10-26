@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Agregar Relaciones</title>
+</head>
+
+<body>
+    
+    <a><h2>Administracion del Proyecto: ${g.current_project.nom_proyecto}</h2></a>
+    <a><h2>Administracion de Fase: ${g.current_phase.nom_fase}</h2></a>
+    <a><h2>Agregar Relaciones a item: ${g.current_item.item.nom_item}</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>
+    <div id="search" class="search">
+    <form action="./searchItems" >       
+       <img src="${tg.url('/images/logo.png')}" alt="TurboGears" height="50" width="50" />
+       <input type="text" name="key"/>
+       <input type="submit" value="Buscar"/>
+    </form>
+    </div>
+    <a><h2>Agregar padres</h2></a>
+    <table rules='rows'>
+          <tr>
+          <th width="5%"></th>          
+          <th width="20%">Identificador</th>
+          <th width="20%">Codigo</th>
+          <th width="20%">Nombre</th>          
+          </tr>
+          <tr py:for="i, padre in enumerate(padres)" class="${i%2 and 'even' or 'odd'}">
+            <td><a href='/item/addPadre?id_version_item=${padre.id_version_item}'><img src="${tg.url('/images/addRelacion.png')}" alt="Agregar Padre a Item" height="16" width="16"/></a></td>
+            <td align='center'>${padre.id_version_item}</td> 
+            <td align='center'>${padre.item.cod_item}</td> 
+            <td>${padre.item.nom_item}</td>            
+          </tr>
+    </table>   
+    <a><h2>Agregar Antecesores</h2></a>
+    <table rules='rows'>
+          <tr>
+          <th width="5%"></th>          
+          <th width="20%">Identificador</th>
+          <th width="20%">Codigo</th>
+          <th width="20%">Nombre</th>          
+          </tr>
+          <tr py:for="i, antecesor in enumerate(antecesores)" class="${i%2 and 'even' or 'odd'}">
+            <td><a href='/item/addAntecesor?id_version_item=${antecesor.id_version_item}'><img src="${tg.url('/images/addRelacion.png')}" alt="Agregar Padre a Item" height="16" width="16"/></a></td>
+            <td align='center'>${antecesor.id_version_item}</td> 
+            <td align='center'>${antecesor.item.cod_item}</td> 
+            <td>${antecesor.item.nom_item}</td>            
+          </tr>
+    </table>     
+    <a href="/item/atributosItem?id_version=${g.current_item.id_version_item};frompage=${'item'}"><img src="${tg.url('/images/back.png')}" alt="Atras"/>Atras</a>
+</body>
+</html>

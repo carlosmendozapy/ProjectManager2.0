@@ -127,8 +127,11 @@ class VersionItem(DeclarativeBase):
             
     __tablename__ = 'VERSION_ITEM'
     
-    def initGraph(self):
+    def initGraph(self,itemVersion):
         self.impacto_graph = digraph()
+        self.impacto_graph.add_node(itemVersion.id_version_item,
+        [('label',itemVersion.item.nom_item + "\n" + str(itemVersion.peso)),
+        ('color','gold')])
         
     def drawGraph(self):
         dot = write(self.impacto_graph)        
@@ -203,7 +206,8 @@ class VersionItem(DeclarativeBase):
             
             if not self.impacto_graph.has_node(idVersion):
                 self.impacto_graph.add_node(idVersion,
-                                        [('label',item.item.nom_item + "\n" + str(item.peso))])
+                [('label',item.item.nom_item + "\n" + str(item.peso),
+                ('shape','box'))])
             
             for sucesor in yoAntecesor.sucesores:
                 if sucesor.ultima_version=='S' and\
@@ -211,12 +215,14 @@ class VersionItem(DeclarativeBase):
                     sucesores.append(sucesor)
                     
                     if not self.impacto_graph.\
-                           has_node(sucesor.id_version_item):
+                    has_node(sucesor.id_version_item):
                         self.impacto_graph.add_node(sucesor.id_version_item,
                         [('label',sucesor.item.nom_item + "\n" + str(sucesor.peso)),
-                        ('ordering','out')])
+                        ('shape','box')])
                         
-                    self.impacto_graph.add_edge((idVersion,
+                    if not self.impacto_graph.\
+                    has_edge((idVersion,sucesor.id_version_item)):
+                        self.impacto_graph.add_edge((idVersion,
                                             sucesor.id_version_item),
                                             label='Sucesor')                                        
             
@@ -230,8 +236,10 @@ class VersionItem(DeclarativeBase):
             filter(VersionItem.id_version_item == int(idVersion)).one()
         
         if not self.impacto_graph.has_node(idVersion):
-             self.impacto_graph.add_node(idVersion,
-                                     [('label',itemVersion.item.nom_item + "\n" + str(itemVersion.peso))])           
+            self.impacto_graph.add_node(idVersion,
+            [('label',itemVersion.item.nom_item + "\n" + str(itemVersion.peso),
+            ('shape','box'))])           
+            
         antecesores=[]
         
         for antecesor in itemVersion.Antecesores:
@@ -244,11 +252,14 @@ class VersionItem(DeclarativeBase):
                 
                 if not self.impacto_graph.has_node(unItem.id_version_item):
                     self.impacto_graph.add_node(unItem.id_version_item,
-                                            [('label',unItem.item.nom_item + "\n" + str(unItem.peso)),
-                                            ('ordering','out')])
+                    [('label',unItem.item.nom_item + "\n" + str(unItem.peso)),
+                    ('shape','box')])
                 
-                self.impacto_graph.add_edge((unItem.id_version_item,idVersion),
-                                        label='Antecesor')
+                if not self.impacto_graph.\
+                has_edge((unItem.id_version_item,idVersion)):
+                    self.impacto_graph.\
+                        add_edge((unItem.id_version_item,idVersion),
+                                 label='Antecesor')
         
         return antecesores
         
@@ -277,9 +288,12 @@ class VersionItem(DeclarativeBase):
                     if not self.impacto_graph.has_node(hijo.id_version_item):
                         self.impacto_graph.add_node(hijo.id_version_item,
                                           [('label',hijo.item.nom_item + "\n" + str(hijo.peso))])
-                                          
-                    self.impacto_graph.add_edge((idVersion,hijo.id_version_item),
-                                             label='Hijo')
+                    
+                    if not self.impacto_graph.\
+                    has_edge((idVersion,hijo.id_version_item)):                      
+                        self.impacto_graph.\
+                            add_edge((idVersion,hijo.id_version_item),
+                                      label='Hijo')
                     
         except NoResultFound,e:
             existe=False

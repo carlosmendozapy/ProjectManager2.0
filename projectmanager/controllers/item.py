@@ -178,10 +178,12 @@ class ItemController(BaseController):
                     order_by(Fase.nro_fase)
                     
         if fase_list.first().nro_fase != Globals.current_phase.nro_fase and\
-           len(kw['antecesor']) == 0:
+        len(kw['antecesor']) == 0 and\
+        len(kw['padres']) == 0:
+            
             flash(_('Debe elegir al menos un Antecesor'),'warning')
             redirect('newItem')
-        
+                
         estado = DBSession.query(Estado).filter(Estado.nom_estado=='En Modificacion').one()
         tipoItem = DBSession.query(TipoItem).filter(TipoItem.id_tipo_item==int(kw['tipoItem'])).one()                      
         lg_name=request.identity['repoze.who.userid']
@@ -1400,7 +1402,255 @@ class ItemController(BaseController):
             DBSession.add(nuevoAtributoItem)
                       
         redirect('/item/revivirItem')
+
+#***********************************************************************
+#**************************** RELACIONES *******************************                
+
+    @expose('projectmanager.templates.items.addRelaciones')
+    def addRelaciones(self,**kw):
+        fase = DBSession.query(Fase).\
+            filter(Fase.id_fase==Globals.current_phase.id_fase).one()
+		
+        fase_list = DBSession.query(Fase).\
+                    filter(Fase.id_proyecto == Globals.current_project.id_proyecto).\
+                    order_by(Fase.nro_fase)
+        
+        estado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Aprobado').one()
+        
+        options_ancestros=[]            
+        if fase_list.first().nro_fase != Globals.current_phase.nro_fase:
+                       
+            anterior = fase_list.first()
+            for fase in fase_list.all():
+                if fase.nro_fase < Globals.current_phase.nro_fase:
+                    anterior = fase
+                else:
+                    break
+            
+            items = DBSession.query(VersionItem).\
+                filter(VersionItem.estado==estado).\
+                filter(VersionItem.ultima_version=='S').\
+                filter(VersionItem.fase==anterior)
+                        
+            if items.count() != 0:                 
+                antList =[]
+                for antecesor in Globals.current_item.Antecesores:
+                    antList.append(antecesor.id_version_item)
+
+                for item in items.all():
+                    if not item.id_version_item in antList:
+                        options_ancestros.append(item)
+            
+        estadoConfirmado = DBSession.query(Estado).\
+            filter(Estado.nom_estado == 'Confirmado').one()
+            
+        options_padres=[]
+        list_items = DBSession.query(VersionItem).\
+            filter(or_(VersionItem.estado==estado, 
+                       VersionItem.estado==estadoConfirmado)).\
+            filter(VersionItem.fase==fase).\
+            filter(VersionItem.ultima_version=='S').all()
+        
+        padList=[]
+        for padre in Globals.current_item.Padres:
+            padList.append(padre.id_version_item)
+                    
+        for item in list_items:
+            if not item.id_version_item in padList:
+                options_padres.append(item)
+        
+        return dict(padres=options_padres,
+                    antecesores=options_ancestros)
+        
+    @expose()
+    def addPadre(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   Globals.current_item.id_version_item).one()
+        
+        padres =[]
+        padres.append(int(kw['id_version_item']))     
+        ciclo = self.controlCiclo(padres,Globals.current_item.id_version_item)
+        if ciclo:
+            flash(_("Se ha detectado un ciclo: Favor seleccione otro padre"), 'warning')
+            redirect('/item/addRelaciones')
+            
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        # Agregar los antecesores del item viejo
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo + el nuevo padre
+        for padre in versionItem.Padres:
+            nuevaVersionItem.Padres.append(padre)
+            
+        try:
+            unPadre = DBSession.query(Padre).\
+                filter(Padre.id_version_item == int(kw['id_version_item'])).one()
+            versionItem.Padres.append(unPadre)
+        except NoResultFound,e:                    
+            versionItem.Padres.append(Padre(int(kw['id_version_item'])))
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
                 
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+        
+        DBSession.flush()
+        
+        redirect('/item/addRelaciones')
+        
+    @expose()
+    def delPadre(self, **kw):
+        versionItem = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item == \
+                   Globals.current_item.id_version_item).one()
+                         
+        versionItem.ultima_version = 'N'
+        
+        lg_name=request.identity['repoze.who.userid']
+        usuario = DBSession.query(Usuario).\
+                  filter(Usuario.login_name==lg_name).one()
+                   
+        nuevaVersionItem = VersionItem()
+        nuevaVersionItem.item = versionItem.item        
+        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
+        nuevaVersionItem.estado = versionItem.estado       
+        nuevaVersionItem.tipoItem = versionItem.tipoItem         
+        nuevaVersionItem.usuarioModifico = usuario
+        nuevaVersionItem.fecha = str(datetime.now())
+        nuevaVersionItem.observaciones = versionItem.observaciones
+        nuevaVersionItem.ultima_version = 'S'
+        nuevaVersionItem.peso = versionItem.peso
+        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
+        
+        # Agregar los antecesores del item viejo
+        for antecesor in versionItem.Antecesores:
+            nuevaVersionItem.Antecesores.append(antecesor)
+        
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo - el padre a eliminar
+        # Primero controlar si se puede quitar ese padre
+        fases = DBSession.query(Fase).\
+        filter(Fase.id_proyecto==Globals.current_project.id_proyecto).\
+        order_by(Fase.nro_fase)
+        
+        padresValidos=[]
+        for padre in versionItem.Padres:
+            item = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==padre.id_version_item).\
+            one()
+            
+            if item.ultima_version=='S' and\
+            item.estado.nom_estado!='Eliminado' and\
+            item.id_version_item != int(kw['id_version_item']):
+                padresValidos.append(padre)
+            
+        if fases.first().nro_fase != Globals.current_phase.nro_fase and\
+        filengh(padresValidos) <= 0:
+            flash(_("No se puede eliminar: El Item podria quedar huerfano"),'warning')
+            redirect("/item/atributosItem?id_version="+\
+                    str(Globals.current_item.id_version_item) +
+                    ";frompage='item'")
+            
+        for padre in versionItem.Padres:
+            if padre.id_version_item != int(kw['id_version_item']):
+                nuevaVersionItem.Padres.append(padre)       
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
+            
+        for atributo in DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item == int(kw['id_version_item'])).all():
+                
+            nuevoAtributoItem = AtributoItem()
+            nuevoAtributoItem.id_atributo = atributo.id_atributo
+            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
+            nuevoAtributoItem.val_atributo = atributo.val_atributo
+            nuevoAtributoItem.id_archivo = atributo.id_archivo
+            DBSession.add(nuevoAtributoItem)
+        
+        DBSession.flush()
+        
+        redirect("/item/atributosItem?id_version="+\
+                str(Globals.current_item.id_version_item) +
+                ";frompage='item'")
+        
         
 #***********************************************************************
 #**************************** BUSQUEDA Y OTROS *************************
@@ -1491,10 +1741,15 @@ class ItemController(BaseController):
                        
                         graph_rel.add_edge((itemPadre.id_version_item,int(nodo)))
         
-        graph_rel.add_node(itemActual,[('label','Nuevo'),('color','gold')])
+        listaAllItems=[]
+        for item in AllItems:
+            listaAllItems.append(item.id_version_item)
+        
+        if not itemActual in listaAllItems:
+            graph_rel.add_node(itemActual,[('label','Nuevo'),('color','gold')])
         
         for padre in padres:
-            graph_rel.add_edge((itemActual,int(padre)))
+            graph_rel.add_edge((int(padre),itemActual))
            
         dot = write(graph_rel)
         gvv = gv.readstring(dot)
@@ -1505,7 +1760,7 @@ class ItemController(BaseController):
         if len(ciclos) > 0: 
             return True
         else:           
-            flash(_('No Se han detectado ciclos'),'info')
+            #flash(_('No Se han detectado ciclos'),'info')
             return False
             
     @expose()
@@ -1713,8 +1968,8 @@ class ItemController(BaseController):
             filter(VersionItem.id_version_item == kw['idVersion']).\
             one()
         
-        itemVersion.initGraph()
-                
+        itemVersion.initGraph(itemVersion)
+              
         izquierda=[]
         derecha=[]
         abajo=[]
@@ -1722,13 +1977,12 @@ class ItemController(BaseController):
         sumaDer = 0
         sumaAbj = 0
         total = 0
-        
-        derecha.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
+                
         izquierda.extend(itemVersion.getRelacionesIzq(itemVersion.id_version_item))
-        hijos=itemVersion.getHijos(itemVersion.id_version_item)
+        hijos=itemVersion.getHijos(itemVersion.id_version_item)        
         abajo.extend(itemVersion.getHijosNietos(hijos))
-        
-        
+        derecha.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
+                
         for item in izquierda:                    
             sumaIzq = sumaIzq + item.peso
             
@@ -1739,6 +1993,8 @@ class ItemController(BaseController):
             sumaAbj = sumaAbj + item.peso
             
         total = itemVersion.peso + sumaIzq + sumaDer + sumaAbj
+        
+        itemVersion.drawGraph()
                         
         return dict(impactoIzq=sumaIzq,
                     impactoDer=sumaDer,
