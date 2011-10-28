@@ -1320,8 +1320,11 @@ class ItemController(BaseController):
                     if not hijo in anteriorHijos:
                         
                         has_antecesores=False
-                    
-                        for antecesor in hijo.Antecesores:
+                        
+                        itemHijo = DBSession.query(VersionItem).\
+                        filter(VersionItem.id_version_item==hijo).one()
+                        
+                        for antecesor in itemHijo.Antecesores:
                             item = DBSession.query(VersionItem).\
                                 filter(VersionItem.id_version_item==\
                                     antecesor.id_version_item).one()
@@ -1331,7 +1334,7 @@ class ItemController(BaseController):
                                 has_antecesores=True
                         
                         if not has_antecesores:
-                            flash(_("No se puede revertir a esta version: El Item " + hijo.item.nom_item + " quedaria huerfano"),'warning')
+                            flash(_("No se puede revertir a esta version: El Item " + itemHijo.item.nom_item + " quedaria huerfano"),'warning')
                             redirect('/item/history?id_item=' + str(Globals.current_item.id_item))
                                
             except NoResultFound,e:                
