@@ -43,7 +43,7 @@
           <tr py:for="i, version in enumerate(versiones)" class="${i%2 and 'even' or 'odd'}">
             <td><input type="checkbox" name="item" value="${version.id_version_item}"/> </td>
             <td>
-              <span py:if="g.current_item.estado.nom_estado != 'Pendiente' and g.current_item.estado.nom_estado != 'Eliminado' and g.current_item.estado.nom_estado != 'Eliminar' and g.current_item.estado.nom_estado != 'Rechazado' and version.ultima_version=='N'">
+              <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and version.ultima_version=='N'">
                 <a href="/item/revertir?id_item=${version.id_version_item}">
                 <img src="${tg.url('/images/revertir.png')}" width="16" height="16"/>
                 </a>
