@@ -1427,7 +1427,38 @@ class ItemController(BaseController):
     def revivir(self, **kw):
         itemRevivir = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == int(kw['id_item'])).one()
-                            
+        
+        fases = DBSession.query(Fase).\
+            filter(Fase.id_proyecto==Globals.current_project.id_proyecto)
+            
+        # Controlar que no se reviva como huerfano 
+        if fases.first().nro_fase != Globals.current_phase.nro_fase:
+            
+            padres=[]
+            for padre in itemRevivir.Padres:
+                item=DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item==\
+                padre.id_version_item).one()
+                
+                if item.ultima_version=='S' and\
+                item.estado.nom_estado!='Eliminado':
+                    padres.append(padre)
+                    
+            antecesores=[]
+            for antecesor in itemRevivir.Antecesores:
+                item=DBSession.query(VersionItem).\
+                filter(VersionItem.id_version_item==\
+                antecesor.id_version_item).one()
+                
+                if item.ultima_version=='S' and\
+                item.estado.nom_estado!='Eliminado':
+                    antecesores.append(antecesor)
+                    
+            if len(padres) <= 0 and len(antecesores) <= 0:
+                flash(_("No se puede revivir este Item porque quedaria"
+                " huerfano"),'warning')
+                redirect('/item/revivirItem')
+        
         itemRevivir.ultima_version = 'N'
                         
         lg_name=request.identity['repoze.who.userid']
@@ -1878,7 +1909,16 @@ class ItemController(BaseController):
             yoAntecesor = DBSession.query(Antecesor).\
                 filter(Antecesor.id_version_item==int(id_version)).one()
                 
-            Sucesores= yoAntecesor.sucesores
+            Sucesores=[]
+            
+            for sucesor in yoAntecesor.sucesores:
+                if sucesor.ultima_version=='S' and\
+                sucesor.estado.nom_estado!='Eliminado':
+                    Sucesores.append(sucesor)            
+                    
+            if len(Sucesores) <= 0:
+                existeSucesores=False
+                huerfanos=False
                                 
             for sucesor in Sucesores:
                 #Si el sucesor tiene un padre entonces no quedara 
