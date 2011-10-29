@@ -52,7 +52,7 @@
           <th width="20%">Estado</th>          
           </tr>
           <tr py:for="i, antecesor in enumerate(antecesores)" class="${i%2 and 'even' or 'odd'}">
-            <td><a href='/item/addAntecesor?id_version_item=${antecesor.id_version_item}'><img src="${tg.url('/images/addRelacion.png')}" alt="Agregar Padre a Item" height="16" width="16"/></a></td>
+            <td><a href='/item/addAntecesor?id_antecesor=${antecesor.id_version_item};id_version_item=${id_version_item}'><img src="${tg.url('/images/addRelacion.png')}" alt="Agregar Padre a Item" height="16" width="16"/></a></td>
             <td align='center'>${antecesor.id_version_item}</td> 
             <td align='center'>${antecesor.item.cod_item}</td> 
             <td>${antecesor.item.nom_item}</td>            

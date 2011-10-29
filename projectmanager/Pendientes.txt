@@ -1,0 +1,3 @@
+Cambiar calculo de impacto para agregar izquierda y derecha de los hijos (Hecho, seguir probando)
+Agregar: Borrar Antecesor(Hecho, seguir probando)
+Agregar control de permisos sobre las entidades

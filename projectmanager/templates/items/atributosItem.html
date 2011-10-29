@@ -125,7 +125,7 @@
             </td>
             <td><span py:for="antecesor in relaciones[2]">
                     <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
-                        <a href=''>
+                        <a href='/item/delAntecesor?id_version_item=${antecesor.id_version_item}'>
                         <img src="${tg.url('/images/eliminar.png')}" alt="Eliminar" height="16" width="16" title='Eliminar Relacion'/>
                         </a> 
                     </span>

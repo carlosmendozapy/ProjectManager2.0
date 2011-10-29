@@ -22,11 +22,15 @@
 
 <div class="menu">
 		<ul>
-			<span>
+			<span py:if="g.current_project.estadoProyecto.nom_estado=='Iniciado'">                
               <li><a href="#" id="current">Item</a>
                 <ul>
-                    <li><a href="/item/newItem">Nuevo Item</a></li>
-                    <li><a href="/item/revivirItem">Revivir Item</a></li>
+                    <span py:if="h.has_FasePriv('crear','Item',g.current_phase.id_fase)">
+                        <li><a href="/item/newItem">Nuevo Item</a></li>
+                    </span>
+                    <span py:if="h.has_FasePriv('revivir','Item',g.current_phase.id_fase)">
+                        <li><a href="/item/revivirItem">Revivir Item</a></li>
+                    </span>
                 </ul>
               </li>              
             </span>
@@ -46,15 +50,22 @@
             <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto)">
               <li><a href="/fase/usersRol">Roles por Usuarios</a></li>
             </span>
-            <span py:if="h.has_AnyFasePriv('Linea Base',g.current_phase.id_fase)">
-            <li><a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}' >Administrar Lineas Base</a></li>    			
+            <span py:if="g.current_project.estadoProyecto.nom_estado=='Iniciado' and h.has_AnyFasePriv('Linea Base',g.current_phase.id_fase)">
+                <li><a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}' >Administrar Lineas Base</a></li>    			
             </span>
+            
+            <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_AnyFasePriv('Tipo de Item',g.current_phase.id_fase)">
             <li><a href="#">Tipos de Item</a>
               <ul>
-                <li><a href="/fase/listTiposItem">Listar Tipos de Item de Fase</a></li>
-                <li><a href="/fase/addTiposItem">Administrar Tipos de Item a Fase</a></li>                
+                <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('listar','Tipo de Item',g.current_phase.id_fase)">
+                    <li><a href="/fase/listTiposItem">Listar Tipos de Item de Fase</a></li>
+                </span>
+                <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('ver','Tipo de Item',g.current_phase.id_fase)">
+                    <li><a href="/fase/addTiposItem">Administrar Tipos de Item a Fase</a></li>                
+                </span>
               </ul>
-            </li>	
+            </li>
+            </span>	
 		</ul>
 	</div>
 
@@ -72,63 +83,73 @@
             <th width="15%">Usuario Modifico</th>
             <th width="15%">Fecha Modificacion</th>                                             
           </tr>
+          <span py:if="h.has_FasePriv('listar','Item',g.current_phase.id_fase)">
           <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
             <td>
-                <span py:if="versionItem.estado.nom_estado != 'Aprobado'">
-                <a href="/item/history?id_item=${versionItem.id_item}">
-                <img src="${tg.url('/images/versions.png')}" width="16" height="16" title='Versiones de Item'/>
-                </a>
+                <span py:if="versionItem.estado.nom_estado != 'Aprobado' and h.has_FasePriv('ver','Item',g.current_phase.id_fase)">
+                    <a href="/item/history?id_item=${versionItem.id_item}">
+                    <img src="${tg.url('/images/versions.png')}" width="16" height="16" title='Versiones de Item'/>
+                    </a>
                 </span>                
             </td>   
             <td>
-                <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
+                <span py:if="versionItem.estado.nom_estado == 'En Modificacion' and h.has_FasePriv('eliminar','Item',g.current_phase.id_fase)">
                   <a href="/item/aEliminar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/delete.png')}" width="16" height="16" title='Eliminar Item'/>
                   </a>
                 </span>
-                <span py:if="versionItem.estado.nom_estado != 'En Modificacion' and versionItem.estado.nom_estado != 'Aprobado'">
+                <span py:if="versionItem.estado.nom_estado != 'En Modificacion' and versionItem.estado.nom_estado != 'Aprobado' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
                   <a href="/item/aModificar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/edit.png')}" width="16" height="16" title='Pasar a estado de Modificacion de Item'/>
                   </a>
                 </span>
             </td>
             <td>
-                <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
+                <span py:if="versionItem.estado.nom_estado == 'En Modificacion' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
                   <a href="/item/aPendiente?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/save.png')}" width="16" height="16" title='Guardar para Aprobacion'/>
                   </a>
                 </span>
-                <span py:if="versionItem.estado.nom_estado == 'Eliminar'">
+                <span py:if="versionItem.estado.nom_estado == 'Eliminar' and h.has_FasePriv('confirmar','Item',g.current_phase.id_fase)">
                   <a href="/item/aEliminado?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar la Eliminación'/>
                   </a>                   
                 </span>
-                <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
+                <span py:if="versionItem.estado.nom_estado == 'Pendiente' and h.has_FasePriv('confirmar','Item',g.current_phase.id_fase)">
                   <a href="/item/confirmar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar Modificacion'/>
                   </a>                                    
                 </span>
             </td> 
             <td>
-                <span py:if="versionItem.estado.nom_estado == 'Eliminar'">
+                <span py:if="versionItem.estado.nom_estado == 'Eliminar' and h.has_FasePriv('rechazar','Item',g.current_phase.id_fase)">
                   <a href="/item/rechazar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/eliminar.png')}" width="16" height="16" title='Rechazar Eliminacion'/>
                   </a>   
                 </span>
-                <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
+                <span py:if="versionItem.estado.nom_estado == 'Pendiente' and h.has_FasePriv('rechazar','Item',g.current_phase.id_fase)">
                     <a href="/item/rechazar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/eliminar.png')}" width="16" height="16" title='Rechazar Modificacion'/>
                   </a>                  
                 </span>
             </td>                    
             <td align='center'>${versionItem.item.cod_item}</td>
-            <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item};frompage=${'item'}">${versionItem.item.nom_item}</a></td>
+            <span py:if="h.has_FasePriv('ver','Item',g.current_phase.id_fase) or h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
+                <td><a href="/item/atributosItem?id_version=${versionItem.id_version_item};frompage=${'item'}">${versionItem.item.nom_item}</a></td>
+            </span>
+            <span py:if="not h.has_FasePriv('ver','Item',g.current_phase.id_fase) and not h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
+                <td>${versionItem.item.nom_item}</td>
+            </span>
             <td align='center'>${versionItem.estado.nom_estado}</td>
             <td align='center'>${versionItem.tipoItem.nom_tipo_item}</td>
             <td align='center'>${versionItem.usuarioModifico.login_name}</td>
             <td>${versionItem.fecha}</td>                        
           </tr>
+          </span>         
         </table>
+        <span py:if="not h.has_FasePriv('listar','Item',g.current_phase.id_fase)">
+              <p class='msgPrivilegio'>Usted No posee los privilegios necesarios para listar los items de esta fase. Favor Comuniquese con el Administrador o Lider del Proyecto</p>
+        </span>
 
         <a href='/fase/index?id_proyecto=${g.current_project.id_proyecto}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>    
   </div>

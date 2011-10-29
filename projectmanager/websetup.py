@@ -155,6 +155,10 @@ def setup_app(command, conf, vars):
                             model.Privilegios(u'eliminar',u'Permite la Eliminacion de una entidad'),
                             model.Privilegios(u'listar',u'Permite listar las entidades'),
                             model.Privilegios(u'ver',u'Permite visualizar una entidad'),
+                            model.Privilegios(u'revivir',u'Aplicable solo a la Entidad Item; permite revivir un Item'),
+                            model.Privilegios(u'revertir',u'Aplicable solo a la Entidad Item; permite revertir a una version anterior un Item'),
+                            model.Privilegios(u'confirmar',u'Aplicable solo a la Entidad Item; permite confirmar un cambio, reversion o revivir un Item'),
+                            model.Privilegios(u'rechazar',u'Aplicable solo a la Entidad Item; permite rechazar un cambio, reversion o revivir un Item'),
                             ])
     model.DBSession.flush()
     

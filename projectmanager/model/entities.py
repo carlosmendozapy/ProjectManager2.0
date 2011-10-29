@@ -141,12 +141,21 @@ class VersionItem(DeclarativeBase):
     
     def getRelacionesDer(self,idVersion):
         derecha=[]
+        abajo=[]
         f = open("derecha.txt","a")
         f.write("Llamada a derecha\n")
         
         sucesores = self.getSucesores(idVersion)
         derecha.extend(sucesores)
-                
+        
+        hijos=self.getHijos(idVersion) 
+        abajo.extend(self.getHijosNietos(hijos))
+        
+        if len(abajo) > 0:
+            for hijo in abajo:
+                sucesores = self.getSucesores(hijo.id_version_item)
+                derecha.extend(sucesores)
+                    
         for item in derecha:
             sucesores = self.getSucesores(item.id_version_item)
             derecha.extend(sucesores)
@@ -160,11 +169,20 @@ class VersionItem(DeclarativeBase):
     def getRelacionesIzq(self, idVersion):
         
         izquierda=[]
+        abajo=[]
         f=open("izquierda.txt","a")
         f.write("Llamada a izquierda\n")       
         antecesores = self.getAntecesores(idVersion)               
         izquierda.extend(antecesores)
         
+        hijos=self.getHijos(idVersion) 
+        abajo.extend(self.getHijosNietos(hijos))
+        
+        if len(abajo) > 0:
+            for hijo in abajo:
+                antecesores =  self.getAntecesores(hijo.id_version_item)
+                izquierda.extend(antecesores)
+                
         for item in izquierda:
             antecesores = self.getAntecesores(item.id_version_item)
             izquierda.extend(antecesores)

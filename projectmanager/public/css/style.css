@@ -354,6 +354,11 @@ p{
     min-width: 250px;
 }
 
+p.msgPrivilegio{
+    color: red;
+    text-align: center;
+    font-weight: bold;
+}
 table tr td table tr.odd{
     background: #DCE8FE;
 }

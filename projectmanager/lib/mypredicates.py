@@ -167,7 +167,7 @@ class has_AnyProPriv(Predicate):
             self.unmet() 
             
 class has_AnyFasePriv(Predicate):
-    """Se utiliza para saber si un usuario posee un cualquier privilegio
+    """Se utiliza para saber si un usuario posee cualquier privilegio
     sobre una entidad en una fase"""
     message = 'El usuario actual no posee el privilegio adecuado para esta entidad'
     
@@ -191,13 +191,22 @@ class has_AnyFasePriv(Predicate):
         
         has = False
         for rol in roles.all():
-            has_priv = DBSession.query(Permisos).\
-                filter(Permisos.entidad==self.entidad)                
-                
-            if has_priv.count() > 0:
-                has = True
-                break
+            unRol=DBSession.query(Rol).\
+            filter(Rol.id_rol==rol.id_rol).one()
             
+            misPermisos = unRol.permisos                
+            
+            for permiso in misPermisos:
+                entidad = DBSession.query(EntidadSistema).\
+                filter(EntidadSistema.id_entidad==permiso.id_entidad_sistema).one()
+                
+                if entidad.nom_entidad == self.entidad.nom_entidad:
+                    has=True
+                    break
+                
+            if has:
+                break 
+                           
         if has == False:
             '''No posee el privilegio'''
             self.unmet()
