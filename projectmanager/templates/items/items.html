@@ -86,7 +86,7 @@
           <span py:if="h.has_FasePriv('listar','Item',g.current_phase.id_fase)">
           <tr py:for="i, versionItem in enumerate(items)" class="${i%2 and 'even' or 'odd'}">
             <td>
-                <span py:if="versionItem.estado.nom_estado != 'Aprobado' and h.has_FasePriv('ver','Item',g.current_phase.id_fase)">
+                <span py:if="h.has_FasePriv('ver','Item',g.current_phase.id_fase)">
                     <a href="/item/history?id_item=${versionItem.id_item}">
                     <img src="${tg.url('/images/versions.png')}" width="16" height="16" title='Versiones de Item'/>
                     </a>

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-"""Sample controller module"""
-
 # turbogears imports
 from tg import expose, tmpl_context
 from tg import redirect, validate, flash
@@ -13,7 +10,6 @@ from repoze.what.predicates import has_permission
 from repoze.what.predicates import not_anonymous
 from projectmanager.lib.mypredicates import is_type
 from projectmanager.lib.app_globals import Globals
-
 
 # project specific imports
 from projectmanager.lib.base import BaseController
@@ -82,10 +78,9 @@ class cambiarEstadoPendienteController(BaseController):
         for imprimir in sinCambios:
         
             print 'sin CAMBIOS GUARDADOS ' + imprimir.item.nom_item
-        
-        print 'salio de aca'
-        Globals.lista_actualizados = cambios
-        Globals.lista_no_actualizados = sinCambios
+            print 'salio de aca'
+            Globals.lista_actualizados = cambios
+            Globals.lista_no_actualizados = sinCambios
          
         return dict(itemActualizados = cambios, itemAnteriores = sinCambios, idlineaBase = self.nro_lb_id) 
             
@@ -100,12 +95,13 @@ class cambiarEstadoPendienteController(BaseController):
         
         
         
-        estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Pendiente').one()
+        estadoA = DBSession.query(Estado).filter(Estado.nom_estado == 'Aprobado').one()
         estadoItem = DBSession.query(Estado).filter(Estado.nom_estado == 'Confirmado').one()
+        estadoP = DBSession.query(Estado).filter(Estado.nom_estado == 'Pendiente').one()
         lineaBase = DBSession.query(NroLineaBase).filter(NroLineaBase.id_nro_lb == nro_lb_id_).one()       
-        lineaBase.id_estado = estado.id_estado
+        lineaBase.id_estado = estadoP.id_estado
 
-        Globals.current_phase.id_estado = estado.id_estado
+        Globals.current_phase.id_estado = estadoP.id_estado
 
 
         lista=[]
@@ -125,22 +121,24 @@ class cambiarEstadoPendienteController(BaseController):
         for itemActualizado in Globals.lista_actualizados:
             itemSelect = DBSession.query(VersionItem).\
                          filter(VersionItem.id_version_item == itemActualizado.id_version_item).one()
-            
+            itemSelect.estado = estadoA
             listaGuardar.append(itemSelect)
             
         for itemNoActualizado in Globals.lista_no_actualizados:
             itemSelect1 = DBSession.query(VersionItem).\
                          filter(VersionItem.id_version_item == itemNoActualizado.id_version_item).one()
+            itemSelect1.estado = estadoA
             listaGuardar.append(itemSelect1)
         
         for item in listaGuardar:
             itemSelect3 = DBSession.query(VersionItem).\
                          filter(VersionItem.id_version_item == item.id_version_item).one()
-            if(itemSelect3.id_estado == estadoItem.id_estado):
+            if(itemSelect3.id_estado == estadoA.id_estado):
                 lineaBase.item.append(itemSelect3)
         
         DBSession.add(lineaBase)
         DBSession.flush()     
         
+        flash(_("LA LINEA BASE HA PASADO A UN ESTADO PENDIENTE DE APROBACION"))
         redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))        
         

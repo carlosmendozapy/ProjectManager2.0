@@ -81,10 +81,10 @@ class itemLineaBaseController(BaseController):
 
         lineaBase = kw['idlineaBase']   
 
-        estado = DBSession.query(Estado).filter(Estado.nom_estado == 'En Revision').one()
-        Globals.current_phase.id_estado = estado.id_estado
+        estadoD = DBSession.query(Estado).filter(Estado.nom_estado == 'En Desarrollo').one()
+        Globals.current_phase.id_estado = estadoD.id_estado
 
-        estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Abierta').one()
+        estadoA = DBSession.query(Estado).filter(Estado.nom_estado == 'Abierta').one()
         usuario = DBSession.query(Usuario).filter(Usuario.login_name == request.identity['repoze.who.userid']).one()
         nroLineaBase = DBSession.query(NroLineaBase).filter(NroLineaBase.id_nro_lb == lineaBase).one()
         
@@ -93,12 +93,14 @@ class itemLineaBaseController(BaseController):
         aNroLineaBase = NroLineaBase()
         aNroLineaBase.id_linea_base = nroLineaBase.id_linea_base
         aNroLineaBase.nro_linea_base = nroLineaBase.nro_linea_base + 1 
-        aNroLineaBase.id_estado = estado.id_estado   
+        aNroLineaBase.id_estado = estadoA.id_estado   
         aNroLineaBase.id_usuario_aprobo = usuario.id_usuario  
         
         items = nroLineaBase.item  
-        
+
+        estadoC = DBSession.query(Estado).filter(Estado.nom_estado == 'Confirmado').one()
         for itemGuardar in items:       
+            itemGuardar.estado = estadoC
             aNroLineaBase.item.append(itemGuardar)
 
         
@@ -117,21 +119,35 @@ class itemLineaBaseController(BaseController):
         
     @expose()
     def aprobar(self, **kw):  
+        print '***************************************************************************************************************'
+        print 'entro aca'
         lineaBase_id = kw['idlineaBase']   
         nroLineaBaseAprobar = DBSession.query(NroLineaBase).\
                               filter(NroLineaBase.id_nro_lb == lineaBase_id).one()
+                              
+        items = nroLineaBaseAprobar.item
         
+        band = 1
+        if (items == []):
+            band = 0
+            flash(_("ERROR!! NO SE PUEDE APROBAR UNA LINEA BASE SIN ITEMS"))
+            redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
         
-        estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Aprobado').one()
-        Globals.current_phase.id_estado = estado.id_estado
-        nroLineaBaseAprobar.id_estado = estado.id_estado
+        else:                
+            estadoA = DBSession.query(Estado).filter(Estado.nom_estado == 'Aprobado').one()
+            for itemEstado in nroLineaBaseAprobar.item:       
+                itemEstado.estado = estadoA
+            
+            Globals.current_phase.id_estado = estadoA.id_estado
+            nroLineaBaseAprobar.id_estado = estadoA.id_estado
+            
+            DBSession.add(nroLineaBaseAprobar)
+            DBSession.flush()     
+            
+            flash(_("LA LINEA BASE HA SIDO APROBADA"))
+            redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
         
-        DBSession.add(nroLineaBaseAprobar)
-        DBSession.flush()     
-        
-        flash(_("HA SIDO CREADA UNA NUEVA LINEA BASE"))
-        redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
-        
+            
     @expose()
     def rechazar(self, **kw):  
         lineaBase_id = kw['idlineaBase']   
@@ -149,6 +165,7 @@ class itemLineaBaseController(BaseController):
         
         lista=[]
         for i in listaAnterior:
+            
             lista.append(i)
 
 
@@ -159,6 +176,7 @@ class itemLineaBaseController(BaseController):
         for item in listaNueva:
             itemSelect3 = DBSession.query(VersionItem).\
                          filter(VersionItem.id_version_item == item.id_version_item).one()
+            itemSelect3.estado = estado
             nroLineaBaseRechazar.item.append(itemSelect3)
         
         DBSession.add(nroLineaBaseRechazar)
@@ -169,11 +187,3 @@ class itemLineaBaseController(BaseController):
         
         flash(_("HA SIDO CREADA UNA NUEVA LINEA BASE"))
         redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
-
-
-        
-        
-        
-        
-          
-        

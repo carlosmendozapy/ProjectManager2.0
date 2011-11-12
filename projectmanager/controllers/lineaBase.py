@@ -215,6 +215,7 @@ class lineabaseController(BaseController):
               
             itemSelect = DBSession.query(VersionItem).filter(VersionItem.id_version_item ==items1).one()
             print itemSelect.observaciones
+            itemSelect.id_estado = estado.id_estado
             aNroLineaBase.item.append(itemSelect)
               
         
