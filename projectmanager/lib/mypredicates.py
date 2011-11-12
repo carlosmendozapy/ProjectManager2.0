@@ -155,12 +155,21 @@ class has_AnyProPriv(Predicate):
         
         has = False
         for rol in roles.all():
-            has_priv = DBSession.query(Permisos).\
-                filter(Permisos.entidad==self.entidad)
-                                
-            if has_priv.count() > 0:
-                has = True
-                break
+            unRol=DBSession.query(Rol).\
+            filter(Rol.id_rol==rol.id_rol_proyecto).one()
+            
+            misPermisos = unRol.permisos                
+            
+            for permiso in misPermisos:
+                entidad = DBSession.query(EntidadSistema).\
+                filter(EntidadSistema.id_entidad==permiso.id_entidad_sistema).one()
+                
+                if entidad.nom_entidad == self.entidad.nom_entidad:
+                    has=True
+                    break
+                
+            if has:
+                break 
             
         if has == False:
             '''No posee el privilegio'''
