@@ -22,6 +22,8 @@ from projectmanager.model.entities import TipoItem
 from projectmanager.model.entities import Atributo
 from projectmanager.model.entities import AtributoItem
 from projectmanager.model.entities import TipoDatoAtributo
+from projectmanager.model.entities import Antecesor
+from projectmanager.model.entities import Padre
 from projectmanager.model.roles import Usuario
 from projectmanager.model.roles import RolFaseUsuario
 from projectmanager.model.roles import RolProyectoUsuario
@@ -386,6 +388,7 @@ class FaseController(BaseController):
             filter(TipoDatoAtributo.id_tipo_dato==int(kw['tipo_dato'])).one()
 		
         if int(kw['save_as']) == 0:
+            '''Opcion para Nuevos Items'''
             newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
         
             if tipoDato.nom_tipo_dato == 'numerico':
@@ -398,6 +401,7 @@ class FaseController(BaseController):
                 newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
         
         else:
+            '''Opcion para Nuevos y Actuales Items'''
             newAtri = Atributo(kw['nom_atributo'], tipoDato, tipoItem)
         
             if tipoDato.nom_tipo_dato == 'numerico':
@@ -433,12 +437,43 @@ class FaseController(BaseController):
                 nuevaVersionItem.peso = item.peso
                 nuevaVersionItem.id_fase = item.id_fase
                         
+                # Agregar los antecesores del item viejo
                 for antecesor in item.Antecesores:
                     nuevaVersionItem.Antecesores.append(antecesor)
         
-                for padre in item.Padres:
-                    nuevaVersionItem.padres.append(padre)
+                # Agregar los sucesores del item viejo
+                try:
+                    antecesor = DBSession.query(Antecesor).\
+                    filter(Antecesor.id_version_item == item.id_version_item).\
+                    one()
             
+                    nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+                    sucesores = antecesor.sucesores
+                    for sucesor in sucesores:
+                        sucesor.Antecesores.append(nuevoAntecesor)
+                except NoResultFound,e:                    
+                    existe=False
+        
+                # Agregar los padres del item viejo       
+                for padre in item.Padres:
+                    nuevaVersionItem.Padres.append(padre)
+            
+                # Agregar los hijos del item viejo
+                try:
+                    padre = DBSession.query(Padre).\
+                    filter(Padre.id_version_item == item.id_version_item).\
+                    one()
+            
+                    nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+                    hijos = padre.hijos
+                    for hijo in hijos:                
+                        hijo.Padres.append(nuevoPadre)
+                except NoResultFound,e:
+                    existe=False
+            
+                # Copiamos los atributos del item viejo
                 for atributo in DBSession.query(AtributoItem).\
                     filter(AtributoItem.id_version_item == item.id_version_item).all():
                 

@@ -1006,6 +1006,8 @@ class ItemController(BaseController):
             nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
                    
+        aRevision(nuevoAtributoItem.id_version_item)
+        
         redirect('adminItem?faseid=' +\
             str(nuevaVersionItem.id_fase))
            
@@ -1235,6 +1237,39 @@ class ItemController(BaseController):
                    
         redirect('adminItem?faseid=' +\
             str(nuevaVersionItem.id_fase))
+      
+    
+    def aRevision(self, idVersion, **Kw):
+            """Metodo interno que se encarga de pasar al estado
+            En Revision a todos los items relacionados con el item
+            que se esta modificando"""
+            
+            revision=DBSession.query(Estado).\
+            filter(Estado.nom_estado=='En Revision').one()
+            
+            #Obtener el item a modificar
+            item = DBSession.query(VersionItem).\
+            filter(VersionItem.id_version_item==idVersion).one()
+            
+            #Obtener la red de relaciones desde este item
+            item.initGraph(itemVersion)
+            
+            ListaItems = []  
+             
+            #Izquierda
+            ListaItems.extend(itemVersion.getRelacionesIzq(itemVersion.id_version_item))
+            
+            #Abajo
+            hijos=itemVersion.getHijos(itemVersion.id_version_item)        
+            ListaItems.extend(itemVersion.getHijosNietos(hijos))
+            
+            #Derecha
+            ListaItems.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
+            
+            for unItem in ListaItems:
+                unItem.estado = revision
+                
+                
 
 # **********************************************************************
 # ********************* Versionado de Item *****************************

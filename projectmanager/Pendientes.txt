@@ -2,3 +2,4 @@ Cambiar calculo de impacto para agregar izquierda y derecha de los hijos (Hecho,
 Agregar: Borrar Antecesor(Hecho, seguir probando)
 Agregar control de permisos sobre las entidades (Hecho, seguir probando)
 Controlar el tema de agregar atributos de item
+Controlar relaciones, pasar a estado En Revision
