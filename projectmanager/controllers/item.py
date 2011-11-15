@@ -587,7 +587,11 @@ class ItemController(BaseController):
         nuevoAtributoItem = AtributoItem()
         nuevoAtributoItem.id_atributo = int(kw['id_atributo'])
         nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
-        nuevoAtributoItem.val_atributo = kw['valor'].strftime('%d/%m/%y')
+        if not kw['valor'] == None:
+            nuevoAtributoItem.val_atributo = kw['valor'].strftime('%d/%m/%y')
+        else:
+            nuevoAtributoItem.val_atributo = kw['valor']
+            
         DBSession.add(nuevoAtributoItem)
         
         Globals.current_item = nuevaVersionItem
@@ -941,6 +945,20 @@ class ItemController(BaseController):
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
+        # Para el caso en que este en Revision controlar que la Linea Base
+        # este Abierta
+        LBases = versionItem.NroLineaBase
+        has_lb = False
+        if len(LBases) > 0:
+            has_lb = True            
+            estado = None
+            for lb in LBases:
+                estado = lb.estado.nom_estado
+                
+            if estado != 'Abierta':
+                flash(_('Solicite primero la Apertura de la Linea Base Correspondiente'),'warning')
+                redirect('adminItem?faseid=' +  str(versionItem.id_fase))
+            
         
         versionItem.ultima_version = 'N'
         
@@ -1005,8 +1023,11 @@ class ItemController(BaseController):
             nuevoAtributoItem.val_atributo = atributo.val_atributo
             nuevoAtributoItem.id_archivo = atributo.id_archivo
             DBSession.add(nuevoAtributoItem)
-                   
-        aRevision(nuevoAtributoItem.id_version_item)
+        
+        #Solo si tiene una linea base le avisara a sus relacionados
+        #que deben estar en revision
+        if has_lb:           
+            self.aRevision(nuevoAtributoItem.id_version_item)
         
         redirect('adminItem?faseid=' +\
             str(nuevaVersionItem.id_fase))
@@ -1252,19 +1273,19 @@ class ItemController(BaseController):
             filter(VersionItem.id_version_item==idVersion).one()
             
             #Obtener la red de relaciones desde este item
-            item.initGraph(itemVersion)
+            item.initGraph(item)
             
             ListaItems = []  
              
             #Izquierda
-            ListaItems.extend(itemVersion.getRelacionesIzq(itemVersion.id_version_item))
+            ListaItems.extend(item.getRelacionesIzq(item.id_version_item))
             
             #Abajo
-            hijos=itemVersion.getHijos(itemVersion.id_version_item)        
-            ListaItems.extend(itemVersion.getHijosNietos(hijos))
+            hijos=item.getHijos(item.id_version_item)        
+            ListaItems.extend(item.getHijosNietos(hijos))
             
             #Derecha
-            ListaItems.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
+            ListaItems.extend(item.getRelacionesDer(item.id_version_item))
             
             for unItem in ListaItems:
                 unItem.estado = revision

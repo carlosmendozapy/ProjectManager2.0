@@ -35,7 +35,7 @@ class has_rol_proyecto(Predicate):
                 filter(RolProyectoUsuario.usuarios==self.usuario).\
                 filter(RolProyectoUsuario.proyecto==self.proyecto).\
                 filter(RolProyectoUsuario.roles==self.rol).one()
-        except NoResultFound,e:
+        except NoResultFound:
             posee_rol=False
             
         if posee_rol == False:

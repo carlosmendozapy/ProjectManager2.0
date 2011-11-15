@@ -398,7 +398,10 @@ class FaseController(BaseController):
                 newAtri.val_default = kw['def_texto']
             
             elif tipoDato.nom_tipo_dato == 'fecha':
-                newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+                if not kw['def_fecha'] == None:
+                    newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+                else:
+                    newAtri.val_default = kw['def_fecha']
         
         else:
             '''Opcion para Nuevos y Actuales Items'''
@@ -411,7 +414,10 @@ class FaseController(BaseController):
                 newAtri.val_default = kw['def_texto']
             
             elif tipoDato.nom_tipo_dato == 'fecha':
-                newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+                if not kw['def_fecha'] == None:
+                    newAtri.val_default = kw['def_fecha'].strftime('%d/%m/%y')
+                else:
+                    newAtri.val_default = kw['def_fecha']
                 
             item_list = DBSession.query(VersionItem).\
                 filter(VersionItem.ultima_version == 'S').\

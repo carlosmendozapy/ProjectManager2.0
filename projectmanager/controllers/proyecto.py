@@ -135,9 +135,31 @@ class ProyectoController(BaseController):
     @expose()
     def startProject(self, **kw):
         """Funcion que cambia el estado de una fase No Inciada a 
-        Iniciada"""
+        Iniciada. Controla primero que las fases se hayan creado
+        correctamente"""
         project = DBSession.query(Proyecto).filter(Proyecto.id_proyecto==int(kw['id'])).one()
         estado =DBSession.query(Estado).filter(Estado.nom_estado == 'Iniciado').one()
+        
+        #Controlar Orden de las fases
+        FasesList = DBSession.query(Fase).\
+            filter(Fase.id_proyecto==project.id_proyecto).\
+            order_by(Fase.nro_fase).all()
+            
+        if len(FasesList) <= 0:
+            flash(_("No se puede iniciar el Proyecto sin Fases"),'warning')
+            redirect('adminProject')
+            
+        actual = FasesList[0].nro_fase
+        for fase in FasesList:
+            next = fase.nro_fase
+            if next > actual+1:
+                flash(_("Segun el orden de las Fases le falta crear una o mas fases"
+                ". Favor Asegurese de que todas las fases esten en un orden correlativo"),
+                'warning')
+                redirect('adminProject')
+            else:
+                actual = next
+        
         project.estadoProyecto = estado
         redirect('adminProject')
         
