@@ -16,6 +16,6 @@
     <h2><a>Nuevo Permiso para el Rol: ${g.current_rol.nom_rol}</a></h2>
     <hr width="100%" color="#6699FF" size="2"/>
     <div py:replace="tmpl_context.form()">Input Form</div>
-  
+  <a href='/permisos/index?id_rol=${g.current_rol.id_rol}'><img src="${tg.url('/images/back.png')}"/> Cancelar y Volver</a>
 </body>
 </html>
