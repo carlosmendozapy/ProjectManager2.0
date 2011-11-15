@@ -16,7 +16,11 @@ from projectmanager.model.entities import Atributo
 from projectmanager.model.entities import AtributoArchivo
 from projectmanager.model.entities import AtributoItem
 from projectmanager.model.entities import VersionItem
+from projectmanager.model.entities import Antecesor
+from projectmanager.model.entities import Padre
+
 from projectmanager.model.roles import Usuario
+from sqlalchemy.orm.exc import NoResultFound
 
 from repoze.what import predicates
 from repoze.what.predicates import has_permission
@@ -94,11 +98,41 @@ class FileUploadController(BaseController):
         nuevaVersionItem.peso = versionItem.peso
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
+        # Agregar los sucesores del item viejo
+        try:
+            antecesor = DBSession.query(Antecesor).\
+            filter(Antecesor.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
+           
+            sucesores = antecesor.sucesores
+            for sucesor in sucesores:
+                sucesor.Antecesores.append(nuevoAntecesor)
+        except NoResultFound,e:                    
+            existe=False
+        
+        # Agregar los padres del item viejo       
         for padre in versionItem.Padres:
-            nuevaVersionitem.padres.append(padre)
+            nuevaVersionItem.Padres.append(padre)
+            
+        # Agregar los hijos del item viejo
+        try:
+            padre = DBSession.query(Padre).\
+            filter(Padre.id_version_item == versionItem.id_version_item).\
+            one()
+            
+            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
+           
+            hijos = padre.hijos
+            for hijo in hijos:                
+                hijo.Padres.append(nuevoPadre)
+        except NoResultFound,e:
+            existe=False
             
         for atributo in DBSession.query(AtributoItem).\
             filter(AtributoItem.id_version_item == Globals.\
@@ -125,7 +159,9 @@ class FileUploadController(BaseController):
         
         Globals.current_item = nuevaVersionItem        
        
-        redirect("/item/atributosItem?id_version="+str(Globals.current_item.id_version_item))
+        redirect("/item/atributosItem?id_version="+\
+        str(Globals.current_item.id_version_item) +\
+        ";frompage=item")
     
     @expose(content_type=CUSTOM_CONTENT_TYPE)
     def view(self, fileid):

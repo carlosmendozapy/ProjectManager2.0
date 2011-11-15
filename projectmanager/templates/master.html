@@ -30,7 +30,7 @@
     </span>
   </ul>
   <div id="content">
-    <py:if test="defined('page')">
+    <!---<py:if test="defined('page')">-->
     <div class="currentpage">
      <!--
      Now Viewing: <span py:replace="page"/>
@@ -39,7 +39,7 @@
         <a><b>${request.identity['repoze.who.userid']}</b></a>
      </span>
      </div>
-    </py:if>
+    <!--</py:if>-->
     <py:with vars="flash=tg.flash_obj.render('flash', use_js=False)">
         <div py:if="flash" py:content="XML(flash)" />
     </py:with>

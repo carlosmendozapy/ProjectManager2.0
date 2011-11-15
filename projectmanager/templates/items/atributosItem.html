@@ -75,7 +75,7 @@
       </tr>
 	  <tr py:for="i, atributoItem in enumerate(atributosItem)" class="${i%2 and 'even' or 'odd'}">        
         <td>
-            <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+            <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and not atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">
               <a href="/item/editAtributo?id_atributo=${atributoItem.id_atributo};id_version_item=${atributoItem.id_version_item}">
               <img src="${tg.url('/images/edit.png')}"/></a>
             </span>
@@ -92,6 +92,8 @@
                     ${atributoItem.atributoArchivo.filename}
                     <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
                     <img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> 
+                    <a align="center" href="/file_upload/file_upload?idAtributo=${atributoItem.atributo.id_atributo};idVersionItem=${g.current_item.id_version_item}">
+                    <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/>Cambiar</a>
                 </span>                
           </span>
 		  <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">		    

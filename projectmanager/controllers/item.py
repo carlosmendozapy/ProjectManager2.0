@@ -460,7 +460,7 @@ class ItemController(BaseController):
         nuevaVersionItem.peso = int(kw['valor'])
         nuevaVersionItem.id_fase = Globals.current_phase.id_fase
         
-         # Agregar los antecesores del item viejo
+        # Agregar los antecesores del item viejo
         for antecesor in versionItem.Antecesores:
             nuevaVersionItem.Antecesores.append(antecesor)
         
