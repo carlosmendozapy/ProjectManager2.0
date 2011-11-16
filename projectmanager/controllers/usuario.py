@@ -3,6 +3,16 @@ from tg import expose, flash, tmpl_context, redirect, validate
 from pylons.i18n import ugettext as _, lazy_ugettext as l_
 from repoze.what.predicates import has_permission
 from repoze.what.predicates import not_anonymous
+from tg import request
+import os
+from datetime import datetime
+import sys
+try:
+    from hashlib import sha1
+except ImportError:
+    sys.exit('ImportError: No module named hashlib\n'
+             'If you are on python2.4 this library is not part of python. '
+             'Please install it. Example: easy_install hashlib')
 
 #from dbsprockets.dbmechanic.frameworks.tg2 import DBMechanic
 #from dbsprockets.saprovider import SAProvider
@@ -89,7 +99,43 @@ class UsuarioController(BaseController):
         tmpl_context.form = asignRol_to_user
         options = DBSession.query(Rol.id_rol,Rol.nom_rol)
         return dict(rol_options=options,idUsuario=int(kw['id']))
-    
+        
+    @expose('projectmanager.templates.usuarios.miPerfil')
+    def miPerfil(self, **kw):
+        usuario = DBSession.query(Usuario).\
+            filter(Usuario.login_name==\
+            request.identity['repoze.who.userid']).one()
+            
+        return dict(Usuario=usuario)
+        
+    @expose()
+    def cambiarPass(self, **kw):
+        usuario = DBSession.query(Usuario).\
+            filter(Usuario.login_name==\
+            request.identity['repoze.who.userid']).one()
+            
+        actual= kw['passActual']
+        nuevo = kw['passNuevo']
+        nuevo2= kw['passRep']
+        
+        #Contralar campos vacios
+        if len(actual) <= 0 or len(nuevo) <= 0 or len(nuevo2) <= 0:
+            flash(_('Debe llenar todos los campos para relizar el cambio'),'warning')
+            
+        #Comparar si el actual es igual al de la BD        
+        if usuario.validate_password(actual):
+            
+            if nuevo == nuevo2:
+                usuario._set_password(nuevo)
+            else:
+                flash(_('Los campos del nuevo password no son iguales'),'warning')
+                
+        else:
+            flash(_('El password no es correcto'),'warning')            
+               
+        redirect('/usuario/miPerfil')
+        
+     
     @expose('projectmanager.templates.usuarios.usuarios')
     def search(self, **kw):
         word = '%'+kw['key']+'%'        

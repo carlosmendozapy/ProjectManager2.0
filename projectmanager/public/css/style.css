@@ -359,6 +359,9 @@ p.msgPrivilegio{
     text-align: center;
     font-weight: bold;
 }
+p#miPerfil{
+    text-align: right
+}
 table tr td table tr.odd{
     background: #DCE8FE;
 }

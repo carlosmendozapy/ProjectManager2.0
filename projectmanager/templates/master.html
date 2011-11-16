@@ -36,7 +36,9 @@
      Now Viewing: <span py:replace="page"/>
      -->
      <span py:if="request.identity">
-        <a><b>${request.identity['repoze.who.userid']}</b></a>
+        <p id='miPerfil'>
+            <a href="/usuario/miPerfil">Mi Perfil:</a><a><b> ${request.identity['repoze.who.userid']}</b></a>
+        </p>
      </span>
      </div>
     <!--</py:if>-->

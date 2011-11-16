@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+  
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title>Mi Perfil</title>
+</head>
+
+<body>    
+  <div id="Administrar">      
+    <a><h2>Mi Perfil: ${Usuario.nom_usuario}</h2></a>
+    <hr width="100%" color="#6699FF" size="2"/>      
+  </div>
+  
+  <table>
+    <tr>
+      <td width="15%"><b>NOMBRE:</b></td>
+      <td width="25%" align='left'>${Usuario.nom_usuario}</td>
+      <td width="60%"></td>
+    </tr>
+    <tr>
+      <td width="15%"><b>NOMBRE DE LOGUEO:</b></td>
+      <td width="25%" align='left'>${Usuario.login_name}</td>
+      <td width="60%"></td>
+    </tr>   
+  </table>
+  
+  <form action="/usuario/cambiarPass" method="get">
+      <table>
+    <tr>
+      <td width="15%"><b>Password actual: </b></td>
+      <td width="25%" align='left'><input type="password" name="passActual" /></td>
+      <td width="60%"></td>
+    </tr>
+    <tr>
+      <td width="15%"><b>Nuevo Password: </b></td>
+      <td width="25%" align='left'><input type="password" name="passNuevo" /></td>
+      <td width="60%"></td>
+    </tr>
+    <tr>
+      <td width="15%"><b>Repetir Password: </b></td>
+      <td width="25%" align='left'><input type="password" name="passRep" /></td>
+      <td width="60%"></td>
+    </tr>
+   
+  </table>       
+  <input type="submit" value="Cambiar Password" />
+</form>
+  <a href="javascript:history.back(1)"><img src="${tg.url('/images/back.png')}"/> VOLVER</a>
+</body>
+</html>
