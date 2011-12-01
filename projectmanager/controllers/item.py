@@ -945,7 +945,7 @@ class ItemController(BaseController):
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
-        # Para el caso en que este en Revision controlar que la Linea Base
+        # Para el caso en que este en una LB controlar que la Linea Base
         # este Abierta
         LBases = versionItem.NroLineaBase
         has_lb = False
