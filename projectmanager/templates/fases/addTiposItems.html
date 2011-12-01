@@ -26,8 +26,10 @@
     </div>
     <div class="menu">
 		<ul>
-			 <li><a href="/fase/newTipoItem">Nuevo Tipo de Item</a></li>
+            <span py:if="h.has_rol_proyecto('Lider de Proyecto',g.current_project.id_proyecto) or h.has_FasePriv('crear','Tipo de Item',g.current_phase.id_fase)">
+			 <li><a href="/fase/newTipoItem">Nuevo Tipo de Item</a></li>           
 			 <li><a href="/fase/importTipoItem">Importar Tipos de Item</a></li>
+            </span>
 		</ul>
     </div>
     <table rules='all'>

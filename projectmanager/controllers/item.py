@@ -68,6 +68,9 @@ class ItemController(BaseController):
     allow_only = not_anonymous(msg='Debe Ingresar al Sistema para ver esta pagina')    
       
     def __init__(self):
+        """ Se inicializan las variables de Estado. Mejor no utilizarlas
+        para no tener problemas con la sesion. En algunos casos da
+        problemas al referirse a esta entidad"""
         self.eliminado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
         
@@ -87,7 +90,14 @@ class ItemController(BaseController):
             filter(Estado.nom_estado == 'En Modificacion').one()
             
     @expose('projectmanager.templates.items.items')
-    def adminItem(self, **kw):                       
+    def adminItem(self, **kw):  
+        """Provee la lista de items de una fase en un proyecto
+        Parametros: 
+        'msg' (opcional) se utiliza para desplegar algun 
+        mensaje de error.
+        'faseid' es el id de la fase de la cual se estan solicitando la 
+        lista de sus items
+        Retorna: lista de items (VersionItem) de la fase solicitada"""
 	    
         if 'msg' in kw:
            flash(_(kw['msg']),'warning')
@@ -117,6 +127,12 @@ class ItemController(BaseController):
         
     @expose('projectmanager.templates.items.newItem')
     def newItem(self, **kw):
+        """Envia los parametros necesarios al widget formulario para 
+        crear un nuevo item
+        Parametros: ninguno
+        Retorna: contexto del formulario, lista de antecesores, lista
+        de padres.
+        """
 	
         if 'ciclo' in kw:
             return dict(ciclo=1)
@@ -180,6 +196,11 @@ class ItemController(BaseController):
     @validate(create_new_item,error_handler=newItem)
     @expose()
     def saveItem(self, **kw):
+        """Guarda la entidad VersionItem. Antes controla si se formara
+        un ciclo.
+        Utilizada por el formulario que tambien realiza las validaciones
+        de campo.
+        """
         fase_list = DBSession.query(Fase).\
                     filter(Fase.id_proyecto == Globals.current_project.id_proyecto).\
                     order_by(Fase.nro_fase)
@@ -256,7 +277,9 @@ class ItemController(BaseController):
         redirect("adminItem?faseid="+str(Globals.current_phase.id_fase))
            
     @expose('projectmanager.templates.items.atributosItem')
-    def atributosItem(self, **kw):                        
+    def atributosItem(self, **kw):
+        """ Retorna los atributos de un item especificado por el 
+        parametro 'id_version'. Incluye sus relaciones"""                        
         unaVersionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item==kw['id_version']).one()
             
@@ -328,7 +351,12 @@ class ItemController(BaseController):
                     frompage = str(kw['frompage']))  
         
     @expose('projectmanager.templates.items.atributosVersion')
-    def atributosVersion(self, **kw):                        
+    def atributosVersion(self, **kw): 
+        """Retorna los atributos de una version de item. Se utiliza en el 
+        modo de historial de versiones de un item.
+        El parametro de entrada es el 'id_version' que representa el 
+        identificador de la  version de item"""
+    
         unaVersionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item==kw['id_version']).one()
             
@@ -403,7 +431,8 @@ class ItemController(BaseController):
 
     @expose('projectmanager.templates.items.editAtributo')
     def editAtributo(self, **kw):
-        
+        """Proporciona el contexto de formulario adecuado segun
+        el tipo de atributo a modificar"""
         if 'id_atributo' in kw and int(kw['id_atributo'])>=0:
             Globals.current_atributo = DBSession.query(AtributoItem).\
                 filter(AtributoItem.id_atributo==int(kw['id_atributo'])).\
@@ -443,6 +472,7 @@ class ItemController(BaseController):
     @validate(edit_atributo_peso, error_handler=editAtributo)
     @expose()
     def updateAtributoPeso(self, **kw):
+        """Guarda y valida el atributo peso que se esta modificando"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -520,6 +550,7 @@ class ItemController(BaseController):
     @validate(edit_atributo_fecha,error_handler=editAtributo)
     @expose()
     def updateAtributoFecha(self, **kw):
+        """Guarda y Valida el atributo Fecha que se esta modificando"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -608,6 +639,7 @@ class ItemController(BaseController):
     @validate(edit_atributo_numerico,error_handler=editAtributo)
     @expose()
     def updateAtributoNumerico(self, **kw):
+        """Guarda y Valida el atributo Numerico que se esta modificando"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -692,7 +724,7 @@ class ItemController(BaseController):
     @validate(edit_atributo_texto,error_handler=editAtributo)
     @expose()
     def updateAtributoTexto(self, **kw):
-                        
+        """Guarda y Valida el atributo texto que se esta modificando"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()

@@ -128,10 +128,10 @@ class VersionItem(DeclarativeBase):
     __tablename__ = 'VERSION_ITEM'
     
     def initGraph(self,itemVersion):
-        self.impacto_graph = digraph()
+        self.impacto_graph = graph()
         self.impacto_graph.add_node(itemVersion.id_version_item,
         [('label',itemVersion.item.nom_item + "\n" + str(itemVersion.peso)),
-        ('color','gold')])
+        ('color','gold'),('root','true')])
         
     def drawGraph(self):
         dot = write(self.impacto_graph)        
@@ -217,7 +217,7 @@ class VersionItem(DeclarativeBase):
             if not self.impacto_graph.has_node(idVersion):
                 self.impacto_graph.add_node(idVersion,
                 [('label',item.item.nom_item + "\n" + str(item.peso)),
-                ('shape','box')])
+                ('shape','box'),('rankdir','LR')])
             
             for sucesor in yoAntecesor.sucesores:
                 if sucesor.ultima_version=='S' and\
@@ -228,7 +228,7 @@ class VersionItem(DeclarativeBase):
                     has_node(sucesor.id_version_item):
                         self.impacto_graph.add_node(sucesor.id_version_item,
                         [('label',sucesor.item.nom_item + "\n" + str(sucesor.peso)),
-                        ('shape','box')])
+                        ('shape','box'),('rankdir','LR')])
                         
                     if not self.impacto_graph.\
                     has_edge((idVersion,sucesor.id_version_item)):
@@ -248,7 +248,7 @@ class VersionItem(DeclarativeBase):
         if not self.impacto_graph.has_node(idVersion):
             self.impacto_graph.add_node(idVersion,
             [('label',itemVersion.item.nom_item + "\n" + str(itemVersion.peso)),
-            ('shape','box')])           
+            ('shape','box'),('rankdir','RL')])           
             
         antecesores=[]
         
@@ -263,7 +263,7 @@ class VersionItem(DeclarativeBase):
                 if not self.impacto_graph.has_node(unItem.id_version_item):
                     self.impacto_graph.add_node(unItem.id_version_item,
                     [('label',unItem.item.nom_item + "\n" + str(unItem.peso)),
-                    ('shape','box')])
+                    ('shape','box'),('rankdir','RL')])
                 
                 if not self.impacto_graph.\
                 has_edge((unItem.id_version_item,idVersion)):
