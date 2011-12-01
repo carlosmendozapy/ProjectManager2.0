@@ -11,6 +11,7 @@ from datetime import datetime
 from sqlalchemy.sql import exists
 from sqlalchemy.orm.exc import NoResultFound
 from projectmanager.lib.base import BaseController
+from projectmanager.lib.mypredicates import has_rol_proyecto
 from projectmanager.lib.app_globals import Globals
 from projectmanager.model import DBSession, metadata
 from projectmanager.model.proyecto import Proyecto
@@ -48,30 +49,27 @@ class FaseController(BaseController):
                
     @expose('projectmanager.templates.fases.fases')
     def index(self,**kw):        
-        
+        """Lista las fases de un proyecto seleccionado por el usuario.
+        Parametros: id del proyecto
+        Retorna: Lista de Fases del proyecto habilitadas para el
+        usuario actual"""
         Globals.current_project = DBSession.query(Proyecto).\
             filter(Proyecto.id_proyecto==int(kw['id_proyecto'])).one()             
-               
-        lider_rol=DBSession.query(Rol).\
-                    filter(Rol.nom_rol=='Lider de Proyecto').one()
+                 
         user = DBSession.query(Usuario).\
             filter(Usuario.login_name==\
                    request.identity['repoze.who.userid']).one()
-        
-        rol_project = DBSession.query(RolProyectoUsuario).\
-                filter(RolProyectoUsuario.roles==lider_rol).\
-                filter(RolProyectoUsuario.proyecto==Globals.current_project).\
-                filter(RolProyectoUsuario.usuarios==user)
-        
-        if rol_project.count > 0:
+                
+       
+        if has_rol_proyecto("Lider de Proyecto",int(kw['id_proyecto'])):
             fases_lista = DBSession.query(Fase).\
                 filter(Fase.id_proyecto == int(kw['id_proyecto'])).\
-                order_by(Fase.nro_fase)
+                order_by(Fase.nro_fase)            
         else:
             fases_lista = DBSession.query(Fase).\
                 filter(Fase.id_proyecto==int(kw['id_proyecto'])).\
                 filter(Fase.usuarios.contains(user))
-        
+                    
         if fases_lista.count() == 0:
             flash(_('No se han encontrado Fases'),'info')  
                     

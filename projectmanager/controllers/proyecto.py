@@ -28,6 +28,7 @@ from projectmanager.model.roles import Rol
 from projectmanager.model.roles import RolProyectoUsuario
 from projectmanager.model.roles import RolFaseUsuario
 from projectmanager.model.entities import Estado
+from projectmanager.model.entities import VersionItem
 from projectmanager.model.auth import Group
 from projectmanager.controllers.fase import FaseController
 
@@ -169,7 +170,21 @@ class ProyectoController(BaseController):
         Finalizada"""
         project = DBSession.query(Proyecto).filter(Proyecto.id_proyecto==int(kw['id'])).one()
         estado =DBSession.query(Estado).filter(Estado.nom_estado == 'Finalizado').one()
+        
+        fases = project.fase;
+        listItems = []
+        for fase in fases:
+            listItems.extend(DBSession.query(VersionItem).\
+            filter(VersionItem.ultima_version=='S').\
+            filter(VersionItem.fase==fase).all())
+            
+        for item in listItems:
+            if(item.estado.nom_estado!="Aprobado"):
+                flash(_("No se puede cerrar el Proyecto. Existen Items que no pertenecen a una Linea Base"),"warning")
+                redirect('adminProject')
+                
         project.estadoProyecto = estado
+        flash(_("Se ha cerrado exitosamente el proyecto " + project.nom_proyecto),"info")
         redirect('adminProject')   
     
     #******************** USUARIOS DE PROYECTO ********************

@@ -51,6 +51,7 @@ from projectmanager.model.entities import RelacionItem
 from projectmanager.model.entities import Padre
 from projectmanager.model.entities import Antecesor
 from projectmanager.model.proyecto import Fase
+from projectmanager.model.proyecto import Proyecto
 from projectmanager.model.roles import Usuario
 
 from projectmanager.widgets.new_itemForm import create_new_item
@@ -100,6 +101,10 @@ class ItemController(BaseController):
         Globals.current_phase = DBSession.query(Fase).\
             filter(Fase.id_fase == kw['faseid']).one()
                    
+        Globals.current_project = DBSession.query(Proyecto).\
+            filter(Proyecto.id_proyecto == Globals.current_phase.\
+            id_proyecto).one()
+            
         list_items = DBSession.query(VersionItem).\
             filter(VersionItem.ultima_version=='S').\
             filter(VersionItem.fase==Globals.current_phase).\

@@ -119,13 +119,16 @@ class has_FasePriv(Predicate):
         
         has = False
         for rol in roles.all():
-            has_priv = DBSession.query(Permisos).\
-                filter(Permisos.entidad==self.entidad).\
-                filter(Permisos.privilegios.contains(self.privilegio))
-                
-            if has_priv.count() > 0:
-                has = True
-                break
+            elRol = DBSession.query(Rol).\
+            filter(Rol.id_rol==rol.id_rol).one()
+            
+            permisosRol = elRol.permisos
+            
+            for permiso in permisosRol:
+                if permiso.entidad==self.entidad and\
+                   self.privilegio in permiso.privilegios:
+                    has = True
+                    break
             
         if has == False:
             '''No posee el privilegio'''

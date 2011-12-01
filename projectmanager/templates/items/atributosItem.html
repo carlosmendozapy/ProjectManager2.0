@@ -92,8 +92,10 @@
                     ${atributoItem.atributoArchivo.filename}
                     <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
                     <img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> 
-                    <a align="center" href="/file_upload/file_upload?idAtributo=${atributoItem.atributo.id_atributo};idVersionItem=${g.current_item.id_version_item}">
-                    <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/>Cambiar</a>
+                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+                      <a align="center" href="/file_upload/file_upload?idAtributo=${atributoItem.atributo.id_atributo};idVersionItem=${g.current_item.id_version_item}">
+                      <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/>Cambiar</a>
+                    </span>
                 </span>                
           </span>
 		  <span py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato != 'archivo'">		    
