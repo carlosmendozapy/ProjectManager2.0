@@ -88,100 +88,34 @@ class lineabaseController(BaseController):
         filter(VersionItem.id_fase == Globals.current_phase.id_fase).\
         filter(VersionItem.estado == estado).\
         filter(VersionItem.ultima_version == u'S').all()
-		
-        options =[]
-        for itemEnviar in list_options:
-            print '***************************************************************************'
-            print 'LINEA BASE ITEMS ' + itemEnviar.item.nom_item
-            options.append([itemEnviar.id_version_item,itemEnviar.item.nom_item])
-			
-        """
-        listLineasBase =[]
-        listItems =[]
-        
-        #TOdas las lineas base que pertenecen a la fase actual
-        lb = DBSession.query(LineaBase).filter(LineaBase.id_fase == self.fase_id)
-   
-        
-        #Todos los items que pertenecen a la fase actual
-        item_list = DBSession.query(Item).join(['tipoItem', 'fase']).\
-                    filter(Fase.id_fase == Globals.current_phase.id_fase).all()
-        
-        
-        estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Confirmado').one()
-        '''TODAS LAS VERSIONES DE ITEM QEU EXISTAN EN UNA FASE'''        
-        version_item_list = DBSession.query(VersionItem).join(['tipoItem', 'fase']).filter(Fase.id_fase==self.fase_id).all()
 
-    
-        #recorrer todas las lineas base de esa fase y guardar la ultima version de cada linea base
-        for lineaBase in lb: 
-            max = 0
-            for nroLb in lineaBase.NroLineaBase:
-                if(nroLb.nro_linea_base > max):
-                    max = nroLb.nro_linea_base              
-                    maxlb = nroLb
-            print 'NROLINEABASE '+nroLb.lineaBase.nom_linea_base
-            listLineasBase.append(maxlb)
-            '''traer todas las versiones de items que pertenecen a la ultima version de 
-                todas las lineas base aprobadas de esa fase'''
-        for Ver_items in listLineasBase:
-            item1 = Ver_items.item
-            print 'pasa bien'
-            for item2 in item1:
-                listItems.append(item2)
+        if (len(list_options) != 0):
+            for op in list_options:
+                    versionItem = DBSession.query(VersionItem).\
+                                    filter(VersionItem.id_version_item == op.id_version_item).one()
+                    LBases = versionItem.NroLineaBase
+                    has_lb = False
+                    
+                    if len(LBases) > 0:
+                        has_lb = True            
+                        estado = None
+                        for lb in LBases:
+                            estado = lb.estado.nom_estado
             
-                
-        #recorrer todas las versiones item y traer la ultima version de cada item qeu pertenece a una fase
-        versionItem = []
-        for item in item_list:
-            print 'nombre ITEM ' + item.nom_item
-            '''Este primer for recorre la lista de items de la fase'''
-            max = 0            
-            for version_item in item.VersionItem:
-                '''Este segundo for recorre la lista de VersionItem que hay en cada Item'''
-                if (version_item.nro_version_item > max):
-                    max = version_item.nro_version_item
-                    last_version = version_item
-            print 'Nom ultima version ' + last_version.item.nom_item
-            versionItem.append(last_version)
-       
-        
-        itemFactibles=[]
-        for item in versionItem:
-            band=0
-            for item3 in listItems:
-                band = 0
-                if(item.id_version_item == item3.id_version_item): 
-                    band = 1
-                    break
-            if(band == 0):
-                if (item.id_estado == estado.id_estado ):
-                    itemFactibles.append(item)
-                    print 'item a mostrar '
-                    print item.id_version_item
-                else:
-                    band = 0
-
-        options=[]
-        for itemEnviar in itemFactibles:
-            if (itemEnviar.id_estado == estado.id_estado ):
-                print 'LINEA BASE ITEMS ' + itemEnviar.item.nom_item
+        if (len(list_options) != 0 and estado != 'Abierta'):
+            
+            options = []
+            for itemEnviar in list_options:
                 options.append([itemEnviar.id_version_item,itemEnviar.item.nom_item])
-
-        tam = len(itemFactibles)
-        print 'TAMANHO'
-        print tam
+            
+            tmpl_context.form = creacion_nueva_lineaBase
+            return dict(page='Nueva Linea Base', type_options = options)                     
+            
+        else:
         
-        tmpl_context.form = creacion_nueva_lineaBase
-       
-        
-        #options = DBSession.query(item.id_tipo, TipoRol.nom_tipo_rol) 
-        """
-        tmpl_context.form = creacion_nueva_lineaBase
-                 
-        return dict(page='Nueva Linea Base', type_options = options)
+            flash(_("No existen items para una nueva Linea Base"))
+            redirect("index?id_fase="+str(self.fase_id))
     
-    #ACA SE DEBE USAR TRANSACCION     
     @validate(creacion_nueva_lineaBase,error_handler=nuevaLineaBase)
     @expose()
     def guardarLineaBase(self, **kw):

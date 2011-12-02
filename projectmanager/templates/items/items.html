@@ -115,7 +115,7 @@
                   <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar la Eliminación'/>
                   </a>                   
                 </span>
-                <span py:if="versionItem.estado.nom_estado == 'Pendiente' and h.has_FasePriv('confirmar','Item',g.current_phase.id_fase)">
+                <span py:if="(versionItem.estado.nom_estado == 'Pendiente' or versionItem.estado.nom_estado =='En Revision') and h.has_FasePriv('confirmar','Item',g.current_phase.id_fase)">
                   <a href="/item/confirmar?id_version_item=${versionItem.id_version_item}">
                   <img src="${tg.url('/images/confirmar.png')}" width="16" height="16" title='Confirmar Modificacion'/>
                   </a>                                    

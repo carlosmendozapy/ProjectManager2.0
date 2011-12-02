@@ -132,8 +132,8 @@ class itemLineaBaseController(BaseController):
             band = 0
             flash(_("ERROR!! NO SE PUEDE APROBAR UNA LINEA BASE SIN ITEMS"))
             redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
-        
-        else:                
+        else:
+            
             estadoA = DBSession.query(Estado).filter(Estado.nom_estado == 'Aprobado').one()
             for itemEstado in nroLineaBaseAprobar.item:       
                 itemEstado.estado = estadoA
@@ -153,15 +153,23 @@ class itemLineaBaseController(BaseController):
         lineaBase_id = kw['idlineaBase']   
         nroLineaBaseRechazar = DBSession.query(NroLineaBase).\
                               filter(NroLineaBase.id_nro_lb == lineaBase_id).one()
+        lineaBaseId = DBSession.query(LineaBase).\
+                              filter(LineaBase.id_linea_base == nroLineaBaseRechazar.id_linea_base).one()
         
         
         estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Aprobado').one()
         
+        anteriorNroLineaBase = DBSession.query(NroLineaBase).\
+            filter(NroLineaBase.nro_linea_base == (nroLineaBaseRechazar.nro_linea_base - 1)).\
+            filter(NroLineaBase.id_linea_base == lineaBaseId.id_linea_base).one()
+        
         Globals.current_phase.id_estado = estado.id_estado
         nroLineaBaseRechazar.id_estado = estado.id_estado
+        nroLineaBaseRechazar.nro_linea_base = nroLineaBaseRechazar.nro_linea_base - 1 
+        
         
         listaAnterior = nroLineaBaseRechazar.item
-        listaNueva = Globals.lista_version_anterior
+        listaNueva = anteriorNroLineaBase.item
         
         lista=[]
         for i in listaAnterior:

@@ -30,17 +30,17 @@
             
     <table rules='rows'>
           <tr>
-          <th width="10%" height="20">Identificador</th>
-          <th width="15%" height="30">Nombre</th>
-          <th width="15%" height="40">Estado</th>
-          <th width="50%" height="20">Descripcion</th>          
+          <th width="10%" >Identificador</th>
+          <th width="15%" >Nombre</th>
+          <th width="15%" >Estado</th>
+          <th width="50%" >Descripcion</th>          
           </tr>
    
        <span py:if="bandera == 'ok'">          
           <tr py:for="i, lineaBase in enumerate(lineasBase)" class="${i%2 and 'even' or 'odd'}">
             <td align='center'>${lineaBase.id_nro_lb}</td>
-            <td><a href='/itemLineaBase/index?id_nro_lb=${lineaBase.id_nro_lb}'>${lineaBase.lineaBase.nom_linea_base}</a></td>                       
-            <td>${lineaBase.estado.nom_estado}</td>
+            <td align='center'><a href='/itemLineaBase/index?id_nro_lb=${lineaBase.id_nro_lb}'>${lineaBase.lineaBase.nom_linea_base}</a></td>                       
+            <td align='center'>${lineaBase.estado.nom_estado}</td>
             <td>${lineaBase.lineaBase.descripcion}</td>            
           </tr>
         </span> 

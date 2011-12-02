@@ -37,7 +37,7 @@
           <tr py:for="i, itemactualizado in enumerate(itemActualizados)" class="${i%2 and 'even' or 'odd'}">
             <td align='center'>${itemactualizado.id_version_item}</td>
             <td>${itemactualizado.item.nom_item}</td>  
-            <td>${itemactualizado.id_estado}</td>
+            <td>${itemactualizado.estado.nom_estado}</td>
           </tr>
     
     </table>      
@@ -56,7 +56,7 @@
           <tr py:for="j, itemanterior in enumerate(itemAnteriores)" class="${j%2 and 'even' or 'odd'}">
             <td align='center'>${itemanterior.id_version_item}</td>
             <td>${itemanterior.item.nom_item}</td>  
-            <td>${itemanterior.id_estado}</td>
+            <td>${itemanterior.estado.nom_estado}</td>
           </tr>    
     </table> 
     <a href='/lineaBase/index?id_fase=${g.current_phase.id_fase}'><img src="${tg.url('/images/back.png')}"/> ATRAS</a>     

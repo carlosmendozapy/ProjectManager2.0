@@ -30,7 +30,7 @@
                 <li><a href="/item/calcularImpacto?idVersion=${g.current_item.id_version_item}">Calculo de Impacto</a></li>
                 <li><a href="#" id="current">Relaciones</a>
 			    <ul>
-                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
                         <li><a href="/item/addRelaciones?id_version_item=${g.current_item.id_version_item}">Agregar Relaciones</a></li>                 
                     </span>
                     <li><a href="javascript:popitup('${tg.url('/images/esquemaRelaciones.png')}')">Representacion Grafica</a></li>                                                       
@@ -49,7 +49,7 @@
       </tr>
       <tr>
         <td>
-          <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+          <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
             <a href="/item/editAtributo?peso=0">
             <img src="${tg.url('/images/edit.png')}"/></a>
           </span>
@@ -62,7 +62,7 @@
       </tr>
       <tr>
         <td>
-          <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+          <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
             <a href="/item/editAtributo?obs=0">
             <img src="${tg.url('/images/edit.png')}"/></a>
           </span>
@@ -75,7 +75,7 @@
       </tr>
 	  <tr py:for="i, atributoItem in enumerate(atributosItem)" class="${i%2 and 'even' or 'odd'}">        
         <td>
-            <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and not atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">
+            <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and not atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
               <a href="/item/editAtributo?id_atributo=${atributoItem.id_atributo};id_version_item=${atributoItem.id_version_item}">
               <img src="${tg.url('/images/edit.png')}"/></a>
             </span>
@@ -84,7 +84,7 @@
 	    <td>${atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato}</td>            
 	    <td>
 		  <span align="center" py:if="atributoItem.atributo.tipoDatoAtributo.nom_tipo_dato == 'archivo'">		    
-            <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and atributoItem.atributoArchivo == None">
+            <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and atributoItem.atributoArchivo == None and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
               <a align="center" href="/file_upload/file_upload?idAtributo=${atributoItem.atributo.id_atributo};idVersionItem=${g.current_item.id_version_item}">
               <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/>Adjuntar</a>
             </span>  
@@ -92,7 +92,7 @@
                     ${atributoItem.atributoArchivo.filename}
                     <a align="center" href="${tg.url('./download', tg.request.params, idAtributo=atributoItem.atributo.id_atributo, idVersionItem=g.current_item.id_version_item)}">
                     <img src="${tg.url('/images/download.png')}" alt="Descargar Archivo" height="16" width="16" align="center"/>Descargar</a> 
-                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion'">
+                    <span py:if="g.current_item.estado.nom_estado == 'En Modificacion' and h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
                       <a align="center" href="/file_upload/file_upload?idAtributo=${atributoItem.atributo.id_atributo};idVersionItem=${g.current_item.id_version_item}">
                       <img src="${tg.url('/images/attach.png')}" alt="Cargar Archivo" height="16" width="16" align="center"/>Cambiar</a>
                     </span>

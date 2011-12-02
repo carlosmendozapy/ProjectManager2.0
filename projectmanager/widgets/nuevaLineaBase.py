@@ -35,7 +35,7 @@ class NuevaLineaBaseForm(TableForm):
                                 attrs={'maxlength':200})
         
         listaItem = MultipleSelectField(label_text='Lista de Items',                                
-                                validator=NotEmpty,
+                                validator=ForEach(Int, if_missing=NoDefault),
                                 help_text='Establece la lista de items. Para seleccionar varios items mantenga presionada la tecla CTRL mientras elige',)   
         
                      
