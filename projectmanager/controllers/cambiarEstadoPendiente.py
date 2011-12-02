@@ -125,13 +125,16 @@ class cambiarEstadoPendienteController(BaseController):
         for item in itemlineabase:
             for item3 in versionItem:
                 if((item.id_item == item3.id_item) and (item3.nro_version_item > item.nro_version_item)):
-                    if item3.estado != estadoItem:
+                    if (item3.estado != estadoItem):
                         flash(_("ATENCION!! EXISTEN ITEMS DE LA FASE QUE AUN NO HAN SIDO CONFIRMADOS"),'warning')
                         redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
                         
                     cambios.append(item3)
                     break
                 if((item.id_item == item3.id_item) and(item3.nro_version_item == item.nro_version_item)):
+                    if (item3.estado != estadoItem):
+                        flash(_("ATENCION!! EXISTEN ITEMS DE LA FASE QUE AUN NO HAN SIDO CONFIRMADOS"),'warning')
+                        redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
                     sinCambios.append(item3)
                     break
                     
@@ -208,8 +211,7 @@ class cambiarEstadoPendienteController(BaseController):
                 
             if(Globals.current_phase.nro_fase != faseList.first().nro_fase):     
                 for item in ListaIzq:
-                    if len(item.NroLineaBase)>0 and \
-                    item.estado != estadoA:
+                    if (len(item.NroLineaBase)>0 and item.estado != estadoA):
                         flash(_("ATENCION!! DEBE APROBAR PRIMERO LA LINEA BASE DE LA FASE ANTERIOR"),'warning')
                         redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))              
 
