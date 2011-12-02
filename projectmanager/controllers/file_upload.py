@@ -55,7 +55,7 @@ class FileUploadController(BaseController):
         aFile=[]
         if 'validate' in kw:
             flash(_('Favor seleccione un archivo'),'warning')
-            aFile=[]
+            aFile=None
             
         else:
             Globals.current_atributo = DBSession.query(AtributoItem).\
@@ -79,89 +79,20 @@ class FileUploadController(BaseController):
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == Globals.\
                    current_item.id_version_item).one()
-        
-        versionItem.ultima_version = 'N'
-        
-        lg_name=request.identity['repoze.who.userid']
-        usuario = DBSession.query(Usuario).\
-                  filter(Usuario.login_name==lg_name).one()
-            
-        nuevaVersionItem = VersionItem()
-        nuevaVersionItem.item = versionItem.item        
-        nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
-        nuevaVersionItem.estado = versionItem.estado       
-        nuevaVersionItem.tipoItem = versionItem.tipoItem         
-        nuevaVersionItem.usuarioModifico = usuario
-        nuevaVersionItem.fecha = str(datetime.now())
-        nuevaVersionItem.observaciones = versionItem.observaciones
-        nuevaVersionItem.ultima_version = 'S'
-        nuevaVersionItem.peso = versionItem.peso
-        nuevaVersionItem.id_fase = Globals.current_phase.id_fase
-        
-        # Agregar los antecesores del item viejo
-        for antecesor in versionItem.Antecesores:
-            nuevaVersionItem.Antecesores.append(antecesor)
-        
-        # Agregar los sucesores del item viejo
-        try:
-            antecesor = DBSession.query(Antecesor).\
-            filter(Antecesor.id_version_item == versionItem.id_version_item).\
-            one()
-            
-            nuevoAntecesor = Antecesor(nuevaVersionItem.id_version_item)
-           
-            sucesores = antecesor.sucesores
-            for sucesor in sucesores:
-                sucesor.Antecesores.append(nuevoAntecesor)
-        except NoResultFound,e:                    
-            existe=False
-        
-        # Agregar los padres del item viejo       
-        for padre in versionItem.Padres:
-            nuevaVersionItem.Padres.append(padre)
-            
-        # Agregar los hijos del item viejo
-        try:
-            padre = DBSession.query(Padre).\
-            filter(Padre.id_version_item == versionItem.id_version_item).\
-            one()
-            
-            nuevoPadre = Padre(nuevaVersionItem.id_version_item)
-           
-            hijos = padre.hijos
-            for hijo in hijos:                
-                hijo.Padres.append(nuevoPadre)
-        except NoResultFound,e:
-            existe=False
-            
-        for atributo in DBSession.query(AtributoItem).\
-            filter(AtributoItem.id_version_item == Globals.\
-                   current_item.id_version_item).\
-            filter(AtributoItem.id_atributo != Globals.\
-                   current_atributo.id_atributo).all():
-                
-            nuevoAtributoItem = AtributoItem()
-            nuevoAtributoItem.id_atributo = atributo.id_atributo
-            nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item        
-            nuevoAtributoItem.val_atributo = atributo.val_atributo
-            nuevoAtributoItem.id_archivo = atributo.id_archivo
-            DBSession.add(nuevoAtributoItem)
-        
+               
         filecontent = userfile.file.read()
         new_file = AtributoArchivo(filename=userfile.filename, filecontent=filecontent)        
         DBSession.add(new_file)
         
-        nuevoAtributoItem = AtributoItem()
-        nuevoAtributoItem.id_atributo = Globals.current_atributo.id_atributo
-        nuevoAtributoItem.id_version_item = nuevaVersionItem.id_version_item                
-        nuevoAtributoItem.atributoArchivo = new_file
-        DBSession.add(nuevoAtributoItem)
-        
-        Globals.current_item = nuevaVersionItem        
+        atributo = DBSession.query(AtributoItem).\
+            filter(AtributoItem.id_version_item==versionItem.id_version_item).\
+            filter(AtributoItem.id_atributo == Globals.current_atributo.id_atributo).one()
+                            
+        atributo.atributoArchivo = new_file
+               
        
         redirect("/item/atributosItem?id_version="+\
-        str(Globals.current_item.id_version_item) +\
-        ";frompage=item")
+        str(versionItem.id_version_item) + ";frompage=item")
     
     @expose(content_type=CUSTOM_CONTENT_TYPE)
     def view(self, fileid):

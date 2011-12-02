@@ -151,6 +151,10 @@ class ProyectoController(BaseController):
             redirect('adminProject')
             
         actual = FasesList[0].nro_fase
+        if(actual != 1):
+            flash(_("La Primera Fase debe tener el Orden: 1, Favor realize los cambios respectivos"),'warning')
+            redirect('adminProject')
+            
         for fase in FasesList:
             next = fase.nro_fase
             if next > actual+1:

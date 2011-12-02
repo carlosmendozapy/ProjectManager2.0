@@ -66,29 +66,7 @@ class ItemController(BaseController):
     
     # The predicate that must be met for all the actions in this controller:
     allow_only = not_anonymous(msg='Debe Ingresar al Sistema para ver esta pagina')    
-      
-    def __init__(self):
-        """ Se inicializan las variables de Estado. Mejor no utilizarlas
-        para no tener problemas con la sesion. En algunos casos da
-        problemas al referirse a esta entidad"""
-        self.eliminado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Eliminado').one()
-        
-        self.eliminar = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Eliminar').one()
-        
-        self.rechazado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Rechazado').one()
-            
-        self.pendiente = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Pendiente').one()
-        
-        self.confirmado = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'Confirmado').one()
-            
-        self.modificacion = DBSession.query(Estado).\
-            filter(Estado.nom_estado == 'En Modificacion').one()
-            
+                   
     @expose('projectmanager.templates.items.items')
     def adminItem(self, **kw):  
         """Provee la lista de items de una fase en un proyecto
@@ -555,12 +533,28 @@ class ItemController(BaseController):
     
     @expose()
     def confirmar(self, **kw):
-        """Cambia el estado del item a Confirmado"""
+        """Cambia el estado del item a Confirmado si no esta en una
+        linea base o si su linea base esta abierta, y pasa a Aprobado
+        si ya esta en una linea base"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
         
-        versionItem.estado = self.confirmado       
+        confirmado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Confirmado').one()
+        
+        aprobado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Aprobado').one()
+           
+        listNroLB = versionItem.NroLineaBase
+        listNroLB.sort(cmp=None, key= lambda lb: lb.nro_linea_base, reverse=True)
+        
+        if len(listNroLB) <= 0:
+            versionItem.estado == confirmado
+        elif listNroLB[0].estado.nom_estado == 'Abierta':
+            versionItem.estado = confirmado       
+        elif istNroLB[0].estado.nom_estado == 'Aprobada':
+            versionItem.estado = aprobado
                            
         redirect('adminItem?faseid=' +\
             str(versionItem.id_fase))
@@ -584,7 +578,7 @@ class ItemController(BaseController):
         if versionItem.nro_version_item == 0 or\
            versionItem.estado == eliminar:
         
-            versionItem.estado == rechazado
+            versionItem.estado = rechazado
             redirect('adminItem?faseid=' + str(versionItem.id_fase))
                    
         #Caso rechazar un item modificado           
@@ -667,6 +661,10 @@ class ItemController(BaseController):
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
+        
+        modificacion = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='En Modificacion').one()
+            
         # Para el caso en que este en una LB controlar que la Linea Base
         # este Abierta
         LBases = versionItem.NroLineaBase
@@ -690,7 +688,7 @@ class ItemController(BaseController):
         nuevaVersionItem = VersionItem()
         nuevaVersionItem.item = versionItem.item        
         nuevaVersionItem.nro_version_item = versionItem.nro_version_item+1
-        nuevaVersionItem.estado = self.modificacion       
+        nuevaVersionItem.estado = modificacion       
         nuevaVersionItem.tipoItem = versionItem.tipoItem         
         nuevaVersionItem.usuarioModifico = usuario
         nuevaVersionItem.fecha = str(datetime.now())
@@ -759,8 +757,11 @@ class ItemController(BaseController):
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
-                
-        versionItem.estado = self.pendiente       
+        
+        pendiente = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Pendiente').one()
+            
+        versionItem.estado = pendiente       
                           
         redirect('adminItem?faseid=' + str(versionItem.id_fase))
             
@@ -777,7 +778,10 @@ class ItemController(BaseController):
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
         
-        versionItem.estado = self.eliminar       
+        eliminar = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Eliminar').one()
+            
+        versionItem.estado = eliminar       
         
         redirect('adminItem?faseid=' + str(versionItem.id_fase)) 
     
@@ -787,8 +791,11 @@ class ItemController(BaseController):
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
-              
-        nuevaVersionItem.estado = self.eliminado       
+        
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Eliminado').one()
+            
+        versionItem.estado = eliminado       
                            
         redirect('adminItem?faseid=' + str(versionItem.id_fase))
       
@@ -834,11 +841,14 @@ class ItemController(BaseController):
         versiones = DBSession.query(VersionItem).\
             filter(VersionItem.id_item == int(kw['id_item'])).\
             order_by(VersionItem.nro_version_item)
-                
+        
+        eliminado = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Eliminado').one()
+            
         Globals.current_item = DBSession.query(VersionItem).\
             filter(VersionItem.id_item == int(kw['id_item'])).\
             filter(VersionItem.ultima_version == 'S').\
-            filter(VersionItem.estado!=self.eliminado).one()
+            filter(VersionItem.estado!=eliminado).one()
                 
         return dict(versiones = versiones)
         
@@ -935,7 +945,10 @@ class ItemController(BaseController):
             except NoResultFound,e:                
                 flash(_("No se puede revertir a esta version: Existen Items que podrian quedar huerfanos"),'warning')
                 redirect('/item/history?id_item=' + str(Globals.current_item.id_item))
-                
+        
+        pendiente = DBSession.query(Estado).\
+            filter(Estado.nom_estado=='Pendiente').one()
+        
         ultimaVersion.ultima_version = 'N'
                         
         lg_name=request.identity['repoze.who.userid']
@@ -945,7 +958,7 @@ class ItemController(BaseController):
         nuevaVersionItem = VersionItem()
         nuevaVersionItem.item = anteriorVersion.item        
         nuevaVersionItem.nro_version_item = ultimaVersion.nro_version_item+1
-        nuevaVersionItem.estado = self.pendiente       
+        nuevaVersionItem.estado = pendiente       
         nuevaVersionItem.tipoItem = anteriorVersion.tipoItem         
         nuevaVersionItem.usuarioModifico = usuario
         nuevaVersionItem.fecha = str(datetime.now())
@@ -1283,7 +1296,7 @@ class ItemController(BaseController):
         DBSession.flush()
                
         redirect('/item/addRelaciones?id_version_item=' +\
-        str(nuevaVersionItem.id_version_item))
+        str(versionItem.id_version_item))
         
     @expose()
     def delAntecesor(self, **kw):
@@ -1476,6 +1489,7 @@ class ItemController(BaseController):
                     if item.estado.nom_estado != 'Eliminado' and\
                     item.ultima_version=='S':
                         tienePadres = True
+                        huerfanos = False
                 
                 if sucesor.ultima_version=='S' and\
                 sucesor.estado.nom_estado != 'Eliminado' and\
@@ -1497,7 +1511,8 @@ class ItemController(BaseController):
             
         except NoResultFound,e:                    
             existeSucesores= False
-                
+            huerfanos = False
+                           
         if existeSucesores and huerfanos:
             return True
                           
@@ -1515,9 +1530,16 @@ class ItemController(BaseController):
                 yoPadre = DBSession.query(Padre).\
                     filter(Padre.id_version_item==int(id_version)).one()
             
-                huerfanos=True    
-                Hijos= yoPadre.hijos
-                        
+                huerfanos=True  
+                Hijos= []
+                for hijo in yoPadre.hijos:
+                    if hijo.estado.nom_estado != 'Eliminado' and\
+                       hijo.ultima_version == 'S':
+                        Hijos.append(hijo)               
+                
+                if len(Hijos) <= 0:
+                    huerfanos=False
+                    
                 for hijo in Hijos:                
                     #Si el hijo tiene otro antecesor entonces no quedara 
                     #huerfano y pasamos al sgte hijo
@@ -1664,7 +1686,21 @@ class ItemController(BaseController):
         hijos=itemVersion.getHijos(itemVersion.id_version_item)        
         abajo.extend(itemVersion.getHijosNietos(hijos))
         derecha.extend(itemVersion.getRelacionesDer(itemVersion.id_version_item))
-                
+        
+        #izquierda.sort(cmp=None, key= lambda item: item.id_version_item, reverse=False)
+        for item in izquierda:
+            veces = izquierda.count(item)
+            if veces > 1:
+                for i in range(veces-1):
+                    izquierda.remove(item)
+                                
+        #derecha.sort(cmp=None, key= lambda item: item.id_version_item, reverse=False)
+        for item in derecha:
+            veces = derecha.count(item)
+            if veces > 1:
+                for i in range(veces-1):
+                    derecha.remove(item)
+                    
         for item in izquierda:                    
             sumaIzq = sumaIzq + item.peso
             
