@@ -42,7 +42,7 @@ __all__ = ['AdminController']
 
 
 class FaseController(BaseController):
-    """Controlador de la Pagina de Administración del Sistema"""
+    """Controlador de la Pagina de Administración del Sistema """
     
     # The predicate that must be met for all the actions in this controller:
     allow_only = not_anonymous(msg='Debe Ingresar al Sistema para ver esta pagina')    

@@ -49,7 +49,7 @@ class lineabaseController(BaseController):
             listVersionLineasBase=[]
             lineabase_lista = DBSession.query(LineaBase).filter(LineaBase.id_fase == self.fase_id)
 
-                    #recorrer todas las lineas base de esa fase y guardar la ultima version de cada linea base
+            #recorrer todas las lineas base de esa fase y guardar la ultima version de cada linea base
             for lineaBase in lineabase_lista: 
                 max = 0
                 for nroLb in lineaBase.NroLineaBase:

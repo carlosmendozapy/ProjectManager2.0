@@ -52,7 +52,7 @@ class cambiarEstadoPendienteController(BaseController):
         
         versionItem=[]
         for item in items:
-            max=0
+            max=-1
             for item2 in item.VersionItem:
                 if (item2.nro_version_item > max):
                     max = item2.nro_version_item
@@ -72,16 +72,6 @@ class cambiarEstadoPendienteController(BaseController):
                     sinCambios.append(item3)
                     break
                 
-        print 'pasa esto 3'
-
-        for imprimir in cambios:
-        
-            print 'CAMBIOS GUARDADOS ' + imprimir.item.nom_item
-        
-        for imprimir in sinCambios:
-        
-            print 'sin CAMBIOS GUARDADOS ' + imprimir.item.nom_item
-            print 'salio de aca'
             
         return dict(itemActualizados = cambios, itemAnteriores = sinCambios, idlineaBase = self.nro_lb_id) 
             
@@ -111,7 +101,7 @@ class cambiarEstadoPendienteController(BaseController):
         
         versionItem=[]
         for item in items:
-            max=0
+            max=-1
             for item2 in item.VersionItem:
                 if (item2.nro_version_item > max):
                     max = item2.nro_version_item
@@ -125,16 +115,9 @@ class cambiarEstadoPendienteController(BaseController):
         for item in itemlineabase:
             for item3 in versionItem:
                 if((item.id_item == item3.id_item) and (item3.nro_version_item > item.nro_version_item)):
-                    if (item3.estado != estadoItem):
-                        flash(_("ATENCION!! EXISTEN ITEMS DE LA FASE QUE AUN NO HAN SIDO CONFIRMADOS"),'warning')
-                        redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
-                        
                     cambios.append(item3)
                     break
                 if((item.id_item == item3.id_item) and(item3.nro_version_item == item.nro_version_item)):
-                    if (item3.estado != estadoItem):
-                        flash(_("ATENCION!! EXISTEN ITEMS DE LA FASE QUE AUN NO HAN SIDO CONFIRMADOS"),'warning')
-                        redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
                     sinCambios.append(item3)
                     break
                     
@@ -157,9 +140,13 @@ class cambiarEstadoPendienteController(BaseController):
         ListaItems = []  
         ListaIzq = []
         for itemP in listaGuardar:
+            if (itemP.estado != estadoItem):
+                flash(_("ATENCION!! EXISTEN ITEMS DE LA FASE QUE AUN NO HAN SIDO CONFIRMADOS"),"warning")
+                redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
+            
             #El item modificado que se quiere volver a la LB
             item = DBSession.query(VersionItem).\
-            filter(VersionItem.id_version_item==itemP.id_version_item).one()
+                filter(VersionItem.id_version_item==itemP.id_version_item).one()
             
             #Obtener la red de relaciones desde este item
             item.initGraph(item)
@@ -190,7 +177,7 @@ class cambiarEstadoPendienteController(BaseController):
         band = 1
         if (ListaItems == []):
             band = 0
-            flash(_("ATENCION!! NO EXISTEN ITEMS","warning"))
+            flash(_("ATENCION!! NO EXISTEN ITEMS"),"warning")
             redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
         elif(bandR == 1):                
             flash(_("ATENCION!! EXISTEN ITEMS DE OTRAS FASES EN REVISION"),"warning")
@@ -199,26 +186,30 @@ class cambiarEstadoPendienteController(BaseController):
             
             estadoP = DBSession.query(Estado).filter(Estado.nom_estado == 'Pendiente').one()
             lineaBase = DBSession.query(NroLineaBase).filter(NroLineaBase.id_nro_lb == self.nro_lb_id).one()       
-            lineaBase.id_estado = estadoP.id_estado
             estadoE = DBSession.query(Estado).filter(Estado.nom_estado == 'Eliminado').one()
     
             faseList = DBSession.query(Fase).\
                 filter(Fase.id_proyecto==Globals.current_project.id_proyecto).\
-                order_by(Fase.nro_fase)
-                            
-            print '*******************************************************************************************************************************************'
-            print faseList
-                
-            if(Globals.current_phase.nro_fase != faseList.first().nro_fase):     
-                for item in ListaIzq:
-                    if (len(item.NroLineaBase)>0 and item.estado != estadoA):
-                        flash(_("ATENCION!! DEBE APROBAR PRIMERO LA LINEA BASE DE LA FASE ANTERIOR"),'warning')
-                        redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))              
-
-
-            Globals.current_phase.id_estado = estadoP.id_estado
-
+                order_by(Fase.nro_fase).all()
+            
+            print '**************************************************hola************************************************************'
+            print faseList[0].nro_fase
+            print ListaIzq
+            if(Globals.current_phase.nro_fase != faseList[0].nro_fase):     
+                bandA = 0
+                for itemP in listaGuardar:
+                    antecesores = itemP.Antecesores
+                    for antecesor in antecesores:
+                        itemAntecesor = DBSession.query(VersionItem).\
+                            filter(VersionItem.id_version_item==antecesor.id_version_item).one()
+                        
+                        if(itemAntecesor.estado != estadoA and itemAntecesor.ultima_version == 'S' and itemAntecesor.estado.nom_estado != "Eliminado"):
+                            flash(_("ATENCION!! DEBE APROBAR PRIMERO LA LINEA BASE DE LA FASE ANTERIOR"),'warning')
+                            redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))              
             lista=[]
+            Globals.current_phase.id_estado = estadoP.id_estado
+            lineaBase.id_estado = estadoP.id_estado
+
             for i in lineaBase.item:
                 lista.append(i)
 
@@ -238,4 +229,4 @@ class cambiarEstadoPendienteController(BaseController):
         
             flash(_("LA LINEA BASE HA PASADO A UN ESTADO PENDIENTE DE APROBACION"))
             redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))        
-        
+    

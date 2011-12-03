@@ -153,20 +153,37 @@ class itemLineaBaseController(BaseController):
         lineaBase_id = kw['idlineaBase']   
         nroLineaBaseRechazar = DBSession.query(NroLineaBase).\
                               filter(NroLineaBase.id_nro_lb == lineaBase_id).one()
+        
+        estadoA = DBSession.query(Estado).filter(Estado.nom_estado == 'Abierta').one()
+        estadoC = DBSession.query(Estado).filter(Estado.nom_estado == 'Confirmado').one()
+        nroLineaBaseRechazar.estado = estadoA
+        listaItem = nroLineaBaseRechazar.item
+        
+        for item in listaItem:
+            itemSelect = DBSession.query(VersionItem).\
+                         filter(VersionItem.id_version_item == item.id_version_item).one()
+            itemSelect.estado = estadoC
+            
+        
+        flash(_("LA LINEA BASE HA SIDO RECHAZADA"))
+        redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
+
+'''        
         lineaBaseId = DBSession.query(LineaBase).\
                               filter(LineaBase.id_linea_base == nroLineaBaseRechazar.id_linea_base).one()
-        
-        
         estado = DBSession.query(Estado).filter(Estado.nom_estado == 'Aprobado').one()
+        estadoA = DBSession.query(Estado).filter(Estado.nom_estado == 'Abierta').one()
+        estadoE = DBSession.query(Estado).filter(Estado.nom_estado == 'En Revision').one()
         
         anteriorNroLineaBase = DBSession.query(NroLineaBase).\
+            filter(NroLineaBase.id_linea_base == lineaBaseId.id_linea_base).\
             filter(NroLineaBase.nro_linea_base == (nroLineaBaseRechazar.nro_linea_base - 1)).\
-            filter(NroLineaBase.id_linea_base == lineaBaseId.id_linea_base).one()
+            filter(NroLineaBase.estado == estadoA).one()
         
-        Globals.current_phase.id_estado = estado.id_estado
-        nroLineaBaseRechazar.id_estado = estado.id_estado
+        Globals.current_phase.id_estado = estadoE.id_estado
+        nroLineaBaseRechazar.id_estado = estadoA.id_estado
+        
         nroLineaBaseRechazar.nro_linea_base = nroLineaBaseRechazar.nro_linea_base - 1 
-        
         
         listaAnterior = nroLineaBaseRechazar.item
         listaNueva = anteriorNroLineaBase.item
@@ -195,3 +212,4 @@ class itemLineaBaseController(BaseController):
         
         flash(_("HA SIDO CREADA UNA NUEVA LINEA BASE"))
         redirect("/lineaBase/index?id_fase="+str(Globals.current_phase.id_fase))
+'''
