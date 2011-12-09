@@ -2,73 +2,62 @@
 """Test suite for the TG app's models"""
 from nose.tools import eq_
 
-from sgp import model
-from sgp.tests.models import ModelTest
+from projectmanager import model
+from projectmanager.model.roles import Rol
+from projectmanager.model.roles import Usuario
+from projectmanager.model.roles import Permisos
 
-class TestRol(ModelTest):
+class TestRol(Rol):
     """Unit test case for the ``Rol`` model."""
     klass = model.Rol
     attrs = dict(
-        nombre = u"test_rol",
-        descripcion = u"Descripcion de prueba",
-        tipo=1
+        nom_rol = u"test_rol",
+        des_rol = u"Descripcion de prueba",
+        id_tipo_rol=u"uno"
         )
     def test_obj_creation_nombre(self):
         """El constructor debe setear el nombre correctamente"""
-        eq_(self.obj.nombre, u"test_rol")
+        eq_(self.obj.nom_rol, u"test_rol")
         
     def test_obj_creation_descripcion(self):
         """El constructor debe setear la descripcion correctamente"""
-        eq_(self.obj.descripcion, u"Descripcion de prueba")
+        eq_(self.obj.des_rol, u"Descripcion de prueba")
         
     def test_obj_creation_tipo(self):
         """El constructor debe setear el tipo correctamente"""
-        eq_(self.obj.tipo, 1)
+        eq_(self.obj.id_tipo_rol, u"uno")
         
 
 
-class TestUser(ModelTest):
+class TestUser(Usuario):
     """Unit test case for the ``Usuario`` model."""
     
     klass = model.Usuario
     attrs = dict(
-        usuario = u"Cleodovina",
-        nombre = u"Cleodovina",
-        telefono = 123456,
+        nom_usuario = u"Cleodovina",
+        login_name = u"Cleodovina",
         _password = u"admin"
         )
 
     def test_obj_creation_nombre(self):
         """El constructor debe setear el nombre correctamente"""
-        eq_(self.obj.nombre, u"Cleodovina")
-
-    def test_obj_creation_telefono(self):
-        """El constructor debe setear el numero de telefono correctamente"""
-        eq_(self.obj.telefono, 123456)
-
-    def test_no_permissions_by_default(self):
-        """El usuario se crea sin roles por defecto"""
-        eq_(len(self.obj.roles), 0)
-
-
-
-class TestPermiso(ModelTest):
+        eq_(self.obj.nom_usuario, u"Cleodovina")
+   
+    
+class TestPermiso(Permisos):
     """Unit test case for the ``Permiso`` model."""
     
-    klass = model.Permiso
+    klass = model.Permisos
     attrs = dict(
-        nombre = u"test_permiso",
-        descripcion = u"Permiso de prueba",
-        tipo = 0
+        id_permiso = 1,
+        id_entidad_sistema= 1
         )
-    def test_obj_creation_nombre(self):
+    def test_obj_creation_permiso(self):
         """El constructor debe setear el nombre correctamente"""
-        eq_(self.obj.nombre, u"test_permiso")
+        eq_(self.obj.id_permiso, 1)
         
-    def test_obj_creation_descripcion(self):
+    def test_obj_creation_entidad(self):
         """El constructor debe setear la descripcion correctamente"""
-        eq_(self.obj.descripcion, u"Permiso de prueba")
+        eq_(self.obj.id_entidad_sistema, 2)
         
-    def test_obj_creation_tipo(self):
-        """El constructor debe setear el tipo correctamente"""
-        eq_(self.obj.tipo, 0)
+    

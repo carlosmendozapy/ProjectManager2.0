@@ -9,8 +9,22 @@ from tw.forms import PasswordField
 from tw.forms.validators import Int
 from tw.forms.validators import NotEmpty
 from tw.forms.validators import DateConverter
+import formencode
 from formencode import *
-    
+
+from formencode import *
+from projectmanager.model import DeclarativeBase, metadata, DBSession
+from projectmanager.model.roles import Usuario
+from projectmanager.model.entities import TipoItem
+from projectmanager.model.proyecto import Fase
+from projectmanager.lib.app_globals import Globals
+
+
+class FilteringSchema(Schema):
+    filter_extra_fields = False
+    allow_extra_fields = True
+    ignore_key_missing = False
+
 class NuevaLineaBaseForm(TableForm):
 
     hover_help = True

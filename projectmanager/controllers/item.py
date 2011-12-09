@@ -53,6 +53,8 @@ from projectmanager.model.entities import Antecesor
 from projectmanager.model.proyecto import Fase
 from projectmanager.model.proyecto import Proyecto
 from projectmanager.model.roles import Usuario
+from projectmanager.model.configuracion import LineaBase
+from projectmanager.model.configuracion import NroLineaBase
 
 from projectmanager.widgets.new_itemForm import create_new_item
 from projectmanager.widgets.edit_fechaForm import edit_atributo_fecha
@@ -537,6 +539,7 @@ class ItemController(BaseController):
         """Cambia el estado del item a Confirmado si no esta en una
         linea base o si su linea base esta abierta, y pasa a Aprobado
         si ya esta en una linea base"""
+       
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -546,17 +549,21 @@ class ItemController(BaseController):
         
         aprobado = DBSession.query(Estado).\
             filter(Estado.nom_estado=='Aprobado').one()
-           
-        listNroLB = versionItem.NroLineaBase
-        listNroLB.sort(cmp=None, key= lambda lb: lb.nro_linea_base, reverse=True)
-        
-        if len(listNroLB) <= 0:
-            versionItem.estado == confirmado
-        elif listNroLB[0].estado.nom_estado == 'Abierta':
-            versionItem.estado = confirmado       
-        elif istNroLB[0].estado.nom_estado == 'Aprobada':
-            versionItem.estado = aprobado
-                           
+          
+        NroLB = versionItem.NroLineaBase
+                        
+        if len(NroLB) == 0:
+            versionItem.estado = confirmado
+        else:
+            NroLB.sort(cmp=None, key= lambda nrolb: nrolb.nro_linea_base, reverse=True)
+              
+            if NroLB[0].estado.nom_estado == 'Abierto':
+                versionItem.estado = confirmado
+            elif NroLB[0].estado.nom_estado == 'Aprobado':
+                versionItem.estado = aprobado
+            else:
+                versionItem.estado = confirmado
+                 
         redirect('adminItem?faseid=' +\
             str(versionItem.id_fase))
     
@@ -838,7 +845,8 @@ class ItemController(BaseController):
 
     @expose('projectmanager.templates.items.itemHistory')   
     def history(self, **kw):
-              
+        """Envia la lista de items que forman parte de las versiones
+        anteriores al item que se le pasa como parametro"""
         versiones = DBSession.query(VersionItem).\
             filter(VersionItem.id_item == int(kw['id_item'])).\
             order_by(VersionItem.nro_version_item)
@@ -854,7 +862,8 @@ class ItemController(BaseController):
         return dict(versiones = versiones)
         
     @expose('projectmanager.templates.items.atributosComparar')
-    def comparar(self, **kw):        
+    def comparar(self, **kw):
+        """Envia los atributos de las versiones de item para comparar"""        
         atributos_list = []
         
                                 
@@ -870,6 +879,7 @@ class ItemController(BaseController):
     
     @expose()
     def revertir(self, **kw):
+        """Restaura una version de item como la version actual"""
         anteriorVersion = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == int(kw['id_item'])).one()
             
@@ -1021,6 +1031,8 @@ class ItemController(BaseController):
         
     @expose('projectmanager.templates.items.revivirItem')
     def revivirItem(self, **kw):
+        """Envia la lista de Items eliminados a la pagina que lista 
+        estos items"""
         eliminado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
             
@@ -1034,6 +1046,8 @@ class ItemController(BaseController):
     
     @expose()
     def revivir(self, **kw):
+        """Recupera un item Eliminado y lo restaura como una nueva version
+        en estado pendiente. controla que no se reviva como huerfano"""
         itemRevivir = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == int(kw['id_item'])).one()
         
@@ -1142,6 +1156,8 @@ class ItemController(BaseController):
 
     @expose('projectmanager.templates.items.addRelaciones')
     def addRelaciones(self,**kw):
+        """Envia las relaciones que se le puede agregar a un item.
+        Envia la lista de padres y antecesores"""
         itemVersion = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item==\
             int(kw['id_version_item'])).one()
@@ -1204,7 +1220,7 @@ class ItemController(BaseController):
         
     @expose()
     def addPadre(self, **kw):
-               
+        """Agrega un nuevo padre a la version de item"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -1231,6 +1247,8 @@ class ItemController(BaseController):
         
     @expose()
     def delPadre(self, **kw):
+        """Elimina una relacion de padre del item. Controla que no 
+        quede huerfano."""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    Globals.current_item.id_version_item).one()
@@ -1281,6 +1299,7 @@ class ItemController(BaseController):
     
     @expose()
     def addAntecesor(self, **kw):
+        """Agrega un nuevo antecesor al item"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    int(kw['id_version_item'])).one()
@@ -1301,6 +1320,8 @@ class ItemController(BaseController):
         
     @expose()
     def delAntecesor(self, **kw):
+        """Borra una relacion de antecesor al item. Realiza primero
+        los controles si queda huerfano"""
         versionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == \
                    Globals.current_item.id_version_item).one()
@@ -1347,6 +1368,7 @@ class ItemController(BaseController):
 #**************************** BUSQUEDA Y OTROS *************************
     @expose('projectmanager.templates.items.items')
     def search(self, **kw):
+        """Devuelve el item que se esta buscando por nombre"""
         word = kw['key']
         estado = DBSession.query(Estado).\
             filter(Estado.nom_estado == 'Eliminado').one()
@@ -1365,6 +1387,7 @@ class ItemController(BaseController):
     
     @expose(content_type=CUSTOM_CONTENT_TYPE)
     def download(self, **kw):
+        """Descarga el atributo de tipo archivo"""
         idAtributo = kw['idAtributo']
         idVersionItem = kw['idVersionItem']        
 
@@ -1391,11 +1414,15 @@ class ItemController(BaseController):
         
     @expose()
     def advertirItemsRelacionados(self, itemVersion):
+        """Deprecated"""
         lista_items = []
         return lista_items
         
     @expose()
     def controlCiclo(self, padres, itemActual):
+        """Realiza el contro de ciclo. Arma un grafo con el nuevo
+        posible item y aplica un algoritmo de deteccion de Ciclo.
+        Retorna True si existe un item"""
         #CONTROL CON GRAFO
         
         eliminado = DBSession.query(Estado).\
@@ -1452,7 +1479,8 @@ class ItemController(BaseController):
             
     @expose()
     def quedanHuerfanos(self, id_version):
-        
+        """Controla que un item no quede huerfano. Devuelve True si 
+        queda Huerfano, False en caso contrario"""
         itemEliminar = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item==id_version).one()
             
@@ -1581,6 +1609,8 @@ class ItemController(BaseController):
       
     @expose()
     def graficarRelaciones(self, itemVersion):
+        """Se utiliza para realizar el grafico de las relaciones
+        de un item particular"""
         unaVersionItem = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == itemVersion).one()
         eliminado = DBSession.query(Estado).\
@@ -1668,7 +1698,11 @@ class ItemController(BaseController):
         
     @expose('projectmanager.templates.items.calculoImpacto')
     def calcularImpacto(self,**kw):
-     
+        """Realiza el calculo de impacto. Primero Obtiene los items
+        por la izquierda, luego los de abajo, y por ultimo los de la
+        derecha. Luego recorre cada lista y realiza la suma, previo 
+        control de repeticion de items, generados por el grafo, que 
+        se genera al mismo tiempo del calculo"""
         itemVersion = DBSession.query(VersionItem).\
             filter(VersionItem.id_version_item == kw['idVersion']).\
             one()

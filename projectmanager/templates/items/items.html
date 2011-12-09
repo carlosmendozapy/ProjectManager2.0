@@ -140,7 +140,24 @@
             <span py:if="not h.has_FasePriv('ver','Item',g.current_phase.id_fase) and not h.has_FasePriv('modificar','Item',g.current_phase.id_fase)">
                 <td>${versionItem.item.nom_item}</td>
             </span>
-            <td align='center'>${versionItem.estado.nom_estado}</td>
+            <span py:if="versionItem.estado.nom_estado == 'Aprobado'">
+                <td align='center' bgcolor='#81F781'>${versionItem.estado.nom_estado}</td>
+            </span>
+            <span py:if="versionItem.estado.nom_estado == 'En Modificacion'">
+                <td align='center' bgcolor='#CEECF5'>${versionItem.estado.nom_estado}</td>
+            </span>
+            <span py:if="versionItem.estado.nom_estado == 'En Revision'">
+                <td align='center' bgcolor='#F2F5A9'>${versionItem.estado.nom_estado}</td>
+            </span>
+            <span py:if="versionItem.estado.nom_estado == 'Eliminar'">
+                <td align='center' bgcolor='#F78181'>${versionItem.estado.nom_estado}</td>
+            </span>
+            <span py:if="versionItem.estado.nom_estado == 'Pendiente'">
+                <td align='center' bgcolor='#F5DA81'>${versionItem.estado.nom_estado}</td>
+            </span>
+            <span py:if="versionItem.estado.nom_estado == 'Confirmado'">
+                <td align='center' bgcolor='#A9F5F2'>${versionItem.estado.nom_estado}</td>
+            </span>            
             <td align='center'>${versionItem.tipoItem.nom_tipo_item}</td>
             <td align='center'>${versionItem.usuarioModifico.login_name}</td>
             <td>${versionItem.fecha}</td>                        

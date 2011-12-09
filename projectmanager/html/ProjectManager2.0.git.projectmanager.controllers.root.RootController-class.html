@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>ProjectManager2.0.git.projectmanager.controllers.root.RootController</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="ProjectManager2.0.git.projectmanager.controllers-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;ProjectManager2 ::
+        Package&nbsp;0 ::
+        Package&nbsp;git ::
+        Package&nbsp;projectmanager ::
+        <a href="ProjectManager2.0.git.projectmanager.controllers-module.html">Package&nbsp;controllers</a> ::
+        <a href="ProjectManager2.0.git.projectmanager.controllers.root-module.html">Module&nbsp;root</a> ::
+        Class&nbsp;RootController
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="ProjectManager2.0.git.projectmanager.controllers.root.RootController-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RootController</h1><p class="nomargin-top"><span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+lib.base.BaseController --+
+                          |
+                         <strong class="uidshort">RootController</strong>
+</pre>
+
+<hr />
+<p>The root controller for the ProjectManager application.</p>
+  <p>All the other controllers and WSGI applications should be mounted on 
+  this controller. For example:</p>
+<pre class="literalblock">
+   panel = ControlPanelController()
+   another_app = AnotherWSGIApplication()
+</pre>
+  <p>Keep in mind that WSGI applications shouldn't be mounted directly: 
+  They must be wrapped around with 
+  :class:`tg.controllers.WSGIAppController`.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ProjectManager2.0.git.projectmanager.controllers.root.RootController-class.html#index" class="summary-sig-name">index</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Handle the front-page.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ProjectManager2.0.git.projectmanager.controllers.root.RootController-class.html#manage_permission_only" class="summary-sig-name">manage_permission_only</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">**kw</span>)</span><br />
+      Illustrate how a page for managers only works.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.manage_permission_only">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ProjectManager2.0.git.projectmanager.controllers.root.RootController-class.html#login" class="summary-sig-name">login</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">came_from</span>=<span class="summary-sig-default">url('/')</span>)</span><br />
+      Start the user login.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.login">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ProjectManager2.0.git.projectmanager.controllers.root.RootController-class.html#post_login" class="summary-sig-name">post_login</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">came_from</span>=<span class="summary-sig-default">url('/')</span>)</span><br />
+      Redirect the user to the initially requested page on successful 
+      authentication or redirect her back to the login page if login 
+      failed.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.post_login">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ProjectManager2.0.git.projectmanager.controllers.root.RootController-class.html#post_logout" class="summary-sig-name">post_logout</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">came_from</span>=<span class="summary-sig-default">url('/')</span>)</span><br />
+      Redirect the user to the initially requested page on logout and say 
+      goodbye as well.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.post_logout">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="secc"></a><span class="summary-name">secc</span> = <code title="SecureController()">SecureController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="admin"></a><span class="summary-name">admin</span> = <code title="AdminController()">AdminController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="proyecto"></a><span class="summary-name">proyecto</span> = <code title="ProyectoController()">ProyectoController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="usuario"></a><span class="summary-name">usuario</span> = <code title="UsuarioController()">UsuarioController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="fase"></a><span class="summary-name">fase</span> = <code title="FaseController()">FaseController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="roles"></a><span class="summary-name">roles</span> = <code title="RolController()">RolController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="item"></a><span class="summary-name">item</span> = <code title="ItemController()">ItemController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="lineaBase"></a><span class="summary-name">lineaBase</span> = <code title="lineabaseController()">lineabaseController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="itemLineaBase"></a><span class="summary-name">itemLineaBase</span> = <code title="itemLineaBaseController()">itemLineaBaseController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="cambiarEstadoPendiente"></a><span class="summary-name">cambiarEstadoPendiente</span> = <code title="cambiarEstadoPendienteController()">cambiarEstadoPendienteController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="error"></a><span class="summary-name">error</span> = <code title="ErrorController()">ErrorController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="file_upload"></a><span class="summary-name">file_upload</span> = <code title="FileUploadController()">FileUploadController()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="userid"></a><span class="summary-name">userid</span> = <code title="&quot;&quot;">&quot;&quot;</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="permisos"></a><span class="summary-name">permisos</span> = <code title="PermisoController()">PermisoController()</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="index"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">index</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.index">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handle the front-page.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@expose('projectmanager.templates.index')</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="manage_permission_only"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">manage_permission_only</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">**kw</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.manage_permission_only">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Illustrate how a page for managers only works.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@expose('projectmanager.templates.index')</code></li>
+        <li><code>@require(predicates.has_permission('admin', msg= l_('Solo para Administradores')))</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="login"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">login</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">came_from</span>=<span class="sig-default">url('/')</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.login">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Start the user login.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@expose('projectmanager.templates.login')</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="post_login"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">post_login</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">came_from</span>=<span class="sig-default">url('/')</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.post_login">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Redirect the user to the initially requested page on successful 
+  authentication or redirect her back to the login page if login 
+  failed.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@expose()</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="post_logout"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">post_logout</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">came_from</span>=<span class="sig-default">url('/')</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ProjectManager2.0.git.projectmanager.controllers.root-pysrc.html#RootController.post_logout">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Redirect the user to the initially requested page on logout and say 
+  goodbye as well.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@expose()</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="ProjectManager2.0.git.projectmanager.controllers-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sat Dec  3 10:08:57 2011
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
