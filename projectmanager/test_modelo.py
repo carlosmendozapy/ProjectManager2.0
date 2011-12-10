@@ -1,31 +1,32 @@
 # -*- coding: utf-8 -*-
-"""Test suite for the TG app's models"""
+"""Test suite for the TG app's models
+ python -m unittest test_modelo.TestRol"""
 from nose.tools import eq_
+import unittest
 
 from projectmanager import model
 from projectmanager.model.roles import Rol
 from projectmanager.model.roles import Usuario
 from projectmanager.model.roles import Permisos
 
-class TestRol(Rol):
+class TestRol(unittest.TestCase):
     """Unit test case for the ``Rol`` model."""
     klass = model.Rol
-    attrs = dict(
-        nom_rol = u"test_rol",
-        des_rol = u"Descripcion de prueba",
-        id_tipo_rol=u"uno"
-        )
+    nom_rol = u"test_rol"
+    des_rol = u"Descripcion de prueba"
+    id_tipo_rol=1
+    
     def test_obj_creation_nombre(self):
         """El constructor debe setear el nombre correctamente"""
-        eq_(self.obj.nom_rol, u"test_rol")
+        eq_(self.nom_rol, u"test_rol")
         
     def test_obj_creation_descripcion(self):
         """El constructor debe setear la descripcion correctamente"""
-        eq_(self.obj.des_rol, u"Descripcion de prueba")
+        eq_(self.des_rol, u"Descripcion de prueba")
         
     def test_obj_creation_tipo(self):
         """El constructor debe setear el tipo correctamente"""
-        eq_(self.obj.id_tipo_rol, u"uno")
+        eq_(self.id_tipo_rol, u"uno")
         
 
 

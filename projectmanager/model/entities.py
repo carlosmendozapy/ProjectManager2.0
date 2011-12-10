@@ -128,7 +128,7 @@ class VersionItem(DeclarativeBase):
     __tablename__ = 'VERSION_ITEM'
     
     def initGraph(self,itemVersion):
-        self.impacto_graph = graph()
+        self.impacto_graph = digraph()
         self.impacto_graph.add_node(itemVersion.id_version_item,
         [('label',itemVersion.item.nom_item + "\n" + str(itemVersion.peso)),
         ('color','gold'),('root','true')])
@@ -268,7 +268,7 @@ class VersionItem(DeclarativeBase):
                 if not self.impacto_graph.\
                 has_edge((unItem.id_version_item,idVersion)):
                     self.impacto_graph.\
-                        add_edge((unItem.id_version_item,idVersion),
+                        add_edge((idVersion,unItem.id_version_item),
                                  label='Antecesor')
         
         return antecesores
